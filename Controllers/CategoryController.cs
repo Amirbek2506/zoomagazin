@@ -22,11 +22,27 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("Categories/fetch")]
-        public async Task<IActionResult> GetCategories()
+        public async Task<IActionResult> GetCategories([FromForm] bool hierarchie = true)
         {
-            return Ok(await _categoriesService.FetchWithSubcategories());
+            if(hierarchie)
+            {
+                return Ok(await _categoriesService.FetchWithSubcategories());
+            }
+            return Ok(await _categoriesService.Fetch());
         }
 
+
+        [HttpGet]
+        [Route("Category/fetchbyid")]
+        public IActionResult GetCategoryById([FromForm] int id)
+        {
+            Category category = _categoriesService.FetchById(id);
+            if (category == null)
+            {
+                return BadRequest(new Response { Status = "Error", Message = "Категория не найдена!" });
+            }
+            return Ok(category);
+        }
 
         [HttpPost]
         [Route("Category/create")]
@@ -58,7 +74,7 @@ namespace ZooMag.Controllers
         [HttpDelete]
         [Route("Category/delete")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        public async Task<IActionResult> DeleteCategory([FromForm] int id)
         {
              Response ress = await _categoriesService.Delete(id);
             if (ress.Status == "success")
@@ -70,20 +86,3 @@ namespace ZooMag.Controllers
 
     }
 }
-
-
-#region data base
-//[HttpGet]
-//[Route("Category/fetchbyid")]
-//public IActionResult GetCategoryById(int id)
-//{
-//    Category category = _categoriesService.FetchById(id);
-//    if (category==null)
-//    {
-//        return StatusCode(
-//            StatusCodes.Status400BadRequest, 
-//            new Response { Status = "Error", Message = "Категория не найдена!" });
-//    }
-//    return Ok(category);
-//}
-#endregion

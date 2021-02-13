@@ -75,9 +75,9 @@ namespace ZooMag.Controllers
 
 
         [HttpDelete]
-        [Route("deleteUser")]
+        [Route("delete")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> DeleteUser([FromForm]int id)
+        public async Task<IActionResult> DeleteUser([FromForm] int id)
         {
            Response ress = await _usersService.DeleteUser(id);
             if(ress.Status == "success")

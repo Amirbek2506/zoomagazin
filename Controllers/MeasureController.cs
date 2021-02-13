@@ -71,7 +71,7 @@ namespace ZooMag.Controllers
         [HttpDelete]
         [Route("delete")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> DeleteMeasure(int id)
+        public async Task<IActionResult> DeleteMeasure([FromForm] int id)
         {
             _measureService.Delete(id);
             await _measureService.Save();

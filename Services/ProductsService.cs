@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.Mapping;
 using ZooMag.Models;
+using ZooMag.Models.ViewModels.Products;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -28,7 +29,7 @@ namespace ZooMag.Services
 
 
         #region CRUD products
-        public int CreateProduct(ProductModel product)
+        public int CreateProduct(InpProductModel product)
         {
             Product prod = new Product
             {
@@ -55,12 +56,12 @@ namespace ZooMag.Services
         }
 
 
-        public ProductModel FetchProductById(int id)
+        public OutProductModel FetchProductById(int id)
         {
             Product prod = _context.Products.FirstOrDefault(p => p.Id == id && p.IsActive);
             if (prod == null)
                 return null;
-            return new ProductModel
+            return new OutProductModel
             {
                 Id = prod.Id,
                 CategoryId = prod.CategoryId,
@@ -82,13 +83,21 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<List<ProductModel>> FetchProducts()
+        public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId)
         {
-            List<Product> products = await _context.Products.Where(p => p.IsActive).ToListAsync();
-            List<ProductModel> prods = new List<ProductModel>();
+            List<Product> products = new List<Product>();
+            if(categoryId!=0)
+            {
+                products = await _context.Products.Where(p=>p.IsActive && p.CategoryId == categoryId).Skip(rows_offset).Take(rows_limit).ToListAsync();
+            }
+            else
+            {
+                products = await _context.Products.Where(p => p.IsActive).Skip(rows_offset).Take(rows_limit).ToListAsync();
+            }
+            List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
-                prods.Add(new ProductModel
+                prods.Add(new OutProductModel
                 {
                     Id = prod.Id,
                     CategoryId = prod.CategoryId,
@@ -112,13 +121,15 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<int> UpdateProduct(ProductModel product)
+        public async Task<int> UpdateProduct(UpdProductModel product)
         {
             Product prod = await _context.Products.SingleOrDefaultAsync(p => p.Id == product.Id && p.IsActive);
             if (prod == null)
             {
                 return 0;
             }
+            prod.CategoryId = product.CategoryId;
+            prod.MeasureId = prod.MeasureId;
             prod.NameRu = product.Name;
             prod.DiscriptionRu = product.Discription;
             prod.ShortDiscriptionRu = product.ShortDiscription;
@@ -132,7 +143,6 @@ namespace ZooMag.Services
             prod.SaleStartDate = product.SaleStartDate;
             prod.SaleEndDate = product.SaleEndDate;
             prod.Quantity = product.Quantity;
-            _context.Products.Update(prod);
             await Save();
 
             return prod.Id;
@@ -148,10 +158,13 @@ namespace ZooMag.Services
                 await DeleteProductSizes(id);
                 product.Image = "Resources/Images/deleted.png";
                 product.IsActive = false;
+                await Save();
                 return new Response { Status = "success", Message = "Продукт успешно удален!" };
             }
                 return new Response { Status = "error", Message = "Продукт не существует!" };
         }
+
+       
         #endregion
 
 
@@ -214,6 +227,20 @@ namespace ZooMag.Services
             return _mapper.Map<List<Size>, List<SizeModel>>(sizes); ;
         }
 
+
+        public async Task<Response> DeleteProductSize(int productId,int sizeId)
+        {
+            var productSize = await _context.ProductSizes.FirstOrDefaultAsync(p=>p.ProductId == productId && p.SizeId == sizeId);
+            if(productSize!=null)
+            {
+                _context.ProductSizes.Remove(productSize);
+                await Save();
+                return new Response {Status = "success",Message = "Размер успешно удален!" };
+            }
+            return new Response {Status = "error", Message = "Размер не найден!"};
+        }
+
+
         #endregion
 
 
@@ -271,13 +298,67 @@ namespace ZooMag.Services
             return _mapper.Map<List<ProductGalery>, List<ProductImagesModel>>(res);
         }
 
-        public void DeleteDirectory(int productId)
+        private void DeleteDirectory(int productId)
         {
             string path = "Resources/Images/Products/" + productId;
             if (Directory.Exists(path))
                 Directory.Delete(path, true);
         }
 
+        private void DeleteImage(string path)
+        {
+            FileInfo fileInfo = new FileInfo(path);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+        }
+
+
+        public async Task<Response> DeleteImage(int id, int productId)
+        {
+            if (id != 0)
+            {
+                var galery = _context.ProductGaleries.FirstOrDefault(p => p.Id == id);
+                if(galery!=null)
+                {
+                    DeleteImage(galery.Image);
+                    await DeleteProductGalery(id);
+                    return new Response { Status = "success", Message = "Фотография успешно удалено!" };
+                }
+            }
+            else
+            {
+                var product = await _context.Products.FirstOrDefaultAsync(p=>p.Id == productId);
+                if (product!=null)
+                {
+                    DeleteImage(product.Image);
+                    var galery = _context.ProductGaleries.FirstOrDefault(p => p.ProductId == productId);
+                    if (galery != null)
+                    {
+                        product.Image = galery.Image;
+                        await Save();
+                        await DeleteProductGalery(galery.Id);
+                    }else
+                    {
+                        product.Image = null;
+                        await Save();
+                    }
+                    return new Response { Status = "success", Message = "Фотография успешно удалено!" };
+                }
+            }
+            return new Response { Status = "error", Message = "Фотография не найдена!" };
+        }
+
+        private async Task<int> DeleteProductGalery(int id)
+        {
+            var galery = await _context.ProductGaleries.FirstOrDefaultAsync(p=>p.Id == id);
+            if(galery!=null)
+            {
+                _context.ProductGaleries.Remove(galery);
+            }
+            return await _context.SaveChangesAsync();
+        }
 
         #endregion
 
@@ -286,9 +367,16 @@ namespace ZooMag.Services
             return await _context.SaveChangesAsync();
         }
 
-        public int CountProducts()
+        public async Task<int> CountProducts(int categoryId = 0)
         {
-            return _context.Products.Count();
+            if(categoryId != 0)
+            {
+                return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId).CountAsync();
+            }
+            else
+            {
+                return await _context.Products.Where(p => p.IsActive).CountAsync();
+            }
         }
     }
 }
