@@ -24,17 +24,17 @@ namespace ZooMag.Controllers
         [HttpGet]
         [Route("fetchWorkers")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> GetFetchWorkers()
+        public async Task<IActionResult> GetFetchWorkers(int offset = 0, int limit = 20)
         {
-            return Ok(await _usersService.FetchWorkers());
+            return Ok(new { count = await _usersService.CountWorkers(), users = await _usersService.FetchWorkers(offset, limit) });
         }
 
         [HttpGet]
         [Route("fetchClients")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> GetFetchСlients()
+        public async Task<IActionResult> GetFetchСlients(int offset = 0, int limit = 20)
         {
-            return Ok(await _usersService.FetchСlients());
+            return Ok(new { count = await _usersService.CountClients(), users = await _usersService.FetchСlients(offset, limit) });
         }
 
         

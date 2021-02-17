@@ -18,7 +18,6 @@ namespace ZooMag.Services
     public class ProductsService : IProductsService
     {
         private readonly ApplicationDbContext _context;
-
         private readonly IMapper _mapper;
 
         public ProductsService(ApplicationDbContext context)
@@ -29,29 +28,12 @@ namespace ZooMag.Services
 
 
         #region CRUD products
-        public int CreateProduct(InpProductModel product)
+        public async Task<int> CreateProduct(InpProductModel product)
         {
-            Product prod = new Product
-            {
-                NameRu = product.Name,
-                DiscriptionRu = product.Discription,
-                ShortDiscriptionRu = product.ShortDiscription,
-                CategoryId = product.CategoryId,
-                MeasureId = product.MeasureId,
-                ColorRu = product.Color,
-                Weight = product.Weight,
-                IsNew = product.IsNew,
-                IsSale = product.IsSale,
-                OriginalPrice = product.OriginalPrice,
-                SellingPrice = product.SellingPrice,
-                SaleStartDate = product.SaleStartDate,
-                SaleEndDate = product.SaleEndDate,
-                Quantity = product.Quantity,
-                IsActive = true
-            };
+            Product prod = _mapper.Map<InpProductModel, Product>(product);
+            prod.IsActive = true;
             _context.Products.Add(prod);
-            _context.SaveChanges();
-
+            await Save();
             return prod.Id;
         }
 
@@ -61,25 +43,7 @@ namespace ZooMag.Services
             Product prod = _context.Products.FirstOrDefault(p => p.Id == id && p.IsActive);
             if (prod == null)
                 return null;
-            return new OutProductModel
-            {
-                Id = prod.Id,
-                CategoryId = prod.CategoryId,
-                Color = prod.ColorRu,
-                Discription = prod.DiscriptionRu,
-                IsNew = prod.IsNew,
-                IsSale = prod.IsSale,
-                MeasureId = prod.MeasureId,
-                Name = prod.NameRu,
-                OriginalPrice = prod.OriginalPrice,
-                Quantity = prod.Quantity,
-                Image = prod.Image,
-                SaleEndDate = prod.SaleEndDate,
-                SaleStartDate = prod.SaleStartDate,
-                SellingPrice = prod.SellingPrice,
-                ShortDiscription = prod.ShortDiscriptionRu,
-                Weight = prod.Weight,
-            };
+            return _mapper.Map<Product,OutProductModel>(prod);
         }
 
 
@@ -97,25 +61,7 @@ namespace ZooMag.Services
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
-                prods.Add(new OutProductModel
-                {
-                    Id = prod.Id,
-                    CategoryId = prod.CategoryId,
-                    Color = prod.ColorRu,
-                    Discription = prod.DiscriptionRu,
-                    IsNew = prod.IsNew,
-                    IsSale = prod.IsSale,
-                    MeasureId = prod.MeasureId,
-                    Name = prod.NameRu,
-                    OriginalPrice = prod.OriginalPrice,
-                    Quantity = prod.Quantity,
-                    Image = prod.Image,
-                    SaleEndDate = prod.SaleEndDate,
-                    SaleStartDate = prod.SaleStartDate,
-                    SellingPrice = prod.SellingPrice,
-                    ShortDiscription = prod.ShortDiscriptionRu,
-                    Weight = prod.Weight,
-                });
+                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
         }
@@ -130,11 +76,15 @@ namespace ZooMag.Services
             }
             prod.CategoryId = product.CategoryId;
             prod.MeasureId = prod.MeasureId;
-            prod.NameRu = product.Name;
-            prod.DiscriptionRu = product.Discription;
-            prod.ShortDiscriptionRu = product.ShortDiscription;
+            prod.NameRu = product.NameRu;
+            prod.NameEn = product.NameEn;
+            prod.DiscriptionRu = product.DiscriptionRu;
+            prod.DiscriptionEn = product.DiscriptionEn;
+            prod.ShortDiscriptionRu = product.ShortDiscriptionRu;
+            prod.ShortDiscriptionEn = product.ShortDiscriptionEn;
             prod.MeasureId = product.MeasureId;
-            prod.ColorRu = product.Color;
+            prod.ColorRu = product.ColorRu;
+            prod.ColorEn = product.ColorEn;
             prod.Weight = product.Weight;
             prod.IsNew = product.IsNew;
             prod.IsSale = product.IsSale;

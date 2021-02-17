@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace ZooMag.ViewModels
 {
-    public class CategoryModel
+    public class OutCategoryModel
     {
         [Key]
         public int Id { get; set; }
-        public string Title { get; set; }
-        public List<CategoryModel> SubCategories { get; set; }
+        public string TitleEn { get; set; }
+        public string TitleRu { get; set; }
+        public List<OutCategoryModel> SubCategories { get; set; }
 
     }
 }

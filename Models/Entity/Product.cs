@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,9 @@ namespace ZooMag.Models
     {
         [Key]
         public int Id { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal OriginalPrice { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal SellingPrice { get; set; }
         public bool IsSale { get; set; }
         public DateTime SaleStartDate { get; set; }
@@ -22,10 +25,10 @@ namespace ZooMag.Models
         public string DiscriptionRu { get; set; }
         public string ShortDiscriptionEn { get; set; }
         public string ShortDiscriptionRu { get; set; }
-        public int CategoryId { get; set; }
-        public int MeasureId { get; set; }
         public string ColorEn { get; set; }
         public string ColorRu { get; set; }
+        public int MeasureId { get; set; }
+        public int CategoryId { get; set; }
         public string Image { get; set; }
         public bool IsNew { get; set; }
         public string PreOrder { get; set; }

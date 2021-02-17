@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.ViewModels.Categories
 {
-    public class Category
+    public class UpdCategoryModel
     {
-        [Key]
         public int Id { get; set; }
-        public int ParentId { get; set; }
         public string TitleEn { get; set; }
         public string TitleRu { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
     }
 }

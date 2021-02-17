@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.ViewModels.Measures
 {
-    public class Gender
+    public class InpMeasureModel
     {
-        [Key]
-        public int Id { get; set; }
         public string TitleEn { get; set; }
         public string TitleRu { get; set; }
-
-        public virtual ICollection<User> Users { get; set; }
     }
 }

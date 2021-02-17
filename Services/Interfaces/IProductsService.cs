@@ -10,7 +10,7 @@ namespace ZooMag.Services.Interfaces
 {
     public interface IProductsService
     {
-        int CreateProduct(InpProductModel product);
+        Task<int> CreateProduct(InpProductModel product);
         Task<int> UpdateProduct(UpdProductModel product);
         Task<int> CountProducts(int categoryId);
         Task<Response> DeleteProduct(int id);

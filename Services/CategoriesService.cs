@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
+using ZooMag.Mapping;
 using ZooMag.Models;
+using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -16,14 +19,21 @@ namespace ZooMag.Services
     {
         private readonly ApplicationDbContext _context;
 
+        private readonly IMapper _mapper;
+
         public CategoriesService(ApplicationDbContext context)
         {
             _context = context;
+            _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
 
-        public int Count()
+        public async Task<Response> Create(InpCategoryModel categoryModel)
         {
-            return _context.Categories.Count();
+            if (String.IsNullOrEmpty(categoryModel.TitleRu) || String.IsNullOrEmpty(categoryModel.TitleEn))
+                return new Response { Status = "error", Message = "Invalid Category!" };
+            _context.Categories.Add(_mapper.Map<InpCategoryModel, Category>(categoryModel));
+            await Save();
+            return new Response { Status = "success", Message = "Категория успешно добавлена!" };
         }
 
         public Category FetchById(int id)
@@ -36,12 +46,17 @@ namespace ZooMag.Services
             return await _context.Categories.ToListAsync();
         }
 
-        public async Task<Response> Update(int id, string title)
+        public async Task<Response> Update(UpdCategoryModel categoryModel)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(p=>p.Id==id);
+            if (String.IsNullOrEmpty(categoryModel.TitleRu) || String.IsNullOrEmpty(categoryModel.TitleEn))
+            {
+                return new Response { Status = "error", Message = "Invalid Category!" };
+            }
+            var category = await _context.Categories.FindAsync(categoryModel.Id);
             if (category != null)
             {
-                category.Title = title;
+                category.TitleRu = categoryModel.TitleRu;
+                category.TitleEn = categoryModel.TitleEn;
                 await Save();
                 return new Response { Status = "success", Message = "Категория успешно изменена!" };
             }
@@ -84,20 +99,16 @@ namespace ZooMag.Services
                 Directory.Delete(path, true);
         }
 
-        public void Create(int parentid, string title)
-        {
-            _context.Categories.Add(new Category { ParentId = parentid,Title = title});
-        }
 
         public async Task<int> Save()
         {
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<List<CategoryModel>> FetchWithSubcategories()
+        public async Task<List<OutCategoryModel>> FetchWithSubcategories()
         {
             var categories = await _context.Categories.ToListAsync();
-            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new CategoryModel { Id = x.Id, Title = x.Title}).ToList();
+            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn }).ToList();
             foreach(var superCategory in superCategories)
             {
                 await GetSubcategories(superCategory, categories);
@@ -105,9 +116,9 @@ namespace ZooMag.Services
             return superCategories;
         }
 
-        private async Task GetSubcategories(CategoryModel superCategory, IList<Category> categories)
+        private async Task GetSubcategories(OutCategoryModel superCategory, IList<Category> categories)
         {
-            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new CategoryModel { Id = x.Id, Title = x.Title}).ToList();
+            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn}).ToList();
             foreach(var category in superCategory.SubCategories)
             {
                 await GetSubcategories(category, categories);

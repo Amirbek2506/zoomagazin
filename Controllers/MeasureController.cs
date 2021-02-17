@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ZooMag.Models;
+using ZooMag.Models.ViewModels.Measures;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -27,44 +28,43 @@ namespace ZooMag.Controllers
             return Ok(await _measureService.Fetch());
         }
 
-        //[HttpGet]
-        //[Route("fetchbyid")]
-        //public IActionResult GetMeasureById(int id)
-        //{
-        //    Measure measure = _measureService.FetchById(id);
-        //    if (measure == null)
-        //    {
-        //        return StatusCode(
-        //            StatusCodes.Status400BadRequest,
-        //            new Response { Status = "Error", Message = "Измерение не найдено!" });
-        //    }
-        //    return Ok(measure);
-        //}
+        [HttpGet]
+        [Route("fetchbyid/{id}")]
+        public IActionResult GetMeasureById(int id)
+        {
+            Measure measure = _measureService.FetchById(id);
+            if (measure == null)
+            {
+                return BadRequest(new Response { Status = "Error", Message = "Измерение не найдено!" });
+            }
+            return Ok(measure);
+        }
 
         [HttpPost]
         [Route("create")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> CreateMeasure([FromForm] string title)
+        public async Task<IActionResult> CreateMeasure([FromForm] InpMeasureModel measureModel)
         {
-            if (String.IsNullOrEmpty(title))
-                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Invalid Category!" });
+            var ress = await _measureService.Create(measureModel);
+            if (ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
 
-            _measureService.Create(title);
-            await _measureService.Save();
-            return Ok(new Response { Status = "Success", Message = "Измерение успешно добавлено!" });
         }
 
         [HttpPut]
         [Route("update")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> UpdateMeasure([FromForm]int id, [FromForm]string title)
+        public async Task<IActionResult> UpdateMeasure([FromForm] Measure measure)
         {
-            if (String.IsNullOrEmpty(title))
-                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Invalid Category!" });
-
-            _measureService.Update(id, title);
-            await _measureService.Save();
-            return Ok(new Response { Status = "Success", Message = "Измерение успешно изменено!" });
+            var ress = await _measureService.Update(measure);
+            if (ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
         }
 
 
@@ -73,9 +73,12 @@ namespace ZooMag.Controllers
         [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> DeleteMeasure([FromForm] int id)
         {
-            _measureService.Delete(id);
-            await _measureService.Save();
-            return Ok(new Response { Status = "Success", Message = "Измерения успешно удалено!" });
+            var ress =await _measureService.Delete(id);
+            if (ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
         }
     }
 }

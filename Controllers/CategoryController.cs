@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ZooMag.Models;
+using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -22,7 +23,7 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("Categories/fetch")]
-        public async Task<IActionResult> GetCategories([FromForm] bool hierarchie = true)
+        public async Task<IActionResult> GetCategories(bool hierarchie = true)
         {
             if(hierarchie)
             {
@@ -33,8 +34,8 @@ namespace ZooMag.Controllers
 
 
         [HttpGet]
-        [Route("Category/fetchbyid")]
-        public IActionResult GetCategoryById([FromForm] int id)
+        [Route("Category/fetchbyid/{id}")]
+        public IActionResult GetCategoryById(int id)
         {
             Category category = _categoriesService.FetchById(id);
             if (category == null)
@@ -47,23 +48,22 @@ namespace ZooMag.Controllers
         [HttpPost]
         [Route("Category/create")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> CreateCategory([FromForm] int parentid, [FromForm]string title)
+        public async Task<IActionResult> CreateCategory([FromForm] InpCategoryModel categoryModel)
         {
-            if (String.IsNullOrEmpty(title))
-                return BadRequest(new Response { Status = "error", Message = "Invalid Category!" });
-            _categoriesService.Create(parentid,title);
-            await _categoriesService.Save();
-            return Ok(new Response { Status = "success", Message = "Категория успешно добавлена!" });
+            var ress = await _categoriesService.Create(categoryModel);
+            if(ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
         }
         
         [HttpPut]
         [Route("Category/update")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> UpdateCategory([FromForm] int id, [FromForm] string title)
+        public async Task<IActionResult> UpdateCategory([FromForm] UpdCategoryModel categoryModel)
         {
-            if (String.IsNullOrEmpty(title))
-                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "error", Message = "Invalid Category!" });
-            Response ress = await _categoriesService.Update(id, title);
+            Response ress = await _categoriesService.Update(categoryModel);
             if (ress.Status == "success")
             {
                 return Ok(ress);

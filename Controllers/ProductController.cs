@@ -26,7 +26,7 @@ namespace ZooMag.Controllers
         [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> CreateProduct([FromForm] InpProductModel model)
         {
-            int productId = _productsService.CreateProduct(model);
+            int productId = await _productsService.CreateProduct(model);
             if (model.Images != null)
                 await _productsService.CreateProductGaleries(productId, model.Images);
             if (model.Sizes.Count() > 0)
@@ -41,9 +41,9 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("fetch")]
-        public async Task<IActionResult> GetProducts([FromForm]int rows_limit,[FromForm] int rows_offset,[FromForm] int categoryId = 0)
+        public async Task<IActionResult> GetProducts(int offset=0, int limit=20,int categoryId=0)
         {
-            var products = await _productsService.FetchProducts(rows_limit<1?1:rows_limit, rows_offset<1?0:rows_offset,categoryId);
+            var products = await _productsService.FetchProducts(limit<1?1:limit,offset<1?0:offset,categoryId);
             int count = await _productsService.CountProducts(categoryId);
             foreach (var product in products)
             {
@@ -55,8 +55,8 @@ namespace ZooMag.Controllers
 
 
         [HttpGet]
-        [Route("fetchbyid")]
-        public async Task<IActionResult> GetProductById([FromForm] int id)
+        [Route("fetchbyid/{id}")]
+        public async Task<IActionResult> GetProductById(int id)
         {
             var productModel = _productsService.FetchProductById(id);
             if (productModel == null)

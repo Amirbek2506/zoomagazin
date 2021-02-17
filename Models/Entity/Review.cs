@@ -14,7 +14,6 @@ namespace ZooMag.Models
         public int ProductId { get; set; }
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
 
         public virtual User Users { get; set; }
         public virtual Product Product { get; set; }

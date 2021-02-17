@@ -10,12 +10,14 @@ namespace ZooMag.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Title { get; set; }
+        public string TitleEn { get; set; }
+        public string TitleRu { get; set; }
         public string Link { get; set; }
         public string Image { get; set; }
         public string ImageMobile { get; set; }
         public bool IsActive { get; set; }
-        public string Description { get; set; }
+        public string DescriptionEn { get; set; }
+        public string DescriptionRu { get; set; }
         public DateTime DateShow { get; set; }
         public DateTime DateEnd { get; set; }
     }

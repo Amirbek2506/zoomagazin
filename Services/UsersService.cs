@@ -26,12 +26,32 @@ namespace ZooMag.Services
             _context = context;
             _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
-        public async Task<List<UserModel>> FetchWorkers()
+        public async Task<int> CountClients()
+        {
+            return await _context.Users
+                 .Join(_context.UserRoles.Where(t => t.RoleId == 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
+                 .CountAsync();
+        }
+        public async Task<int> CountWorkers()
+        {
+            return await _context.Users
+                 .Join(_context.UserRoles.Where(t => t.RoleId != 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
+                 .CountAsync();
+        }
+        public async Task<List<UserModel>> FetchWorkers(int offset,int limit)
         {
             var userList = new List<UserModel>();
-            foreach (var user in _context.Users.ToList())
+            var users = await _context.Users
+                 .Join(_context.UserRoles.Where(t => t.RoleId != 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
+                 .Skip(offset)
+                 .Take(limit)
+                 .ToListAsync();
+            foreach (var user in users)
             {
-                var userRolesIds = await _context.UserRoles.Where(m => m.UserId == user.Id && m.RoleId != 3).Select(p=>p.RoleId).ToListAsync();
+                var userRolesIds = await _context.UserRoles
+                    .Where(m => m.UserId == user.Id && m.RoleId != 3)
+                    .Select(p=>p.RoleId)
+                    .ToListAsync();
                 if(userRolesIds.Count()!=0)
                 {
                     var model = _mapper.Map<User, UserModel>(user);
@@ -42,16 +62,16 @@ namespace ZooMag.Services
             return userList;
         }
 
-        public async Task<List<UserModel>> FetchСlients()
+        public async Task<List<UserModel>> FetchСlients(int offset,int limit)
         {
             var userList = new List<UserModel>();
-            foreach (var user in _context.Users.ToList())
+            var users = await _context.Users
+                .Join(_context.UserRoles.Where(t => t.RoleId == 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
+                .Skip(offset)
+                .Take(limit)                
+                .ToListAsync();
+            foreach (var user in users)
             {
-                var userRol = await _context.UserRoles.FirstOrDefaultAsync(m => m.UserId == user.Id && m.RoleId != 3);
-                if (userRol != null)
-                {
-                    continue;
-                }
                 var userRole = await _context.UserRoles.FirstOrDefaultAsync(m => m.UserId == user.Id && m.RoleId == 3);
                     var model = _mapper.Map<User, UserModel>(user);
                 if(userRole!=null)
@@ -62,6 +82,7 @@ namespace ZooMag.Services
             }
             return userList;
         }
+
         public async Task<Response> SetRole(int userId, int roleId)
         {
             var userrole = await _context.UserRoles.Where(p => p.UserId == userId).ToListAsync();

@@ -45,7 +45,6 @@ namespace ZooMag
             services.AddTransient<IProductsService, ProductsService>();
             services.AddTransient<IUserService, UserService>();
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnStr")));
             services.AddControllers();
             services.Configure<IdentityOptions>(options =>
             {
@@ -61,6 +60,7 @@ namespace ZooMag
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.AllowedUserNameCharacters += "абвгдеёжзийклмнопрстуфхцшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦШЩЬЫЪЭЮЯ ";
             });
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnStr")));
             services.AddAutoMapper(typeof(Startup), typeof(GeneralProfile));
             // For Identity  
             services.AddIdentity<User, Role>()

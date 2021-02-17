@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Models;
@@ -38,6 +39,70 @@ namespace ZooMag.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            builder.Entity<Role>().HasData(new Role
+            {
+                Id = 1,
+                Name = "Администратор",
+                NormalizedName = "Администратор".ToUpper()
+            });
+            builder.Entity<Role>().HasData(new Role
+            {
+                Id = 2,
+                Name = "Бухгалтер",
+                NormalizedName = "Бухгалтер".ToUpper()
+            });
+            builder.Entity<Role>().HasData(new Role
+            {
+                Id = 3,
+                Name = "Клиент",
+                NormalizedName = "Клиент".ToUpper()
+            });
+
+
+
+            builder.Entity<Gender>().HasData(new Gender
+            {
+                Id = 1,
+                TitleRu = "не выбрано",
+                TitleEn = "not chosen"
+            });
+            builder.Entity<Gender>().HasData(new Gender
+            {
+                Id = 2,
+                TitleRu = "мужчина",
+                TitleEn = "man"
+            });
+            builder.Entity<Gender>().HasData(new Gender
+            {
+                Id = 3,
+                TitleRu = "женщина",
+                TitleEn = "woman"
+            });
+
+
+            var hasher = new PasswordHasher<IdentityUser<int>>();
+            builder.Entity<User>().HasData(new User
+            {
+                Id = 1,
+                UserName = "admin",
+                NormalizedUserName = "admin",
+                Email = "user@example.com",
+                NormalizedEmail = "user@example.com",
+                EmailConfirmed = false,
+                PasswordHash = hasher.HashPassword(null, "string"),
+                SecurityStamp = string.Empty,
+                GenderId = 1,
+                Image = "/Resources/Users/defaultavatar.svg"
+            });
+
+            builder.Entity<IdentityUserRole<int>>().HasData(new IdentityUserRole<int>
+            {
+                RoleId = 1,
+                UserId = 1
+            });
+
+
             base.OnModelCreating(builder);
         }
     }

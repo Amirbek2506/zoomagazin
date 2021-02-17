@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.Models;
+using ZooMag.Models.ViewModels.Measures;
 using ZooMag.Services.Interfaces;
+using ZooMag.ViewModels;
 
 namespace ZooMag.Services
 {
@@ -34,28 +36,51 @@ namespace ZooMag.Services
             return await _context.Measures.ToListAsync();
         }
 
-        public void Update(int id, string title)
+        public async Task<Response> Update(Measure measure)
         {
-            var measure = FetchById(id);
-            if (measure != null)
+            if(String.IsNullOrEmpty(measure.TitleRu) || String.IsNullOrEmpty(measure.TitleEn))
             {
-                measure.TitleRu = title;
-                _context.Measures.Update(measure);
+                return new Response { Status = "error", Message = "Invalid Measure!" };
             }
+            var _measure = await _context.Measures.FindAsync(measure.Id);
+            if (_measure != null)
+            {
+                _measure.TitleRu = measure.TitleRu;
+                _measure.TitleEn = measure.TitleEn;
+                await Save();
+                return new Response { Status = "success", Message = "Измерение успешно изменено!" };
+            }
+            else
+            {
+                return new Response { Status = "error", Message = "Измерение не найдено!" };
+            }
+
         }
 
-        public void Delete(int id)
+        public async Task<Response> Delete(int id)
         {
-            var measure = FetchById(id);
+            var measure =await _context.Measures.FindAsync(id);
             if (measure != null)
             {
                 _context.Measures.Remove(measure);
+                await Save();
+                return new Response { Status = "success", Message = "Измерения успешно удалено!" };
             }
+            return new Response { Status = "error", Message = "Измерение не найдено!" };
         }
 
-        public void Create(string title)
+        public async Task<Response> Create(InpMeasureModel measureModel)
         {
-            _context.Measures.Add(new Measure { TitleRu = title });
+            if (String.IsNullOrEmpty(measureModel.TitleRu) || String.IsNullOrEmpty(measureModel.TitleEn))
+                return new Response { Status = "error", Message = "Invalid Category!" };
+            _context.Measures.Add(
+                new Measure 
+                { 
+                    TitleRu = measureModel.TitleRu,
+                    TitleEn = measureModel.TitleEn
+                });
+            await Save();
+            return new Response { Status = "success", Message = "Измерение успешно добавлено!" };
         }
 
         public async Task<int> Save()
