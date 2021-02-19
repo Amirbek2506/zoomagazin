@@ -46,7 +46,7 @@ namespace ZooMag.Services
                  .Skip(offset)
                  .Take(limit)
                  .ToListAsync();
-            foreach (var user in users)
+            foreach (var user in users.OrderBy(p=>p.Id).ToList())
             {
                 var userRolesIds = await _context.UserRoles
                     .Where(m => m.UserId == user.Id && m.RoleId != 3)

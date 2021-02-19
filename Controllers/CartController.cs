@@ -28,8 +28,8 @@ namespace ZooMag.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromForm] InpCartModel model)
         {
-            string cartKey = GetCartKey();
-            CartModel cartModel = await _cartsService.Create(model, cartKey);
+            string userKey = GetUserKey();
+            CartModel cartModel = await _cartsService.Create(model, userKey);
             if(cartModel!=null)
             {
                 return Ok(cartModel);
@@ -41,8 +41,8 @@ namespace ZooMag.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            string cartKey = GetCartKey();
-            Response ress = await _cartsService.Delete(id, cartKey);
+            string userKey = GetUserKey();
+            Response ress = await _cartsService.Delete(id, userKey);
             if(ress.Status == "success")
             {
                 return Ok(ress);
@@ -54,24 +54,24 @@ namespace ZooMag.Controllers
         [Route("fetch")]
         public async Task<IActionResult> FetchCartItems()
         {
-            string cartid = GetCartKey();
-            return Ok(await _cartsService.FetchCartItems(cartid));
+            string userKey = GetUserKey();
+            return Ok(await _cartsService.FetchCartItems(userKey));
         }
         
         [HttpGet]
         [Route("count")]
         public async Task<IActionResult> Count()
         {
-            string cartid = GetCartKey();
-            return Ok(await _cartsService.Count(cartid));
+            string userKey = GetUserKey();
+            return Ok(await _cartsService.Count(userKey));
         }
 
         [HttpPost]
         [Route("setsize")]
         public async Task<IActionResult> SetSize([FromForm]int cartid,[FromForm]int sizeid)
         {
-            string cartKey = GetCartKey();
-            Response ress = await _cartsService.SetSize(cartid, sizeid, cartKey);
+            string userKey = GetUserKey();
+            Response ress = await _cartsService.SetSize(cartid, sizeid, userKey);
             if (ress.Status == "success")
             {
                 return Ok(ress);
@@ -83,8 +83,8 @@ namespace ZooMag.Controllers
         [Route("incrqty/{id}")]
         public async Task<IActionResult> IncrQty(int id)
         {
-            string cartKey = GetCartKey();
-            var ress = await _cartsService.IncrQty(id, cartKey);
+            string userKey = GetUserKey();
+            var ress = await _cartsService.IncrQty(id, userKey);
             if (ress != 0)
             {
                 return Ok(ress);
@@ -96,8 +96,8 @@ namespace ZooMag.Controllers
         [Route("decrqty/{id}")]
         public async Task<IActionResult> DecrQty(int id)
         {
-            string cartKey = GetCartKey();
-            var ress = await _cartsService.DecrQty(id, cartKey);
+            string userKey = GetUserKey();
+            var ress = await _cartsService.DecrQty(id, userKey);
             if (ress != 0)
             {
                 return Ok(ress);
@@ -108,18 +108,11 @@ namespace ZooMag.Controllers
 
 
 
-        private string GetCartKey()
+        private string GetUserKey()
         {
             if (User.Identity.IsAuthenticated)
             {
-                if (Request.Cookies["cartid"] == null)
-                {
-                    CookieOptions cookieOptions = new CookieOptions();
-                    cookieOptions.Expires = DateTime.Now.AddMonths(1);
-                    Response.Cookies.Append("cartid", User.FindFirstValue(ClaimTypes.NameIdentifier), cookieOptions);
-                    return User.FindFirstValue(ClaimTypes.NameIdentifier);
-                }
-                return User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             }
             else
             {

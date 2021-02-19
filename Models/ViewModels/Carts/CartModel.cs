@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using ZooMag.Models.ViewModels.Products;
 
 namespace ZooMag.Models.ViewModels.Carts
 {
@@ -16,7 +17,7 @@ namespace ZooMag.Models.ViewModels.Carts
         public int Quantity { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public virtual Product Product { get; set; }
+        public OutProductModel Product { get; set; }
         public virtual Size Size { get; set; }
     }
 }

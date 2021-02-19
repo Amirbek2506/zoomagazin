@@ -8,6 +8,7 @@ using ZooMag.Data;
 using ZooMag.Mapping;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Carts;
+using ZooMag.Models.ViewModels.Products;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -44,7 +45,7 @@ namespace ZooMag.Services
                 await Save();
 
             var cartmodel = _mapper.Map<Cart, CartModel>(cart);
-            cart.Product = product;
+            cartmodel.Product = _mapper.Map<Product, OutProductModel>(product);
             Size size = await _context.Sizes.FindAsync(model.SizeId);
             if(size!=null)
             {
@@ -76,7 +77,7 @@ namespace ZooMag.Services
             var cartModels = _mapper.Map<List<Cart>, List<CartModel>>(carts);
             foreach(var item in cartModels)
             {
-                item.Product = await _context.Products.FindAsync(item.ProductId);
+                item.Product = _mapper.Map<Product, OutProductModel>(await _context.Products.FindAsync(item.ProductId));
                 item.Size = await _context.Sizes.FindAsync(item.SizeId);
             }
             return cartModels;
@@ -92,9 +93,15 @@ namespace ZooMag.Services
             var cart = await _context.Carts.FirstOrDefaultAsync(p => p.Id == cartid && p.UserKey == userKey);
             if (cart != null)
             {
-                cart.SizeId = sizeid;
-                await Save();
-                return new Response { Status = "success", Message = "Размер успешно присвоен!" };
+                var prodsize = await _context.ProductSizes
+                    .FirstOrDefaultAsync(p=>p.ProductId==cart.ProductId && p.SizeId == sizeid);
+                if(prodsize!=null)
+                {
+                    cart.SizeId = sizeid;
+                    await Save();
+                    return new Response { Status = "success", Message = "Размер успешно присвоен!" };
+                }
+                return new Response { Status = "error", Message = "Размер не существует!" };
             }
             return new Response { Status = "error", Message = "Не найден!" };
         }

@@ -36,7 +36,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Login(LoginModel model)
         {
             var user = await userManager.FindByEmailAsync(model.Email);
-            if(user == null)
+            if (user == null)
             {
                 return Unauthorized(new Response { Status = "Error", Message = "Неправильный логин!" });
             }
@@ -79,23 +79,23 @@ namespace ZooMag.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserData()
         {
-                var user = await userManager.FindByEmailAsync(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value);
-                UserModel userModel = new UserModel
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    BirthDay = user.BirthDay,
-                    GenderId = user.GenderId,
-                    Image = user.Image,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                };
-                if(user!=null)
-                {
-                    var userRoles = await userManager.GetRolesAsync(user);
-                    userModel.Position = userRoles.ToList<string>();
-                }
-                return Ok(userModel);
+            var user = await userManager.FindByEmailAsync(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value);
+            UserModel userModel = new UserModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                BirthDay = user.BirthDay,
+                GenderId = user.GenderId,
+                Image = user.Image,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+            };
+            if (user != null)
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+                userModel.Position = userRoles.ToList<string>();
+            }
+            return Ok(userModel);
         }
 
 
@@ -124,8 +124,8 @@ namespace ZooMag.Controllers
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "Клиент");
-                    return await Login(new LoginModel {Email = model.Email,Password = model.Password });
-                        //Ok(new Response { Status = "Success", Message = "Пользователь успешно добавлен!" });
+                    return await Login(new LoginModel { Email = model.Email, Password = model.Password });
+                    //Ok(new Response { Status = "Success", Message = "Пользователь успешно добавлен!" });
                 }
                 else
                 {
