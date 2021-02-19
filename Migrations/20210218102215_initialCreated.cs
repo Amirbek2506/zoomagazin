@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ZooMag.Migrations
 {
-    public partial class InitCreating : Migration
+    public partial class initialCreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,7 +45,8 @@ namespace ZooMag.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ParentId = table.Column<int>(type: "int", nullable: false),
                     TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -212,10 +213,10 @@ namespace ZooMag.Migrations
                     DiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ShortDiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ShortDiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    MeasureId = table.Column<int>(type: "int", nullable: false),
                     ColorEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ColorRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MeasureId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsNew = table.Column<bool>(type: "bit", nullable: false),
                     PreOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -541,9 +542,9 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "624e20f6-2d7e-4634-be0a-c710ce9e4e1b", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "5afe3744-65b9-4c88-beec-f89cf062ef20", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "11454510-ad76-4597-a905-f2624edd76fd", "Клиент", "КЛИЕНТ" }
+                    { 1, "6700fd82-19fd-4567-ac04-2577a4e50a53", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "58853692-ac41-401d-af92-645bae9e54ec", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "ebaed9d9-67f3-46b2-8401-cb3154a16dba", "Клиент", "КЛИЕНТ" }
                 });
 
             migrationBuilder.InsertData(
@@ -559,7 +560,7 @@ namespace ZooMag.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "cbde5b9b-1abc-40a3-896a-5472a6050443", "user@example.com", false, null, 1, "/Resources/Users/defaultavatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAENwURp5LmYexsbLYtZKRS839uy9BE1DLxURkfRfJa1EIaIc/IYCMB2TLJvgb2B3JYw==", null, false, "", false, "admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "29dac09b-cf79-41b6-a8e4-956bdfa537ed", "user@example.com", false, null, 1, "/Resources/Users/defaultavatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEB7/BZuVWEWA2hqpwA3Ia2aasTTK4kNcwT0dlnwU1P8Qr7bdJc1cQWE+5+WLcp4l+g==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

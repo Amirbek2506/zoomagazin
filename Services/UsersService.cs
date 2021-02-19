@@ -55,7 +55,7 @@ namespace ZooMag.Services
                 if(userRolesIds.Count()!=0)
                 {
                     var model = _mapper.Map<User, UserModel>(user);
-                    model.Position = await _context.Roles.Where(r => userRolesIds.Contains(r.Id)).Select(g => g.Name).ToListAsync();
+                    model.Roles = await _context.Roles.Where(r => userRolesIds.Contains(r.Id)).ToListAsync();
                     userList.Add(model);
                 }
             }
@@ -76,7 +76,7 @@ namespace ZooMag.Services
                     var model = _mapper.Map<User, UserModel>(user);
                 if(userRole!=null)
                 {
-                    model.Position = await _context.Roles.Where(r => r.Id == userRole.RoleId).Select(g => g.Name).ToListAsync();
+                    model.Roles = await _context.Roles.Where(r => r.Id == userRole.RoleId).ToListAsync();
                 }
                 userList.Add(model);
             }
@@ -127,19 +127,18 @@ namespace ZooMag.Services
 
         public async Task<string> UploadImage(int userId, IFormFile file)
         {
-            string fName = Guid.NewGuid().ToString() + file.FileName;
             string path = Path.GetFullPath("Resources/Images/Users/" + userId);
             if (Directory.Exists(path))
             {
                 Directory.Delete(path, true);
             }
                 Directory.CreateDirectory(path);
-            path = Path.Combine(path, fName);
+            path = Path.Combine(path, file.FileName);
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
-            return fName;
+            return file.FileName;
         }
 
 
@@ -181,11 +180,11 @@ namespace ZooMag.Services
                     }
                 }
                 
-                //List<Chat> chats = await _context.Chats.Where(p => p.FromUserId == id || p.ToUserId == id).ToListAsync();
-                //if (chats.Count() > 0)
-                //{
-                //    _context.Chats.RemoveRange(chats);
-                //}
+                List<Chat> chats = await _context.Chats.Where(p => p.FromUserId == id || p.ToUserId == id).ToListAsync();
+                if (chats.Count() > 0)
+                {
+                    _context.Chats.RemoveRange(chats);
+                }
                 DeleteDirectory(id);
                 _context.Users.Remove(user);
                 await Save();
@@ -216,7 +215,7 @@ namespace ZooMag.Services
         private void DeleteDirectory(int id)
         {
             string path = "Resources/Images/Users/" + id;
-            if (Directory.Exists(path))
+            if(Directory.Exists(path))
                 Directory.Delete(path, true);
         }
     }

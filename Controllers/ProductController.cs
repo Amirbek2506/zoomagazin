@@ -128,5 +128,14 @@ namespace ZooMag.Controllers
             }
             return BadRequest(ress);
         }
+
+
+        [HttpGet]
+        [Route("fetchsizes/{productid}")]
+        public async Task<IActionResult> GetProducts(int productid)
+        {
+            return Ok(await _productsService.FetchSizesByProductId(productid));
+        }
+
     }
 }

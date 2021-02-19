@@ -117,7 +117,8 @@ namespace ZooMag.Controllers
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
                     UserName = model.Email,
-                    GenderId = 1
+                    GenderId = 1,
+                    Image = "Resources/Images/Users/useravatar.svg"
                 };
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

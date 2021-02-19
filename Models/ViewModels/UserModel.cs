@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using ZooMag.Models;
 
 namespace ZooMag.ViewModels
 {
@@ -14,6 +15,7 @@ namespace ZooMag.ViewModels
         public string LastName { get; set; }
         public string Email { get; set; }
         public List<string> Position { get; set; }
+        public List<Role> Roles { get; set; }
 
         public IFormFile file { get; set; }
     }

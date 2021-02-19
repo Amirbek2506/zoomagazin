@@ -41,6 +41,7 @@ namespace ZooMag
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<ICategoriesService, CategoriesService>();
+            services.AddTransient<ICartsService, CartsService>();
             services.AddTransient<IMeasuresService, MeasuresService>();
             services.AddTransient<IProductsService, ProductsService>();
             services.AddTransient<IUserService, UserService>();

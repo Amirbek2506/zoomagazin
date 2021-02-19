@@ -32,7 +32,7 @@ namespace ZooMag.Controllers
         [HttpGet]
         [Route("fetchClients")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> GetFetchСlients(int offset = 0, int limit = 20)
+        public async Task<IActionResult> FetchСlients(int offset = 0, int limit = 20)
         {
             return Ok(new { count = await _usersService.CountClients(), users = await _usersService.FetchСlients(offset, limit) });
         }

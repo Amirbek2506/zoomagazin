@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.ViewModels.Carts
 {
-    public class Cart
+    public class CartModel
     {
-        [Key]
         public int Id { get; set; }
-        public string UserKey { get; set; }
         public int ProductId { get; set; }
         public int SizeId { get; set; }
         [Column(TypeName = "decimal(18,2)")]
@@ -20,6 +17,6 @@ namespace ZooMag.Models
         public DateTime CreatedAt { get; set; }
 
         public virtual Product Product { get; set; }
-        //public virtual Size Size { get; set; }
+        public virtual Size Size { get; set; }
     }
 }

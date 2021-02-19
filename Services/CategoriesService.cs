@@ -31,8 +31,16 @@ namespace ZooMag.Services
         {
             if (String.IsNullOrEmpty(categoryModel.TitleRu) || String.IsNullOrEmpty(categoryModel.TitleEn))
                 return new Response { Status = "error", Message = "Invalid Category!" };
-            _context.Categories.Add(_mapper.Map<InpCategoryModel, Category>(categoryModel));
+
+            var cat = _mapper.Map<InpCategoryModel, Category>(categoryModel);
+            _context.Categories.Add(cat);
             await Save();
+            if (categoryModel.Image != null)
+            {
+                string image = await UploadImage(cat.Id, categoryModel.Image);
+                cat.Image = "Resources/Images/Categories/"+ cat.Id + "/" + image;
+                await Save();
+            }
             return new Response { Status = "success", Message = "Категория успешно добавлена!" };
         }
 
@@ -57,6 +65,11 @@ namespace ZooMag.Services
             {
                 category.TitleRu = categoryModel.TitleRu;
                 category.TitleEn = categoryModel.TitleEn;
+                if (categoryModel.Image != null)
+                {
+                    string image = await UploadImage(categoryModel.Id, categoryModel.Image);
+                    category.Image = "Resources/Images/Categories/" + categoryModel.Id + "/" + image;
+                }
                 await Save();
                 return new Response { Status = "success", Message = "Категория успешно изменена!" };
             }
@@ -77,6 +90,9 @@ namespace ZooMag.Services
                     product.Image = "Resources/Images/deleted.png";
                     product.IsActive = false;
                 }
+                string path = "Resources/Images/Categories/" + category.Id;
+                if (Directory.Exists(path))
+                    Directory.Delete(path, true);
                 _context.Categories.Remove(category);
                 await Save();
                 var cats = await _context.Categories.Where(x => x.ParentId == category.Id).ToListAsync();
@@ -108,7 +124,7 @@ namespace ZooMag.Services
         public async Task<List<OutCategoryModel>> FetchWithSubcategories()
         {
             var categories = await _context.Categories.ToListAsync();
-            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn }).ToList();
+            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn,Image = x.Image}).ToList();
             foreach(var superCategory in superCategories)
             {
                 await GetSubcategories(superCategory, categories);
@@ -118,7 +134,7 @@ namespace ZooMag.Services
 
         private async Task GetSubcategories(OutCategoryModel superCategory, IList<Category> categories)
         {
-            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn}).ToList();
+            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn,Image = x.Image}).ToList();
             foreach(var category in superCategory.SubCategories)
             {
                 await GetSubcategories(category, categories);
@@ -138,6 +154,22 @@ namespace ZooMag.Services
             _context.ProductSizes.RemoveRange(sizes);
             await Save();
             return;
+        }
+
+        private async Task<string> UploadImage(int catId, IFormFile file)
+        {
+            string path = Path.GetFullPath("Resources/Images/Categories/" + catId);
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+            Directory.CreateDirectory(path);
+            path = Path.Combine(path, file.FileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            return file.FileName;
         }
 
     }

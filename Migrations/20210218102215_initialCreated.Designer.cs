@@ -10,8 +10,8 @@ using ZooMag.Data;
 namespace ZooMag.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210216141721_InitCreating")]
-    partial class InitCreating
+    [Migration("20210218102215_initialCreated")]
+    partial class initialCreated
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -188,6 +188,9 @@ namespace ZooMag.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ParentId")
                         .HasColumnType("int");
@@ -572,21 +575,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "624e20f6-2d7e-4634-be0a-c710ce9e4e1b",
+                            ConcurrencyStamp = "6700fd82-19fd-4567-ac04-2577a4e50a53",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5afe3744-65b9-4c88-beec-f89cf062ef20",
+                            ConcurrencyStamp = "58853692-ac41-401d-af92-645bae9e54ec",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "11454510-ad76-4597-a905-f2624edd76fd",
+                            ConcurrencyStamp = "ebaed9d9-67f3-46b2-8401-cb3154a16dba",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -759,7 +762,7 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "cbde5b9b-1abc-40a3-896a-5472a6050443",
+                            ConcurrencyStamp = "29dac09b-cf79-41b6-a8e4-956bdfa537ed",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
@@ -767,7 +770,7 @@ namespace ZooMag.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "user@example.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAENwURp5LmYexsbLYtZKRS839uy9BE1DLxURkfRfJa1EIaIc/IYCMB2TLJvgb2B3JYw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB7/BZuVWEWA2hqpwA3Ia2aasTTK4kNcwT0dlnwU1P8Qr7bdJc1cQWE+5+WLcp4l+g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
