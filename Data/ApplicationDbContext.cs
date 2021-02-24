@@ -93,7 +93,7 @@ namespace ZooMag.Data
                 PasswordHash = hasher.HashPassword(null, "string"),
                 SecurityStamp = string.Empty,
                 GenderId = 1,
-                Image = "Resources/Users/defaultavatar.svg"
+                Image = "Resources/Images/Users/useravatar.svg"
             });
 
             builder.Entity<IdentityUserRole<int>>().HasData(new IdentityUserRole<int>

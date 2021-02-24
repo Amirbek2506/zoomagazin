@@ -43,6 +43,18 @@ namespace ZooMag.Controllers
             string userKey = GetUserKey();
             return Ok(await _ordersService.FetchMyOrders(userKey));
         }
+        
+        [HttpGet]
+        [Route("fetchdetail/{orderid}")]
+        public async Task<IActionResult> FetchDetail(int orderid)
+        {
+            var ress = await _ordersService.FetchDetail(orderid);
+            if(ress!=null)
+            {
+                return Ok(ress);
+            }
+            return BadRequest();
+        }
 
         [HttpGet]
         [Route("fetch")]

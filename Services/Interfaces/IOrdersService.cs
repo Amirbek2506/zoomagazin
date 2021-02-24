@@ -10,6 +10,7 @@ namespace ZooMag.Services.Interfaces
     {
         Task<Response> Create(InpOrderModel orderModel, string userKey);
         Task<List<Order>> FetchAll(int offset, int limit);
+        Task<OutOrderModel> FetchDetail(int orderid);
         Task<List<Order>> FetchMyOrders(string userKey);
         Task<int> Count();
         Task<Response> Delete(int id);

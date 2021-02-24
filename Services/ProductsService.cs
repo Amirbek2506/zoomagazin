@@ -348,5 +348,59 @@ namespace ZooMag.Services
                 return await _context.Products.Where(p => p.IsActive).CountAsync();
             }
         }
+        
+        public async Task<int> SearchCount(int categoryId,string q)
+        {
+            if (categoryId != 0)
+            {
+                return await _context.Products
+                    .Where(p => p.IsActive
+                    && p.CategoryId == categoryId
+                    && (p.NameRu.Contains(q)
+                    || p.NameEn.Contains(q)))
+                    .CountAsync();
+            }
+            else
+            {
+                return await _context.Products
+                    .Where(p => p.IsActive
+                    && (p.NameRu.Contains(q)
+                    || p.NameEn.Contains(q)))
+                    .CountAsync();
+            }
+        }
+
+        public async Task<List<OutProductModel>> Search(int rows_limit, int rows_offset, int categoryId,string q)
+        {
+            List<Product> products = new List<Product>();
+            if (categoryId != 0)
+            {
+                products = await _context.Products
+                    .Where(p => p.IsActive 
+                    && p.CategoryId == categoryId 
+                    && (p.NameRu.Contains(q)
+                    || p.NameEn.Contains(q)))
+                    .Skip(rows_offset)
+                    .Take(rows_limit)
+                    .ToListAsync();
+            }
+            else
+            {
+                products = await _context.Products
+                    .Where(p => p.IsActive
+                    && (p.NameRu.Contains(q)
+                    || p.NameEn.Contains(q)))
+                    .Skip(rows_offset)
+                    .Take(rows_limit)
+                    .ToListAsync();
+            }
+            List<OutProductModel> prods = new List<OutProductModel>();
+            foreach (var prod in products)
+            {
+                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
+            }
+
+            return prods;
+        }
     }
 }

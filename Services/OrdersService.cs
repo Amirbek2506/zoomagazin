@@ -89,7 +89,7 @@ namespace ZooMag.Services
             {
                 order.OrderStatus = await _context.OrderStatuses.FindAsync(order.OrderStatusId);
                 order.PaymentMethod = await _context.PaymentMethods.FindAsync(order.PaymentMethodId);
-                order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
+                //order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
             }
             return orders;
         }
@@ -101,7 +101,7 @@ namespace ZooMag.Services
             {
                 order.OrderStatus = await _context.OrderStatuses.FindAsync(order.OrderStatusId);
                 order.PaymentMethod = await _context.PaymentMethods.FindAsync(order.PaymentMethodId);
-                order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
+               // order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
             }
 
             return orders;
@@ -200,5 +200,60 @@ namespace ZooMag.Services
             }
             return orderitem.Price;
         }
+
+        public async Task<OutOrderModel> FetchDetail(int orderid)
+        {
+            var order = await _context.Orders.FindAsync(orderid);
+            OutOrderModel orderModel = new OutOrderModel();
+            if (order!=null)
+            {
+                orderModel = _mapper.Map<Order, OutOrderModel>(order);
+                orderModel.OrderStatus = await _context.OrderStatuses.FindAsync(order.OrderStatusId);
+                orderModel.OrderStatus.Orders = null;
+                orderModel.PaymentMethod = await _context.PaymentMethods.FindAsync(order.PaymentMethodId);
+                orderModel.PaymentMethod.Orders = null;
+                orderModel.OrderItems = new List<OrderItemModel>();
+                foreach (var item in await _context.OrderItems.Where(p => p.OrderId == orderid).ToListAsync())
+                {
+                    Product product = await _context.Products.FindAsync(item.ProductId);
+                    OutProductModel productModel = new OutProductModel();
+                    if (product!=null)
+                    {
+                        productModel = _mapper.Map<Product, OutProductModel>(product);
+                        productModel.Images = _mapper.Map<List<ProductGalery>, List<ProductImagesModel>>(
+                            await _context.ProductGaleries.Where(p => p.ProductId == productModel.Id)
+                            .ToListAsync());
+                        productModel.Sizes = await FetchSizesByProductId(productModel.Id);
+                    }
+                    
+
+                    orderModel.OrderItems.Add(new OrderItemModel
+                    {
+                        Id = item.Id,
+                        Price = item.Price,
+                        Quantity = item.Quantity,
+                        Product = productModel,
+                        Size = await _context.Sizes.FindAsync(item.SizeId)
+                    });
+
+                }
+                return orderModel;
+            }
+            return null;
+        }
+
+        private async Task<List<SizeModel>> FetchSizesByProductId(int productId)
+        {
+            List<Size> sizes = new List<Size>();
+            List<ProductSize> ProductSize = await _context.ProductSizes.Where(p => p.ProductId == productId).ToListAsync();
+            foreach (var item in ProductSize)
+            {
+                Size size = await _context.Sizes.Where(s => s.Id == item.SizeId).FirstOrDefaultAsync();
+                if (size != null)
+                    sizes.Add(size);
+            }
+            return _mapper.Map<List<Size>, List<SizeModel>>(sizes); ;
+        }
+
     }
 }

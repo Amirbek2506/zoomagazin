@@ -53,6 +53,20 @@ namespace ZooMag.Controllers
             return Ok(new { count = count, products = products });
         }
 
+        [HttpGet]
+        [Route("search")]
+        public async Task<IActionResult> Search(string q,int offset=0, int limit=20,int categoryId=0)
+        {
+            var products = await _productsService.Search(limit<1?1:limit,offset<1?0:offset,categoryId,q);
+            int count = await _productsService.SearchCount(categoryId,q);
+            foreach (var product in products)
+            {
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
+            }
+            return Ok(new { count = count, products = products });
+        }
+
 
         [HttpGet]
         [Route("fetchbyid/{id}")]
@@ -132,7 +146,7 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("fetchsizes/{productid}")]
-        public async Task<IActionResult> GetProducts(int productid)
+        public async Task<IActionResult> FetchSizes(int productid)
         {
             return Ok(await _productsService.FetchSizesByProductId(productid));
         }
