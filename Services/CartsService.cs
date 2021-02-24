@@ -27,14 +27,14 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<CartModel> Create(InpCartModel model, string cartid)
+        public async Task<CartModel> Create(InpCartModel model, string userKey)
         {
             Product product = await _context.Products.FindAsync(model.ProductId);
             if (product == null)
                 return null;
                 Cart cart = new Cart
                 {
-                    UserKey = cartid,
+                    UserKey = userKey,
                     ProductId = model.ProductId,
                     Quantity = model.Quantity< 1?1:model.Quantity,
                     SizeId = model.SizeId,
@@ -71,9 +71,9 @@ namespace ZooMag.Services
             return new Response { Status = "error", Message = "Не найден!" };
         }
 
-        public async Task<List<CartModel>> FetchCartItems(string cartid)
+        public async Task<List<CartModel>> FetchCartItems(string userKey)
         {
-            var carts = await _context.Carts.Where(p => p.UserKey == cartid).ToListAsync();
+            var carts = await _context.Carts.Where(p => p.UserKey == userKey).ToListAsync();
             var cartModels = _mapper.Map<List<Cart>, List<CartModel>>(carts);
             foreach(var item in cartModels)
             {

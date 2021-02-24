@@ -1,16 +1,150 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using ZooMag.Models.ViewModels.Orders;
+using ZooMag.Services.Interfaces;
 
 namespace ZooMag.Controllers
 {
-    public class OrderController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class OrderController : ControllerBase
     {
-        public IActionResult Index()
+
+        private readonly IOrdersService _ordersService;
+
+        public OrderController(IOrdersService ordersService)
         {
-            return View();
+            this._ordersService = ordersService;
+        }
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> Create([FromForm] InpOrderModel model)
+        {
+            string userKey = GetUserKey();
+            var ress = await _ordersService.Create(model, userKey);
+            if (ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
+        }
+
+        [HttpGet]
+        [Route("/fetchmyorders")]
+        public async Task<IActionResult> FetchMyOrders()
+        {
+            string userKey = GetUserKey();
+            return Ok(await _ordersService.FetchMyOrders(userKey));
+        }
+
+        [HttpGet]
+        [Route("fetch")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> FetchAll(int offset = 0, int limit = 20)
+        {
+            return Ok(new { count = await _ordersService.Count(),orders = await _ordersService.FetchAll(offset, limit) });
+        }
+
+        
+        [HttpPost]
+        [Route("setsize")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> SetSize(int orderitemid, int sizeid)
+        {
+            var ress = await _ordersService.SetSize(orderitemid,sizeid);
+            if(ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
+        }
+
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var ress = await _ordersService.Delete(id);
+            if(ress.Status=="success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
+        }
+        
+        [HttpDelete]
+        [Route("deleteitem/{id}")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var ress = await _ordersService.DeleteItem(id);
+            if(ress.Status=="success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
+        }
+
+
+        [HttpPost]
+        [Route("incrqty/{itemid}")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> IncrQty(int itemid)
+        {
+            var ress = await _ordersService.IncrQty(itemid);
+            if (ress != 0)
+            {
+                return Ok(ress);
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Route("decrqty/{itemid}")]
+        public async Task<IActionResult> DecrQty(int itemid)
+        {
+            var ress = await _ordersService.DecrQty(itemid);
+            if (ress != 0)
+            {
+                return Ok(ress);
+            }
+            return BadRequest();
+        }
+
+
+        private string GetUserKey()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+            }
+            else
+            {
+                if (Request.Cookies["cartid"] == null)
+                {
+                    CookieOptions cookieOptions = new CookieOptions();
+                    cookieOptions.Expires = DateTime.Now.AddMonths(2);
+                    // Generate a new random GUID using System.Guid class.     
+                    Guid tempCartId = Guid.NewGuid();
+                    Response.Cookies.Append("cartid", tempCartId.ToString(), cookieOptions);
+                    return tempCartId.ToString();
+                }
+                else
+                {
+                    CookieOptions cookieOptions = new CookieOptions();
+                    cookieOptions.Expires = DateTime.Now.AddMonths(2);
+                    Response.Cookies.Append("cartid", Request.Cookies["cartid"].ToString(), cookieOptions);
+                    return Request.Cookies["cartid"].ToString();
+                }
+            }
         }
     }
 }

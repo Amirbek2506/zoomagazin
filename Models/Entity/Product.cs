@@ -16,8 +16,8 @@ namespace ZooMag.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal SellingPrice { get; set; }
         public bool IsSale { get; set; }
-        public DateTime SaleStartDate { get; set; }
-        public DateTime SaleEndDate { get; set; }
+        public DateTime? SaleStartDate { get; set; }
+        public DateTime? SaleEndDate { get; set; }
         public int Quantity { get; set; }
         public string NameEn { get; set; }
         public string NameRu { get; set; }
@@ -37,7 +37,7 @@ namespace ZooMag.Models
         public double Weight { get; set; }
 
 
-        public virtual Category Category { get; set; }
+        //public virtual Category Category { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<ProductGalery> ProductGaleries { get; set; }

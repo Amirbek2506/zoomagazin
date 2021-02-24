@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ZooMag.Migrations
 {
-    public partial class initialCreated : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -125,6 +125,40 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsSale = table.Column<bool>(type: "bit", nullable: false),
+                    SaleStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SaleEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NameRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortDiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortDiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ColorEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ColorRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MeasureId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsNew = table.Column<bool>(type: "bit", nullable: false),
+                    PreOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Weight = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SiteProperties",
                 columns: table => new
                 {
@@ -191,46 +225,6 @@ namespace ZooMag.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Products",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsSale = table.Column<bool>(type: "bit", nullable: false),
-                    SaleStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SaleEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NameRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ColorEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ColorRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MeasureId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsNew = table.Column<bool>(type: "bit", nullable: false),
-                    PreOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Weight = table.Column<double>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Products_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -350,6 +344,26 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Wishlists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wishlists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Wishlists_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductSizes",
                 columns: table => new
                 {
@@ -371,26 +385,6 @@ namespace ZooMag.Migrations
                         name: "FK_ProductSizes_Sizes_SizeId",
                         column: x => x.SizeId,
                         principalTable: "Sizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Wishlists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wishlists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Wishlists_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -542,9 +536,9 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "6700fd82-19fd-4567-ac04-2577a4e50a53", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "58853692-ac41-401d-af92-645bae9e54ec", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "ebaed9d9-67f3-46b2-8401-cb3154a16dba", "Клиент", "КЛИЕНТ" }
+                    { 1, "5f96999a-65c2-458c-ae6a-d41ceb428b4c", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "9a494277-e773-4f8e-8e53-1da1e63e6b50", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "d84a8844-6437-499c-97df-5c22b7d1a24d", "Клиент", "КЛИЕНТ" }
                 });
 
             migrationBuilder.InsertData(
@@ -558,9 +552,25 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "OrderStatuses",
+                columns: new[] { "Id", "Title" },
+                values: new object[,]
+                {
+                    { 1, "Новый заказ" },
+                    { 2, "Обработан" },
+                    { 3, "Отказ" },
+                    { 4, "Доставлен" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PaymentMethods",
+                columns: new[] { "Id", "MethodName" },
+                values: new object[] { 1, "Оплата после получение товара" });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "29dac09b-cf79-41b6-a8e4-956bdfa537ed", "user@example.com", false, null, 1, "/Resources/Users/defaultavatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEB7/BZuVWEWA2hqpwA3Ia2aasTTK4kNcwT0dlnwU1P8Qr7bdJc1cQWE+5+WLcp4l+g==", null, false, "", false, "admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "270d8ec6-519a-4f71-b7a6-db3d921e83e4", "user@example.com", false, null, 1, "Resources/Users/defaultavatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEKFZQ9jDjLTKXBqc6oo/Lvx1eQb4ucd34vgYeJmS0XF2cvocmuUvaREZJnLMBaN8bQ==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -642,11 +652,6 @@ namespace ZooMag.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_CategoryId",
-                table: "Products",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductSizes_ProductId",
                 table: "ProductSizes",
                 column: "ProductId");
@@ -694,6 +699,9 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Chats");
@@ -745,9 +753,6 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genders");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
         }
     }
 }

@@ -10,8 +10,8 @@ using ZooMag.Data;
 namespace ZooMag.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210218102215_initialCreated")]
-    partial class initialCreated
+    [Migration("20210224123222_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -376,6 +376,28 @@ namespace ZooMag.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Title = "Новый заказ"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Title = "Обработан"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Title = "Отказ"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Title = "Доставлен"
+                        });
                 });
 
             modelBuilder.Entity("ZooMag.Models.PaymentMethod", b =>
@@ -391,6 +413,13 @@ namespace ZooMag.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            MethodName = "Оплата после получение товара"
+                        });
                 });
 
             modelBuilder.Entity("ZooMag.Models.Product", b =>
@@ -448,10 +477,10 @@ namespace ZooMag.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("SaleEndDate")
+                    b.Property<DateTime?>("SaleEndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("SaleStartDate")
+                    b.Property<DateTime?>("SaleStartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("SellingPrice")
@@ -467,8 +496,6 @@ namespace ZooMag.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -575,21 +602,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "6700fd82-19fd-4567-ac04-2577a4e50a53",
+                            ConcurrencyStamp = "5f96999a-65c2-458c-ae6a-d41ceb428b4c",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "58853692-ac41-401d-af92-645bae9e54ec",
+                            ConcurrencyStamp = "9a494277-e773-4f8e-8e53-1da1e63e6b50",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "ebaed9d9-67f3-46b2-8401-cb3154a16dba",
+                            ConcurrencyStamp = "d84a8844-6437-499c-97df-5c22b7d1a24d",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -762,15 +789,15 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "29dac09b-cf79-41b6-a8e4-956bdfa537ed",
+                            ConcurrencyStamp = "270d8ec6-519a-4f71-b7a6-db3d921e83e4",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
-                            Image = "/Resources/Users/defaultavatar.svg",
+                            Image = "Resources/Users/defaultavatar.svg",
                             LockoutEnabled = false,
                             NormalizedEmail = "user@example.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB7/BZuVWEWA2hqpwA3Ia2aasTTK4kNcwT0dlnwU1P8Qr7bdJc1cQWE+5+WLcp4l+g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKFZQ9jDjLTKXBqc6oo/Lvx1eQb4ucd34vgYeJmS0XF2cvocmuUvaREZJnLMBaN8bQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -898,17 +925,6 @@ namespace ZooMag.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ZooMag.Models.Product", b =>
-                {
-                    b.HasOne("ZooMag.Models.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("ZooMag.Models.ProductGalery", b =>
                 {
                     b.HasOne("ZooMag.Models.Product", "Product")
@@ -978,11 +994,6 @@ namespace ZooMag.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ZooMag.Models.Category", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("ZooMag.Models.Gender", b =>

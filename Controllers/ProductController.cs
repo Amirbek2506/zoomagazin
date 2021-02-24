@@ -47,7 +47,7 @@ namespace ZooMag.Controllers
             int count = await _productsService.CountProducts(categoryId);
             foreach (var product in products)
             {
-                product.ProductImages = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
                 product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(new { count = count, products = products });
@@ -63,7 +63,7 @@ namespace ZooMag.Controllers
             {
                 return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
             }
-            productModel.ProductImages = await _productsService.FetchProductGaleriesByProductId(id);
+            productModel.Images = await _productsService.FetchProductGaleriesByProductId(id);
             productModel.Sizes = await _productsService.FetchSizesByProductId(productModel.Id);
 
             return Ok(productModel);
@@ -91,9 +91,9 @@ namespace ZooMag.Controllers
         }
 
         [HttpDelete]
-        [Route("delete")]
+        [Route("delete/{id}")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> DeleteProduct([FromForm] int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
             var ress = await _productsService.DeleteProduct(id);
             if (ress.Status == "success")

@@ -78,41 +78,24 @@ namespace ZooMag.Services
 
         public async Task<Response> Delete(int id)
         {
-            var category = FetchById(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 List<Product> products = await _context.Products.Where(p => p.CategoryId == id).ToListAsync();
-                foreach(var product in products)
-                {
-                    DeleteDirectory(product.Id);
-                    await DeleteProductGaleries(id);
-                    await DeleteProductSizes(id);
-                    product.Image = "Resources/Images/deleted.png";
-                    product.IsActive = false;
-                }
+                products.ForEach(p=>p.CategoryId = category.ParentId);
                 string path = "Resources/Images/Categories/" + category.Id;
                 if (Directory.Exists(path))
                     Directory.Delete(path, true);
                 _context.Categories.Remove(category);
-                await Save();
                 var cats = await _context.Categories.Where(x => x.ParentId == category.Id).ToListAsync();
-                foreach (var cat in cats)
-                {
-                    await Delete(cat.Id);
-                }
+                cats.ForEach(p=>p.ParentId = category.ParentId);
+                await Save();
                     return new Response { Status = "success", Message = "Категория успешно удалена!" };
             }
             else
             {
                 return new Response { Status = "error", Message = "Категория не существует!" };
             }
-        }
-
-        private void DeleteDirectory(int productId)
-        {
-            string path = "Resources/Images/Products/" + productId;
-            if (Directory.Exists(path))
-                Directory.Delete(path, true);
         }
 
 
@@ -139,21 +122,6 @@ namespace ZooMag.Services
             {
                 await GetSubcategories(category, categories);
             }
-        }
-
-        public async Task DeleteProductGaleries(int productId)
-        {
-            var galeries = await _context.ProductGaleries.Where(p => p.ProductId == productId).ToListAsync();
-            _context.ProductGaleries.RemoveRange(galeries);
-            await Save();
-            return;
-        }
-        public async Task DeleteProductSizes(int productId)
-        {
-            var sizes = await _context.ProductSizes.Where(p => p.ProductId == productId).ToListAsync();
-            _context.ProductSizes.RemoveRange(sizes);
-            await Save();
-            return;
         }
 
         private async Task<string> UploadImage(int catId, IFormFile file)

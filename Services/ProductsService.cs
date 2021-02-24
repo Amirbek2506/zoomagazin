@@ -31,6 +31,11 @@ namespace ZooMag.Services
         public async Task<int> CreateProduct(InpProductModel product)
         {
             Product prod = _mapper.Map<InpProductModel, Product>(product);
+            if (await _context.Categories.FindAsync(prod.CategoryId)==null)
+            {
+                prod.CategoryId = 0;
+            }
+            prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
             prod.IsActive = true;
             _context.Products.Add(prod);
             await Save();
@@ -74,22 +79,37 @@ namespace ZooMag.Services
             {
                 return 0;
             }
-            prod.CategoryId = product.CategoryId;
-            prod.MeasureId = prod.MeasureId;
+            if (await _context.Categories.FindAsync(prod.CategoryId) == null)
+            {
+                prod.CategoryId = 0;
+            }else
+            {
+                prod.CategoryId = product.CategoryId;
+            }
+
+            if (await _context.Measures.FindAsync(prod.MeasureId) == null)
+            {
+                prod.MeasureId = 0;
+            }
+            else
+            {
+                prod.MeasureId = product.MeasureId;
+            }
+
+
             prod.NameRu = product.NameRu;
             prod.NameEn = product.NameEn;
             prod.DiscriptionRu = product.DiscriptionRu;
             prod.DiscriptionEn = product.DiscriptionEn;
             prod.ShortDiscriptionRu = product.ShortDiscriptionRu;
             prod.ShortDiscriptionEn = product.ShortDiscriptionEn;
-            prod.MeasureId = product.MeasureId;
             prod.ColorRu = product.ColorRu;
             prod.ColorEn = product.ColorEn;
             prod.Weight = product.Weight;
             prod.IsNew = product.IsNew;
             prod.IsSale = product.IsSale;
             prod.OriginalPrice = product.OriginalPrice;
-            prod.SellingPrice = product.SellingPrice;
+            prod.SellingPrice = (product.SellingPrice!=0 && product.IsSale)?product.SellingPrice:product.OriginalPrice;
             prod.SaleStartDate = product.SaleStartDate;
             prod.SaleEndDate = product.SaleEndDate;
             prod.Quantity = product.Quantity;

@@ -93,7 +93,7 @@ namespace ZooMag.Data
                 PasswordHash = hasher.HashPassword(null, "string"),
                 SecurityStamp = string.Empty,
                 GenderId = 1,
-                Image = "/Resources/Users/defaultavatar.svg"
+                Image = "Resources/Users/defaultavatar.svg"
             });
 
             builder.Entity<IdentityUserRole<int>>().HasData(new IdentityUserRole<int>
@@ -101,6 +101,34 @@ namespace ZooMag.Data
                 RoleId = 1,
                 UserId = 1
             });
+
+
+            builder.Entity<OrderStatus>().HasData(new OrderStatus
+            {
+                Id = 1,
+                Title = "Новый заказ"
+            });
+            builder.Entity<OrderStatus>().HasData(new OrderStatus
+            {
+                Id = 2,
+                Title = "Обработан"
+            });
+            builder.Entity<OrderStatus>().HasData(new OrderStatus
+            {
+                Id = 3,
+                Title = "Отказ"
+            });
+            builder.Entity<OrderStatus>().HasData(new OrderStatus
+            {
+                Id = 4,
+                Title = "Доставлен"
+            });
+            builder.Entity<PaymentMethod>().HasData(new PaymentMethod
+            {
+                Id = 1,
+                MethodName = "Оплата после получение товара"
+            });
+
 
 
             base.OnModelCreating(builder);

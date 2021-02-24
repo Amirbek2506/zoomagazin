@@ -14,6 +14,6 @@ namespace ZooMag.Models
         public string TitleEn { get; set; }
         public string TitleRu { get; set; }
         public string Image { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        //public virtual ICollection<Product> Products { get; set; }
     }
 }

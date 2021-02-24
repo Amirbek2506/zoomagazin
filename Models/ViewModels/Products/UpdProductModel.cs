@@ -24,10 +24,9 @@ namespace ZooMag.Models.ViewModels.Products
         public decimal OriginalPrice { get; set; }
         public decimal SellingPrice { get; set; }
         public bool IsSale { get; set; }
-        public DateTime SaleStartDate { get; set; }
-        public DateTime SaleEndDate { get; set; }
+        public DateTime? SaleStartDate { get; set; }
+        public DateTime? SaleEndDate { get; set; }
         public int Quantity { get; set; }
-        public string Image { get; set; }
 
         public List<string> Sizes { get; set; }
         public IFormFile[] Images { get; set; }

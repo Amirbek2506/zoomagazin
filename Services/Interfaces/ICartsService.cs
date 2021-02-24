@@ -7,8 +7,8 @@ namespace ZooMag.Services.Interfaces
 {
     public interface ICartsService
     {
-        Task<CartModel> Create(InpCartModel model, string cartid);
-        Task<List<CartModel>> FetchCartItems(string cartid);
+        Task<CartModel> Create(InpCartModel model, string userKey);
+        Task<List<CartModel>> FetchCartItems(string userKey);
         Task<int> Count(string cartid);
         Task<Response> Delete(int id,string userKey);
         Task<decimal> IncrQty(int id,string userKey);

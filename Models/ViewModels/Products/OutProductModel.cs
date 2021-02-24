@@ -29,7 +29,7 @@ namespace ZooMag.Models.ViewModels.Products
         public int Quantity { get; set; }
         public string Image { get; set; }
 
-        public List<ProductImagesModel> ProductImages { get; set; }
+        public List<ProductImagesModel> Images { get; set; }
         public List<SizeModel> Sizes { get; set; }
     }
 }

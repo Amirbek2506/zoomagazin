@@ -9,6 +9,7 @@ namespace ZooMag.Models
 {
     public class User : IdentityUser<int>
     {
+        public static object Identity { get; internal set; }
         public string Image { get; set; }
         public DateTime BirthDay { get; set; }
         public int GenderId { get; set; }
