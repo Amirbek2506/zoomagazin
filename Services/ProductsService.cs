@@ -71,6 +71,29 @@ namespace ZooMag.Services
             return prods;
         }
 
+         public async Task<List<OutProductModel>> FetchSales(int count)
+         {
+            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).OrderBy(arg => Guid.NewGuid()).Take(count).ToListAsync();
+            List<OutProductModel> prods = new List<OutProductModel>();
+            foreach (var prod in products)
+            {
+                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
+            }
+            return prods;
+         }
+
+        
+         public async Task<List<OutProductModel>> FetchNew(int count)
+         {
+            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).OrderBy(arg => Guid.NewGuid()).Take(count).ToListAsync();
+            List<OutProductModel> prods = new List<OutProductModel>();
+            foreach (var prod in products)
+            {
+                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
+            }
+            return prods;
+         }
+
 
         public async Task<int> UpdateProduct(UpdProductModel product)
         {
@@ -240,9 +263,14 @@ namespace ZooMag.Services
                 {
                     Product product = _context.Products.FirstOrDefault(p => p.Id == productId);
                     if (product != null)
-                        product.Image = "Resources/Images/Products/"+product.Id +"/"+ fileName;
-                    await Save();
-                    continue;
+                    {
+                        if(String.IsNullOrEmpty(product.Image))
+                        {
+                            product.Image = "Resources/Images/Products/" + product.Id + "/" + fileName;
+                            await Save();
+                            continue;
+                        }
+                    }
                 }
                 _context.ProductGaleries.Add(
                     new ProductGalery
@@ -254,6 +282,26 @@ namespace ZooMag.Services
             await Save();
             return;
         }
+
+        public async Task<Response> SetMainImage(int productid,int imageid)
+        {
+            var product = await _context.Products.FindAsync(productid);
+            if(product==null)
+            {
+                return new Response { Status = "error",Message = "Товар не найден!"};
+            }
+            var galery = await _context.ProductGaleries.FindAsync(imageid);
+            if (galery == null)
+            {
+                return new Response { Status = "error", Message = "Фото не найдено!" };
+            }
+            string img = product.Image;
+            product.Image = galery.Image;
+            galery.Image = img;
+            await Save();
+            return new Response {Status = "success",Message = "Фото успешно присвоен!" }; ;
+        }
+
         private async Task DeleteProductGaleries(int productId)
         {
             var galeries = await _context.ProductGaleries.Where(p => p.ProductId == productId).ToListAsync();

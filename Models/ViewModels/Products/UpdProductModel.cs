@@ -29,6 +29,5 @@ namespace ZooMag.Models.ViewModels.Products
         public int Quantity { get; set; }
 
         public List<string> Sizes { get; set; }
-        public IFormFile[] Images { get; set; }
     }
 }

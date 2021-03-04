@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace ZooMag.Controllers
             int productId = await _productsService.CreateProduct(model);
             if (model.Images != null)
                 await _productsService.CreateProductGaleries(productId, model.Images);
-            if (model.Sizes.Count() > 0)
+            if (model.Sizes!=null)
             {
                 List<int> Ids = await _productsService.CreateSizes(model.Sizes);
                 await _productsService.CreateProductSizes(productId, Ids);
@@ -51,6 +52,33 @@ namespace ZooMag.Controllers
                 product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(new { count = count, products = products });
+        }
+        
+
+        [HttpGet]
+        [Route("fetchsales/{count}")]
+        public async Task<IActionResult> GetSales(int count=10)
+        {
+            var products = await _productsService.FetchSales(count);
+            foreach (var product in products)
+            {
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
+            }
+            return Ok(products);
+        }
+
+        [HttpGet]
+        [Route("fetchnew/{count}")]
+        public async Task<IActionResult> GetNew(int count=10)
+        {
+            var products = await _productsService.FetchNew(count);
+            foreach (var product in products)
+            {
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
+            }
+            return Ok(products);
         }
 
         [HttpGet]
@@ -94,14 +122,45 @@ namespace ZooMag.Controllers
             {
                 return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
             }
-            if (model.Images!=null)
-                await _productsService.CreateProductGaleries(productId, model.Images);
-            if (model.Sizes.Count() > 0)
+           
+            if (model.Sizes!=null)
             {
                 List<int> Ids = await _productsService.CreateSizes(model.Sizes);
                 await _productsService.CreateProductSizes(productId, Ids);
             }
             return Ok(new Response { Status = "Success", Message = "Товар успешно изменен!" });
+        }
+
+        [HttpPost]
+        [Route("createimages")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> CreateImages([FromForm]int productid, IFormFile[] Images)
+        {
+            var productModel = _productsService.FetchProductById(productid);
+            if (productModel == null)
+            {
+                return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
+            }
+            if (Images!=null)
+            {
+                await _productsService.CreateProductGaleries(productid, Images);
+            }
+            productModel.Images = await _productsService.FetchProductGaleriesByProductId(productid);
+
+            return Ok(productModel);
+        }
+
+        [HttpPost]
+        [Route("setmainimage")]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> SetMainImage(int productid, int imageid)
+        {
+            var ress = await _productsService.SetMainImage(productid,imageid);
+            if(ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
         }
 
         [HttpDelete]
