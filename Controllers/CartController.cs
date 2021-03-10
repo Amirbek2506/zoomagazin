@@ -23,7 +23,7 @@ namespace ZooMag.Controllers
         {
             this._cartsService = cartsService;
         }
-
+        /*
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromForm] InpCartModel model)
@@ -133,6 +133,6 @@ namespace ZooMag.Controllers
                     return Request.Cookies["cartid"].ToString();
                 }
             }
-        }
+        }*/
     }
 }

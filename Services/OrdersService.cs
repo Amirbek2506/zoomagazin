@@ -37,10 +37,23 @@ namespace ZooMag.Services
         {
             try
             {
-                var carts = await _context.Carts.Where(p => p.UserKey == userKey).ToListAsync();
-                if (carts.Count() == 0)
+                if (orderModel.carts == null || orderModel.carts.Count() == 0)
                 {
                     return new Response { Status = "error", Message = "Корзина пуста!" };
+                }
+                List<Cart> carts = new List<Cart>();
+                foreach(var cart in orderModel.carts)
+                {
+                    var p = await _context.Products.FindAsync(cart.ProductId);
+                    if (p == null)
+                        continue;
+                    carts.Add(new Cart
+                    {
+                        ProductId = cart.ProductId,
+                        Price = cart.Quantity<=1?p.IsSale?p.SellingPrice:p.OriginalPrice:p.IsSale?cart.Quantity*p.SellingPrice:cart.Quantity*p.OriginalPrice,
+                        SizeId = cart.SizeId,
+                        Quantity = cart.Quantity<=1?1:cart.Quantity
+                    });
                 }
                 if (orderModel.PhoneNumber.Length != 9)
                 {
@@ -72,7 +85,6 @@ namespace ZooMag.Services
                             Quantity = cart.Quantity
                         });
                 }
-                _context.Carts.RemoveRange(carts);
                 await Save();
                 return new Response { Status = "success", Message = "Заказ успешно оформлен!" };
             }
@@ -89,6 +101,8 @@ namespace ZooMag.Services
             {
                 order.OrderStatus = await _context.OrderStatuses.FindAsync(order.OrderStatusId);
                 order.PaymentMethod = await _context.PaymentMethods.FindAsync(order.PaymentMethodId);
+                order.PaymentMethod.Orders = null;
+                order.OrderStatus.Orders = null;
                 //order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
             }
             return orders;
@@ -101,7 +115,9 @@ namespace ZooMag.Services
             {
                 order.OrderStatus = await _context.OrderStatuses.FindAsync(order.OrderStatusId);
                 order.PaymentMethod = await _context.PaymentMethods.FindAsync(order.PaymentMethodId);
-               // order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
+                order.PaymentMethod.Orders = null;
+                order.OrderStatus.Orders = null;
+                //order.OrderItems = await _context.OrderItems.Where(p => p.OrderId == order.Id).ToListAsync();
             }
 
             return orders;

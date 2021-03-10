@@ -111,6 +111,23 @@ namespace ZooMag.Controllers
             return Ok(productModel);
         }
 
+        [HttpPost]
+        [Route("fetchbyids")]
+        public async Task<IActionResult> GetProductByIds([FromForm] int[] ids)
+        {
+            var productModels = await _productsService.FetchProductByIds(ids);
+            if (productModels == null)
+            {
+                return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
+            }
+            foreach(var productModel in productModels)
+            {
+                productModel.Images = await _productsService.FetchProductGaleriesByProductId(productModel.Id);
+                productModel.Sizes = await _productsService.FetchSizesByProductId(productModel.Id);
+            }
+            return Ok(productModels);
+        }
+
 
         [HttpPut]
         [Route("update")]

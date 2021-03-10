@@ -18,6 +18,7 @@ namespace ZooMag.Services.Interfaces
         Task<Response> DeleteProductSize(int productId, int sizeId);
         Task<Response> DeleteImage(int id, int productId);
         OutProductModel FetchProductById(int id);
+        Task<List<OutProductModel>> FetchProductByIds(int[] ids);
         Task<Response> SetMainImage(int productid,int imageid);
         Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset, int categoryId);
         Task<List<OutProductModel>> FetchSales(int count);

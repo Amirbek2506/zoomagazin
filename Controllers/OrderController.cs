@@ -25,7 +25,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create([FromForm] InpOrderModel model)
+        public async Task<IActionResult> Create([FromBody] InpOrderModel model)
         {
             string userKey = GetUserKey();
             var ress = await _ordersService.Create(model, userKey);
@@ -41,6 +41,10 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> FetchMyOrders()
         {
             string userKey = GetUserKey();
+            if(userKey=="0")
+            {
+                return BadRequest();
+            }
             return Ok(await _ordersService.FetchMyOrders(userKey));
         }
         
@@ -121,6 +125,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Route("decrqty/{itemid}")]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> DecrQty(int itemid)
         {
             var ress = await _ordersService.DecrQty(itemid);
@@ -140,22 +145,7 @@ namespace ZooMag.Controllers
             }
             else
             {
-                if (Request.Cookies["cartid"] == null)
-                {
-                    CookieOptions cookieOptions = new CookieOptions();
-                    cookieOptions.Expires = DateTime.Now.AddMonths(2);
-                    // Generate a new random GUID using System.Guid class.     
-                    Guid tempCartId = Guid.NewGuid();
-                    Response.Cookies.Append("cartid", tempCartId.ToString(), cookieOptions);
-                    return tempCartId.ToString();
-                }
-                else
-                {
-                    CookieOptions cookieOptions = new CookieOptions();
-                    cookieOptions.Expires = DateTime.Now.AddMonths(2);
-                    Response.Cookies.Append("cartid", Request.Cookies["cartid"].ToString(), cookieOptions);
-                    return Request.Cookies["cartid"].ToString();
-                }
+                return "0";
             }
         }
     }

@@ -37,6 +37,7 @@ namespace ZooMag.Services
             }
             prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
             prod.IsActive = true;
+            prod.Image = "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/image.png";
             _context.Products.Add(prod);
             await Save();
             return prod.Id;
@@ -49,6 +50,14 @@ namespace ZooMag.Services
             if (prod == null)
                 return null;
             return _mapper.Map<Product,OutProductModel>(prod);
+        }
+        
+        public async Task<List<OutProductModel>> FetchProductByIds(int[] ids)
+        {
+            var prods = await _context.Products.Where(p => ids.Contains(p.Id)&& p.IsActive).ToListAsync<Product>();
+            if (prods.Count()==0)
+                return null;
+            return _mapper.Map<List<Product>,List<OutProductModel>>(prods);
         }
 
 
@@ -155,10 +164,9 @@ namespace ZooMag.Services
                 return new Response { Status = "success", Message = "Продукт успешно удален!" };
             }
                 return new Response { Status = "error", Message = "Продукт не существует!" };
-        }
-
-       
+        }       
         #endregion
+
 
 
         #region product sizes
@@ -251,7 +259,7 @@ namespace ZooMag.Services
             {
                 await file.CopyToAsync(stream);
             }
-            return fName;
+            return "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/" + productId + "/" + fName;
         }
 
         public async Task CreateProductGaleries(int productId, IFormFile[] images)
@@ -264,9 +272,9 @@ namespace ZooMag.Services
                     Product product = _context.Products.FirstOrDefault(p => p.Id == productId);
                     if (product != null)
                     {
-                        if(String.IsNullOrEmpty(product.Image))
+                        if(String.IsNullOrEmpty(product.Image) || product.Image == "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/image.png")
                         {
-                            product.Image = "Resources/Images/Products/" + product.Id + "/" + fileName;
+                            product.Image = fileName;
                             await Save();
                             continue;
                         }
@@ -276,7 +284,7 @@ namespace ZooMag.Services
                     new ProductGalery
                     {
                         ProductId = productId,
-                        Image = "Resources/Images/Products/" + productId + "/" + fileName
+                        Image = fileName
                     });
             }
             await Save();
