@@ -42,10 +42,10 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("fetch")]
-        public async Task<IActionResult> GetProducts(int offset=0, int limit=20,int categoryId=0)
+        public async Task<IActionResult> GetProducts(int offset=0, int limit=20,int categoryId=0,int minp=0,int maxp=0,bool issale=false,bool isnew=false)
         {
-            var products = await _productsService.FetchProducts(limit<1?1:limit,offset<1?0:offset,categoryId);
-            int count = await _productsService.CountProducts(categoryId);
+            var products = await _productsService.FetchProducts(limit<1?1:limit,offset<1?0:offset,categoryId,minp,maxp,issale,isnew);
+            int count = await _productsService.CountProducts(categoryId,minp,maxp,issale,isnew);
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);

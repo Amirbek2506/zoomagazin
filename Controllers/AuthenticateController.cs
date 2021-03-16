@@ -47,6 +47,7 @@ namespace ZooMag.Controllers
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("UserId", user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 

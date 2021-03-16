@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using ZooMag.Models;
+using ZooMag.Models.Entity;
 using ZooMag.Models.ViewModels.Carts;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Models.ViewModels.Orders;
+using ZooMag.Models.ViewModels.PetTransports;
 using ZooMag.Models.ViewModels.Products;
 using ZooMag.ViewModels;
 
@@ -21,6 +23,7 @@ namespace ZooMag.Mapping
             CreateMap<Cart, CartModel>().ReverseMap();
             CreateMap<Size, SizeModel>().ReverseMap();
             CreateMap<User, UserModel>().ReverseMap();
+            CreateMap<PetTransport, InpPetTransportModel>().ReverseMap();
         }
     }
 }

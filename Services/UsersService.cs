@@ -179,13 +179,9 @@ namespace ZooMag.Services
                         _context.OrderItems.RemoveRange(await _context.OrderItems.Where(p => p.OrderId == item.Id).ToListAsync());
                     }
                 }
-                
-                List<Chat> chats = await _context.Chats.Where(p => p.FromUserId == id || p.ToUserId == id).ToListAsync();
-                if (chats.Count() > 0)
-                {
-                    _context.Chats.RemoveRange(chats);
-                }
+               
                 DeleteDirectory(id);
+                await DeleteAnimals(id);
                 _context.Users.Remove(user);
                 await Save();
                 return new Response { Status = "success", Message = "Пользователь успешно удален!" };
@@ -193,19 +189,24 @@ namespace ZooMag.Services
             {
                 return new Response { Status = "error", Message = ex.Message};
             }
-
-
         }
 
-
-        public UserModel FetchById(int id)
+        private async Task DeleteAnimals(int userid)
         {
-            return null;
-        }
-
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
+            var animals = await _context.Animals.Where(p =>p.UserId == userid).ToListAsync();
+            foreach(var animal in animals)
+            {
+                string path = Path.GetFullPath("Resources/Images/Animals/" + animal.Id);
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                }
+                var chats = await _context.Chats.Where(p => p.FromAnimalId == animal.Id || p.ToAnimalId == animal.Id).ToListAsync();
+                _context.RemoveRange(chats);
+                _context.Animals.Remove(animal);
+                await Save();
+            }
+            return;
         }
 
         public async Task<int> Save()

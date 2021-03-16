@@ -9,7 +9,6 @@ namespace ZooMag.Services.Interfaces
 {
     public interface IUserService
     {
-        UserModel FetchById(int id);
         Task<int> CountClients();
         Task<int> CountWorkers();
         Task<List<Role>> GetRoles();
@@ -19,7 +18,6 @@ namespace ZooMag.Services.Interfaces
         Task<Response> UpdateUser(UserModel userModel);
         Task<Response> SetRole(int userId,int roleId);
         Task<Response> DeleteUser(int id);
-        void Delete(int id);
         Task<int> Save();
     }
 }

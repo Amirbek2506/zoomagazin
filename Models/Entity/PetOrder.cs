@@ -4,16 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.Entity
 {
-    public class Chat
+    public class PetOrder
     {
         [Key]
         public int Id { get; set; }
-        public int FromAnimalId { get; set; }
-        public int ToAnimalId { get; set; }
-        public string Content { get; set; }
-        public bool IsReaded { get; set; }
+        public string Details { get; set; }
+        public string PhoneNumber { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

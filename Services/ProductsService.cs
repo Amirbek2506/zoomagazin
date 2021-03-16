@@ -61,17 +61,33 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId)
+        public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId, int minp, int maxp,bool issale, bool isnew)
         {
             List<Product> products = new List<Product>();
-            if(categoryId!=0)
+           
+            if(minp!=maxp)
             {
-                products = await _context.Products.Where(p=>p.IsActive && p.CategoryId == categoryId).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                if (categoryId != 0)
+                {
+                    products = await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                }
+                else
+                {
+                    products = await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                }
             }
             else
             {
-                products = await _context.Products.Where(p => p.IsActive).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                if (categoryId != 0)
+                {
+                    products = await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                }
+                else
+                {
+                    products = await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).Skip(rows_offset).Take(rows_limit).ToListAsync();
+                }
             }
+            
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
@@ -393,16 +409,28 @@ namespace ZooMag.Services
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> CountProducts(int categoryId = 0)
+        public async Task<int> CountProducts(int categoryId,int minp, int maxp, bool issale, bool isnew)
         {
-            if(categoryId != 0)
+            if (minp != maxp)
             {
-                return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId).CountAsync();
+                if (categoryId != 0)
+                {
+                    return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).CountAsync();
+                }
+                else
+                {
+                    return await _context.Products.Where(p => p.IsActive &&(issale ? p.IsSale : true)&& (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).CountAsync();
+                }
+            }
+            if (categoryId != 0)
+            {
+                return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).CountAsync();
             }
             else
             {
-                return await _context.Products.Where(p => p.IsActive).CountAsync();
+                return await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).CountAsync();
             }
+            
         }
         
         public async Task<int> SearchCount(int categoryId,string q)

@@ -3,10 +3,55 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ZooMag.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class initialCreating : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AnimalGenders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnimalGenders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AnimalTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnimalTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Articles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Articles", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -38,6 +83,21 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BoxTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BoxTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -59,10 +119,10 @@ namespace ZooMag.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FromUserId = table.Column<int>(type: "int", nullable: false),
-                    ToUserId = table.Column<int>(type: "int", nullable: false),
+                    FromAnimalId = table.Column<int>(type: "int", nullable: false),
+                    ToAnimalId = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsReaded = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -122,6 +182,21 @@ namespace ZooMag.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PetOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PetOrders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,6 +300,27 @@ namespace ZooMag.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Boxes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BoxTypeId = table.Column<int>(type: "int", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Boxes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Boxes_BoxTypes_BoxTypeId",
+                        column: x => x.BoxTypeId,
+                        principalTable: "BoxTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -390,6 +486,45 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Animals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AnimalTypeId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Breed = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AnimalGenderId = table.Column<int>(type: "int", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Animals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Animals_AnimalGenders_AnimalGenderId",
+                        column: x => x.AnimalGenderId,
+                        principalTable: "AnimalGenders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Animals_AnimalTypes_AnimalTypeId",
+                        column: x => x.AnimalTypeId,
+                        principalTable: "AnimalTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Animals_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -475,6 +610,83 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BoxOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    BoxTypeId = table.Column<int>(type: "int", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BoxId = table.Column<int>(type: "int", nullable: false),
+                    FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BoxOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BoxOrders_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BoxOrders_Boxes_BoxId",
+                        column: x => x.BoxId,
+                        principalTable: "Boxes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BoxOrders_BoxTypes_BoxTypeId",
+                        column: x => x.BoxTypeId,
+                        principalTable: "BoxTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PetTransports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderStatusId = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AnimalTypeId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FromAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PetTransports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PetTransports_AnimalTypes_AnimalTypeId",
+                        column: x => x.AnimalTypeId,
+                        principalTable: "AnimalTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PetTransports_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PetTransports_OrderStatuses_OrderStatusId",
+                        column: x => x.OrderStatusId,
+                        principalTable: "OrderStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
@@ -532,13 +744,32 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AnimalGenders",
+                columns: new[] { "Id", "TitleEn", "TitleRu" },
+                values: new object[,]
+                {
+                    { 1, "female", "женский" },
+                    { 2, "male", "мужской" },
+                    { 3, "hermaphrodite", "гермафродит (такими животные тоже бывают)" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AnimalTypes",
+                columns: new[] { "Id", "TitleEn", "TitleRu" },
+                values: new object[,]
+                {
+                    { 1, "cat", "кошка(кот)" },
+                    { 2, "dog", "собака(кобель)" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "5f96999a-65c2-458c-ae6a-d41ceb428b4c", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "9a494277-e773-4f8e-8e53-1da1e63e6b50", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "d84a8844-6437-499c-97df-5c22b7d1a24d", "Клиент", "КЛИЕНТ" }
+                    { 1, "318da520-a97f-4c23-97fd-8a83b75b4c03", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "0653bc40-a271-4b8a-b10b-955d7713884b", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "fbbde70e-2842-4beb-b9cf-0532ff0298c9", "Клиент", "КЛИЕНТ" }
                 });
 
             migrationBuilder.InsertData(
@@ -570,12 +801,27 @@ namespace ZooMag.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "270d8ec6-519a-4f71-b7a6-db3d921e83e4", "user@example.com", false, null, 1, "Resources/Users/defaultavatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEKFZQ9jDjLTKXBqc6oo/Lvx1eQb4ucd34vgYeJmS0XF2cvocmuUvaREZJnLMBaN8bQ==", null, false, "", false, "admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "d1b0d645-828d-4870-b61f-686fdafb4a13", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEFI6D4t0YIUK//eoP7kAqrWqGISJBIkONCOOSRoqKCpbkkV55QYZ5NGwAbQuNs8LTA==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { 1, 1 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Animals_AnimalGenderId",
+                table: "Animals",
+                column: "AnimalGenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Animals_AnimalTypeId",
+                table: "Animals",
+                column: "AnimalTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Animals_UserId",
+                table: "Animals",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -622,6 +868,26 @@ namespace ZooMag.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Boxes_BoxTypeId",
+                table: "Boxes",
+                column: "BoxTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BoxOrders_BoxId",
+                table: "BoxOrders",
+                column: "BoxId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BoxOrders_BoxTypeId",
+                table: "BoxOrders",
+                column: "BoxTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BoxOrders_UserId",
+                table: "BoxOrders",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Carts_ProductId",
                 table: "Carts",
                 column: "ProductId");
@@ -645,6 +911,21 @@ namespace ZooMag.Migrations
                 name: "IX_Orders_PaymentMethodId",
                 table: "Orders",
                 column: "PaymentMethodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PetTransports_AnimalTypeId",
+                table: "PetTransports",
+                column: "AnimalTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PetTransports_OrderStatusId",
+                table: "PetTransports",
+                column: "OrderStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PetTransports_UserId",
+                table: "PetTransports",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductGaleries_ProductId",
@@ -680,6 +961,12 @@ namespace ZooMag.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Animals");
+
+            migrationBuilder.DropTable(
+                name: "Articles");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -698,6 +985,9 @@ namespace ZooMag.Migrations
                 name: "Banners");
 
             migrationBuilder.DropTable(
+                name: "BoxOrders");
+
+            migrationBuilder.DropTable(
                 name: "Carts");
 
             migrationBuilder.DropTable(
@@ -711,6 +1001,12 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderItems");
+
+            migrationBuilder.DropTable(
+                name: "PetOrders");
+
+            migrationBuilder.DropTable(
+                name: "PetTransports");
 
             migrationBuilder.DropTable(
                 name: "ProductGaleries");
@@ -731,10 +1027,19 @@ namespace ZooMag.Migrations
                 name: "Wishlists");
 
             migrationBuilder.DropTable(
+                name: "AnimalGenders");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Boxes");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "AnimalTypes");
 
             migrationBuilder.DropTable(
                 name: "Sizes");
@@ -744,6 +1049,9 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "BoxTypes");
 
             migrationBuilder.DropTable(
                 name: "OrderStatuses");

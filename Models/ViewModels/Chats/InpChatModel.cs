@@ -4,16 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.ViewModels.Chats
 {
-    public class Chat
+    public class InpChatModel
     {
-        [Key]
-        public int Id { get; set; }
+        [Required]
         public int FromAnimalId { get; set; }
+        [Required]
         public int ToAnimalId { get; set; }
+        [Required]
         public string Content { get; set; }
-        public bool IsReaded { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

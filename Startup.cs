@@ -47,6 +47,9 @@ namespace ZooMag
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IWishlistService, WishlistService>();
             services.AddTransient<IOrdersService, OrdersService>();
+            services.AddTransient<IAnimalsService, AnimalsService>();
+            services.AddTransient<IChatsService, ChatsService>();
+            services.AddTransient<IArticlesService, ArticlesService>();
 
             services.AddControllers();
             services.Configure<IdentityOptions>(options =>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Models;
+using ZooMag.Models.Entity;
 
 namespace ZooMag.Data
 {
@@ -34,7 +35,15 @@ namespace ZooMag.Data
         public DbSet<Measure> Measures { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Chat> Chats { get; set; }
-
+        public DbSet<AnimalType> AnimalTypes { get; set; }
+        public DbSet<AnimalGender> AnimalGenders { get; set; }
+        public DbSet<Animal> Animals { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<Box> Boxes { get; set; }
+        public DbSet<BoxOrder> BoxOrders { get; set; }
+        public DbSet<BoxType> BoxTypes { get; set; }
+        public DbSet<PetOrder> PetOrders { get; set; }
+        public DbSet<PetTransport> PetTransports { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -129,6 +138,41 @@ namespace ZooMag.Data
                 MethodName = "Оплата после получение товара"
             });
 
+
+
+             builder.Entity<AnimalGender>().HasData(new AnimalGender
+             {
+                Id = 1,
+                TitleRu = "женский",
+                TitleEn = "female"
+             });
+             builder.Entity<AnimalGender>().HasData(new AnimalGender
+             {
+                Id = 2,
+                TitleRu = "мужской",
+                TitleEn = "male"
+             });
+             builder.Entity<AnimalGender>().HasData(new AnimalGender
+             {
+                Id = 3,
+                TitleRu = "гермафродит (такими животные тоже бывают)",
+                TitleEn = "hermaphrodite"
+             });
+ 
+            
+             builder.Entity<AnimalType>().HasData(new AnimalType
+             {
+                Id = 1,
+                TitleRu = "кошка(кот)",
+                TitleEn = "cat"
+             });
+             builder.Entity<AnimalType>().HasData(new AnimalType
+             {
+                Id = 2,
+                TitleRu = "собака(кобель)",
+                TitleEn = "dog"
+             });
+ 
 
 
             base.OnModelCreating(builder);
