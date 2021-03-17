@@ -24,6 +24,7 @@ namespace ZooMag.Mapping
             CreateMap<Size, SizeModel>().ReverseMap();
             CreateMap<User, UserModel>().ReverseMap();
             CreateMap<PetTransport, InpPetTransportModel>().ReverseMap();
+            CreateMap<PetTransport, OutPetTransport>().ReverseMap();
         }
     }
 }

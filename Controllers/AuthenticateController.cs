@@ -81,6 +81,10 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> GetUserData()
         {
             var user = await userManager.FindByEmailAsync(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value);
+            if(user==null)
+            {
+                return BadRequest();
+            }
             UserModel userModel = new UserModel
             {
                 Id = user.Id,
@@ -91,11 +95,8 @@ namespace ZooMag.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
             };
-            if (user != null)
-            {
-                var userRoles = await userManager.GetRolesAsync(user);
-                userModel.Position = userRoles.ToList<string>();
-            }
+            var userRoles = await userManager.GetRolesAsync(user);
+            userModel.Position = userRoles.ToList<string>();
             return Ok(userModel);
         }
 

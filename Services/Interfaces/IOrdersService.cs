@@ -14,7 +14,9 @@ namespace ZooMag.Services.Interfaces
         Task<List<Order>> FetchMyOrders(string userKey);
         Task<int> Count();
         Task<Response> Delete(int id);
+        Task<Response> ChangeStatus(int id,int statusid);
         Task<Response> DeleteItem(int id);
+        Task<List<OrderStatus>> FetchStatuses();
         Task<Response> SetSize(int orderitemid,int sizeid);
         Task<decimal> IncrQty(int itemid);
         Task<decimal> DecrQty(int itemid);

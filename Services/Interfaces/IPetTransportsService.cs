@@ -11,8 +11,8 @@ namespace ZooMag.Services.Interfaces
     {
         Task<Response> Create(InpPetTransportModel model, int userid);
         Task<Response> Delete(int id);
-        Task<List<PetTransport>> Get();
-        Task<PetTransport> GetById(int id);
+        Task<List<OutPetTransport>> Get();
+        Task<OutPetTransport> GetById(int id);
         Task<Response> ChangeStatus(int id, int statusid);
     }
 }

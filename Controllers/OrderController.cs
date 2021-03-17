@@ -68,7 +68,28 @@ namespace ZooMag.Controllers
             return Ok(new { count = await _ordersService.Count(),orders = await _ordersService.FetchAll(offset, limit) });
         }
 
+
+        [HttpGet]
+        [Route("fetchstatuses")]
+        public async Task<IActionResult> FetchStatuses()
+        {
+            return Ok(await _ordersService.FetchStatuses());
+        }
+
         
+        [HttpPost]
+        [Route("changestatus")]
+        public async Task<IActionResult> ChangeStatus(int id, int statusid)
+        {
+            var ress = await _ordersService.ChangeStatus(id, statusid);
+            if(ress.Status == "success")
+            {
+                return Ok(ress);
+            }
+            return BadRequest(ress);
+        }
+
+
         [HttpPost]
         [Route("setsize")]
         [Authorize(Roles = "Администратор")]

@@ -123,6 +123,8 @@ namespace ZooMag.Services
             return orders;
         }
 
+
+
         public async Task<Response> SetSize(int orderitemid, int sizeid)
         {
             var orderitem = await _context.OrderItems.FindAsync(orderitemid);
@@ -167,7 +169,28 @@ namespace ZooMag.Services
             return new Response { Status = "success", Message = "Успешно удален!" };
         }
 
+        public async Task<List<OrderStatus>> FetchStatuses()
+        {
+            return await _context.OrderStatuses.ToListAsync();
+        }
 
+
+        public async Task<Response> ChangeStatus(int id, int statusid)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if(order==null)
+            {
+                return new Response {Status = "error" ,Message = "Заказ не найден!" };
+            }
+            var status = await _context.OrderStatuses.FindAsync(statusid);
+            if(status==null)
+            {
+                return new Response {Status = "error", Message = "Статус не найден!" };
+            }
+            order.OrderStatusId = statusid;
+            await Save();
+            return new Response {Status = "success",Message = "Статус успешно присвоен!"};
+        }
 
         public async Task<Response> DeleteItem(int id)
         {
