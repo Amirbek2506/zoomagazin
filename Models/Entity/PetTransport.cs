@@ -11,7 +11,7 @@ namespace ZooMag.Models.Entity
         [Key]
         public int Id { get; set; }
         public int OrderStatusId { get; set; }
-        public string PhoneNumber { get; set; }
+        public int PhoneNumber { get; set; }
         public int AnimalTypeId { get; set; }
         public int UserId { get; set; }
         public string Comment { get; set; }

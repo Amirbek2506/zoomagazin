@@ -15,7 +15,7 @@ namespace ZooMag.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal OrderSumm { get; set; }
         public int OrderStatusId { get; set; }
-        public string PhoneNumber { get; set; }
+        public int PhoneNumber { get; set; }
         public int PaymentMethodId { get; set; }
         public string DeliveryType { get; set; }
         public string DeliveryAddress { get; set; }

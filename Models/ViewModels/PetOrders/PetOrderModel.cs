@@ -10,6 +10,6 @@ namespace ZooMag.Models.ViewModels.PetOrders
     {
         public string Details { get; set; }
         [StringLength(9, MinimumLength = 9)]
-        public string PhoneNumber { get; set; }
+        public int PhoneNumber { get; set; }
     }
 }

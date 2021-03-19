@@ -35,6 +35,10 @@ namespace ZooMag.Services
             {
                 return new Response {Status = "error",Message = "Заказ не коректно!"};
             }
+            if (model.PhoneNumber.ToString().Length != 9)
+            {
+                return new Response { Status = "error", Message = "Неверный номер телефон!" };
+            }
             var petorder = new PetOrder
             {
                 Details = model.Details,

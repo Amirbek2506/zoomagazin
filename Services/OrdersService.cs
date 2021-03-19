@@ -41,6 +41,10 @@ namespace ZooMag.Services
                 {
                     return new Response { Status = "error", Message = "Корзина пуста!" };
                 }
+                if (orderModel.PhoneNumber.ToString().Length != 9)
+                {
+                    return new Response { Status = "error", Message = "Неверный номер телефон!" };
+                }
                 List<Cart> carts = new List<Cart>();
                 foreach(var cart in orderModel.carts)
                 {
@@ -54,10 +58,6 @@ namespace ZooMag.Services
                         SizeId = cart.SizeId,
                         Quantity = cart.Quantity<=1?1:cart.Quantity
                     });
-                }
-                if (orderModel.PhoneNumber.Length != 9)
-                {
-                    return new Response { Status = "error", Message = "Неверный номер телефон!" };
                 }
                 var order = new Order
                 {

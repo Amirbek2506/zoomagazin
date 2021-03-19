@@ -12,7 +12,7 @@ namespace ZooMag.Models.ViewModels.Orders
         public string UserKey { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal OrderSumm { get; set; }
-        public string PhoneNumber { get; set; }
+        public int PhoneNumber { get; set; }
         public string DeliveryType { get; set; }
         public string DeliveryAddress { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -406,7 +406,7 @@ namespace ZooMag.Migrations
                     b.Property<int>("BoxId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BoxTypeId")
+                    b.Property<int>("BoxTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -418,6 +418,9 @@ namespace ZooMag.Migrations
                     b.Property<DateTime>("FromDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -428,8 +431,6 @@ namespace ZooMag.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BoxId");
 
                     b.HasIndex("BoxTypeId");
 
@@ -472,8 +473,8 @@ namespace ZooMag.Migrations
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -505,8 +506,8 @@ namespace ZooMag.Migrations
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("ToAddress")
                         .HasColumnType("nvarchar(max)");
@@ -606,8 +607,8 @@ namespace ZooMag.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -894,21 +895,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "318da520-a97f-4c23-97fd-8a83b75b4c03",
+                            ConcurrencyStamp = "cb4e7432-adc2-4333-a976-c48cc6d3a443",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "0653bc40-a271-4b8a-b10b-955d7713884b",
+                            ConcurrencyStamp = "039b1231-f1bb-4d11-9988-44d767def729",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "fbbde70e-2842-4beb-b9cf-0532ff0298c9",
+                            ConcurrencyStamp = "771cad1f-cd7d-452a-8a89-0569753a7d44",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -1081,7 +1082,7 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "d1b0d645-828d-4870-b61f-686fdafb4a13",
+                            ConcurrencyStamp = "142e265f-8a0d-45e1-bdd0-dfd231ae65f8",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
@@ -1089,7 +1090,7 @@ namespace ZooMag.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "user@example.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFI6D4t0YIUK//eoP7kAqrWqGISJBIkONCOOSRoqKCpbkkV55QYZ5NGwAbQuNs8LTA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKBqtO99x4TCc6jMByLL4nss4fvSt4XVIY2ymN2KNej5PX8lZ9zTDgsW90vM9BEi3A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1219,23 +1220,17 @@ namespace ZooMag.Migrations
 
             modelBuilder.Entity("ZooMag.Models.Entity.BoxOrder", b =>
                 {
-                    b.HasOne("ZooMag.Models.Entity.Box", "Box")
-                        .WithMany("BoxOrders")
-                        .HasForeignKey("BoxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ZooMag.Models.Entity.BoxType", "BoxType")
                         .WithMany("BoxOrders")
-                        .HasForeignKey("BoxTypeId");
+                        .HasForeignKey("BoxTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ZooMag.Models.User", "User")
                         .WithMany("BoxOrders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Box");
 
                     b.Navigation("BoxType");
 
@@ -1388,11 +1383,6 @@ namespace ZooMag.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("PetTransports");
-                });
-
-            modelBuilder.Entity("ZooMag.Models.Entity.Box", b =>
-                {
-                    b.Navigation("BoxOrders");
                 });
 
             modelBuilder.Entity("ZooMag.Models.Entity.BoxType", b =>

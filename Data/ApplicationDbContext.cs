@@ -173,8 +173,21 @@ namespace ZooMag.Data
                 TitleEn = "dog"
              });
  
+            
+             builder.Entity<BoxType>().HasData(new BoxType
+             {
+                Id = 1,
+                TitleRu = "Для кошек",
+                TitleEn = "For cat"
+             });
 
-
+             builder.Entity<BoxType>().HasData(new BoxType
+             {
+                Id = 2,
+                TitleRu = "Для собак",
+                TitleEn = "For dog"
+             });
+ 
             base.OnModelCreating(builder);
         }
     }
