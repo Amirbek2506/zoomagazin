@@ -94,6 +94,7 @@ namespace ZooMag.Services
             }
 
         }
+
         public async Task<List<Order>> FetchMyOrders(string userKey)
         {
             var orders = await _context.Orders.Where(p => p.UserKey == userKey).ToListAsync();
@@ -122,8 +123,6 @@ namespace ZooMag.Services
 
             return orders;
         }
-
-
 
         public async Task<Response> SetSize(int orderitemid, int sizeid)
         {
@@ -204,6 +203,9 @@ namespace ZooMag.Services
             {
                 _context.OrderItems.Remove(orderitem);
                 await Save();
+                var order = await _context.Orders.FindAsync(orderitem.OrderId);
+                order.OrderSumm = _context.OrderItems.Where(p => p.OrderId == orderitem.OrderId).Select(p => p.Price).Sum();
+                await Save();
             }
             return new Response {Status = "success",Message = "Успешно удален!" };
         }
@@ -220,6 +222,13 @@ namespace ZooMag.Services
             orderitem.Quantity++;
             orderitem.Price = productPrice * orderitem.Quantity;
             await Save();
+            var order = await _context.Orders.FindAsync(orderitem.OrderId);
+            if (order == null)
+            {
+                return 0;
+            }
+            order.OrderSumm = _context.OrderItems.Where(p => p.OrderId == orderitem.OrderId).Select(p => p.Price).Sum();
+            await Save();
             return orderitem.Price;
         }
 
@@ -235,6 +244,13 @@ namespace ZooMag.Services
                 var productPrice = (await _context.Products.FindAsync(orderitem.ProductId)).SellingPrice;
                 orderitem.Quantity--;
                 orderitem.Price = productPrice * orderitem.Quantity;
+                await Save();
+                var order = await _context.Orders.FindAsync(orderitem.OrderId);
+                if (order == null)
+                {
+                    return 0;
+                }
+                order.OrderSumm = _context.OrderItems.Where(p => p.OrderId == orderitem.OrderId).Select(p => p.Price).Sum();
                 await Save();
             }
             return orderitem.Price;
@@ -264,7 +280,11 @@ namespace ZooMag.Services
                             .ToListAsync());
                         productModel.Sizes = await FetchSizesByProductId(productModel.Id);
                     }
-                    
+                    Size size = await _context.Sizes.FindAsync(item.SizeId);
+                    if(size!=null)
+                    {
+                        size.ProductSizes = null;
+                    }
 
                     orderModel.OrderItems.Add(new OrderItemModel
                     {
@@ -272,7 +292,7 @@ namespace ZooMag.Services
                         Price = item.Price,
                         Quantity = item.Quantity,
                         Product = productModel,
-                        Size = await _context.Sizes.FindAsync(item.SizeId)
+                        Size = size
                     });
 
                 }
