@@ -14,12 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using ZooMag.Data;
 using ZooMag.Mapping;
 using ZooMag.Models;
@@ -72,7 +68,7 @@ namespace ZooMag
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnStr")));
             services.AddAutoMapper(typeof(Startup), typeof(GeneralProfile));
             // For Identity  
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<User, Role>()  
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -155,6 +151,7 @@ namespace ZooMag
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
                 RequestPath = new PathString("/Resources")
             });
+
             //app.UseHttpsRedirection();
 
             app.UseRouting();

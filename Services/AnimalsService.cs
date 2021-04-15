@@ -30,7 +30,7 @@ namespace ZooMag.Services
             _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
 
-        public async Task<Response> Create(InpAnimalModel animal,int userid)
+        public async Task<Response> Create(InpAnimalModel animal, int userid)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace ZooMag.Services
                     Message = "Успешно добавлен!"
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new Response
                 {
@@ -81,7 +81,7 @@ namespace ZooMag.Services
             {
                 await file.CopyToAsync(stream);
             }
-            return "Resources/Images/Animals/" + animalId +"/"+ file.FileName;
+            return "Resources/Images/Animals/" + animalId + "/" + file.FileName;
         }
 
 
@@ -90,25 +90,21 @@ namespace ZooMag.Services
             return await _context.AnimalGenders.ToListAsync();
         }
 
-        public async Task<List<Animal>> GetAnimals(int typeid)
+        public async Task<List<Animal>> GetAnimals(int typeid,int userid)
         {
             List<Animal> animals = new List<Animal>();
-            if(typeid==0)
+            if (typeid == 0)
             {
-                animals = await _context.Animals.ToListAsync();
+                animals = await _context.Animals.Where(p=>p.UserId != userid).ToListAsync();
             }
             else
             {
-                animals = await _context.Animals.Where(p => p.AnimalTypeId == typeid).ToListAsync();
+                animals = await _context.Animals.Where(p => p.AnimalTypeId == typeid && p.UserId != userid).ToListAsync();
             }
-            var genders = await GetAnimalGenders();
-            var types = await GetAnimalTypes();
             foreach (var animal in animals)
             {
-                animal.AnimalGender = genders.FirstOrDefault(p=>p.Id==animal.AnimalGenderId);
-                animal.AnimalType = types.FirstOrDefault(p=>p.Id==animal.AnimalTypeId);
-                animal.AnimalGender.Animals = null;
-                animal.AnimalType.Animals = null;
+                animal.AnimalGender = null;
+                animal.AnimalType = null;
             }
             return animals;
         }
@@ -116,12 +112,10 @@ namespace ZooMag.Services
         public async Task<Animal> GetAnimalById(int id)
         {
             var animal = await _context.Animals.FindAsync(id);
-            if(animal!=null)
+            if (animal != null)
             {
-                animal.AnimalGender = await _context.AnimalGenders.FindAsync(animal.AnimalGenderId);
-                animal.AnimalType = await _context.AnimalTypes.FindAsync(animal.AnimalTypeId);
-                animal.AnimalGender.Animals = null;
-                animal.AnimalType.Animals = null;
+                animal.AnimalGender = null;
+                animal.AnimalType = null;
             }
             return animal;
         }
@@ -135,20 +129,16 @@ namespace ZooMag.Services
         {
             List<Animal> animals = new List<Animal>();
             animals = await _context.Animals.Where(p => p.UserId == userid).ToListAsync();
-            var genders = await GetAnimalGenders();
-            var types = await GetAnimalTypes();
             foreach (var animal in animals)
             {
-                animal.AnimalGender = genders.FirstOrDefault(p => p.Id == animal.AnimalGenderId);
-                animal.AnimalType = types.FirstOrDefault(p => p.Id == animal.AnimalTypeId);
-                animal.AnimalGender.Animals = null;
-                animal.AnimalType.Animals = null;
+                animal.AnimalGender = null;
+                animal.AnimalType = null;
             }
             return animals;
         }
 
 
-        public async Task<Response> UpdateAnimal(UpdAnimalModel model,int userid)
+        public async Task<Response> UpdateAnimal(UpdAnimalModel model, int userid)
         {
             try
             {
@@ -168,7 +158,7 @@ namespace ZooMag.Services
                     animal.Image = await UploadImage(animal.Id, model.image);
                 }
                 await Save();
-                return new Response {Status = "success",Message = "Успешно изменен!"};
+                return new Response { Status = "success", Message = "Успешно изменен!" };
             }
             catch (Exception ex)
             {
@@ -176,12 +166,12 @@ namespace ZooMag.Services
             }
         }
 
-        public async Task<Response> Delete(int id,int userid)
+        public async Task<Response> Delete(int id, int userid)
         {
-            var animal = await _context.Animals.FirstOrDefaultAsync(p=>p.Id == id && p.UserId == userid);
-            if(animal==null)
+            var animal = await _context.Animals.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userid);
+            if (animal == null)
             {
-                return new Response {Status = "error",Message = "Не найден!" };
+                return new Response { Status = "error", Message = "Не найден!" };
             }
             string path = Path.GetFullPath("Resources/Images/Animals/" + id);
             if (Directory.Exists(path))
@@ -192,7 +182,7 @@ namespace ZooMag.Services
             _context.RemoveRange(chats);
             _context.Animals.Remove(animal);
             await Save();
-            return new Response {Status = "success",Message = "Успешно удален!" };
+            return new Response { Status = "success", Message = "Успешно удален!" };
         }
 
 

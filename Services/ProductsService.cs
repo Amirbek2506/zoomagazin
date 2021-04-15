@@ -44,12 +44,17 @@ namespace ZooMag.Services
         }
 
 
-        public OutProductModel FetchProductById(int id)
+        public FirstProductModel FetchProductById(int id)
         {
             Product prod = _context.Products.FirstOrDefault(p => p.Id == id && p.IsActive);
             if (prod == null)
                 return null;
-            return _mapper.Map<Product,OutProductModel>(prod);
+
+            var product = _mapper.Map<Product, FirstProductModel>(prod);
+            product.measure = _context.Measures.Find(prod.MeasureId);
+            product.category = _context.Categories.Find(prod.CategoryId);
+
+            return product;
         }
         
         public async Task<List<OutProductModel>> FetchProductByIds(int[] ids)

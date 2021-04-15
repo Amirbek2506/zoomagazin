@@ -25,6 +25,22 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
+        [Route("CountUnreadMessages")]
+        public async Task<IActionResult> CountUnreadMessages(int animalid)
+        {
+            return Ok(await _chatsService.CountUnreadMessages(animalid));
+        }
+
+
+        [HttpGet]
+        [Route("fetchAnimals")]
+        public async Task<IActionResult> FetchAnimals(int animalid)
+        {
+            return Ok(await _chatsService.FetchAnimals(animalid));
+        }
+
+
+        [HttpGet]
         [Route("fetch")]
         public async Task<IActionResult> Fetch(int fromanimalid, int toanimalid)
         {
@@ -53,6 +69,9 @@ namespace ZooMag.Controllers
             }
             return BadRequest(ress);
         }
+
+
+
         [HttpDelete]
         [Route("delete")]
         public async Task<IActionResult> Delete(int fromanimalid, int toanimalid)

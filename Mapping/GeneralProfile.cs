@@ -20,6 +20,7 @@ namespace ZooMag.Mapping
             CreateMap<Product, InpProductModel>().ReverseMap();
             CreateMap<Order, OutOrderModel>().ReverseMap();
             CreateMap<Product, OutProductModel>().ReverseMap();
+            CreateMap<Product, FirstProductModel>().ReverseMap();
             CreateMap<Product, UpdProductModel>().ReverseMap();
             CreateMap<Cart, CartModel>().ReverseMap();
             CreateMap<Size, SizeModel>().ReverseMap();

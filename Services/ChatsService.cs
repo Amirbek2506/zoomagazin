@@ -30,7 +30,18 @@ namespace ZooMag.Services
             _context = context;
             _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
-        public async Task<List<Chat>> Get(int fromanimalid, int toanimalid)
+        public async Task<List<Animal>> FetchAnimals(int animalid)
+        {
+            var ids = await _context.Chats.Where(p => p.ToAnimalId == animalid && !p.IsReaded).Select(p => p.FromAnimalId).ToListAsync<int>();
+            return await _context.Animals.Where(p =>ids.Contains(p.Id)).ToListAsync();
+        }
+         public async Task<int> CountUnreadMessages(int animalid)
+        {
+            return await _context.Chats.Where(p =>p.ToAnimalId == animalid && !p.IsReaded).CountAsync();
+        }
+
+
+         public async Task<List<Chat>> Get(int fromanimalid, int toanimalid)
         {
             var chats = await _context.Chats.Where(p => (p.FromAnimalId == fromanimalid && p.ToAnimalId == toanimalid) || (p.FromAnimalId == toanimalid && p.ToAnimalId == fromanimalid)).ToListAsync();
             foreach(Chat chat in chats)

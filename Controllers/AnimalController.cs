@@ -47,7 +47,7 @@ namespace ZooMag.Controllers
         [Route("fetch")]
         public async Task<IActionResult> FetchAnimals(int typeid=0)
         {
-            return Ok(await _animalsService.GetAnimals(typeid));
+            return Ok(await _animalsService.GetAnimals(typeid, int.Parse(User.Claims.First(i => i.Type == "UserId").Value)));
         }
 
         [HttpGet]
