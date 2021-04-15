@@ -33,6 +33,14 @@ namespace ZooMag.Controllers
 
 
         [HttpGet]
+        [Route("fetchUnreadAnimals")]
+        public async Task<IActionResult> FetchUnreadAnimals(int animalid)
+        {
+            return Ok(await _chatsService.FetchUnreadAnimals(animalid));
+        }
+
+        
+        [HttpGet]
         [Route("fetchAnimals")]
         public async Task<IActionResult> FetchAnimals(int animalid)
         {

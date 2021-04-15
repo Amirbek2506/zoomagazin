@@ -11,6 +11,7 @@ namespace ZooMag.Services.Interfaces
 {
     public interface IChatsService
     {
+        Task<List<Animal>> FetchUnreadAnimals(int animalid);
         Task<List<Animal>> FetchAnimals(int animalid);
         Task<int> CountUnreadMessages(int animalid);
         Task<List<Chat>> Get(int fromanimalid, int toanimalid);
