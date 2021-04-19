@@ -94,8 +94,8 @@ namespace ZooMag.Data
             builder.Entity<User>().HasData(new User
             {
                 Id = 1,
-                UserName = "admin",
-                NormalizedUserName = "admin",
+                UserName = "user@example.com",
+                NormalizedUserName = "user@example.com",
                 Email = "user@example.com",
                 NormalizedEmail = "user@example.com",
                 EmailConfirmed = false,

@@ -65,7 +65,11 @@ namespace ZooMag
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.User.AllowedUserNameCharacters += "абвгдеёжзийклмнопрстуфхцшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦШЩЬЫЪЭЮЯ ";
             });
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnStr")));
+
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(Configuration.GetConnectionString("ConnStr")));
+
             services.AddAutoMapper(typeof(Startup), typeof(GeneralProfile));
             // For Identity  
             services.AddIdentity<User, Role>()  
