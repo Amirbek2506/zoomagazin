@@ -18,9 +18,9 @@
 
     namespace ZooMag.Controllers
     {
-        [Route("Auth")]
         [ApiController]
-        public class AuthenticateController : ControllerBase
+        [Route("api/[controller]")]
+    public class AuthenticateController : ControllerBase
         {
             private readonly UserManager<User> userManager;
             private readonly IConfiguration _configuration;

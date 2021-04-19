@@ -13,7 +13,7 @@ using ZooMag.ViewModels;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ArticleController : ControllerBase
     {
         private readonly IArticlesService _articlesService;

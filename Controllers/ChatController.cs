@@ -12,9 +12,9 @@ using ZooMag.ViewModels;
 
 namespace ZooMag.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
     [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class ChatController : ControllerBase
     {
         private readonly IChatsService _chatsService;

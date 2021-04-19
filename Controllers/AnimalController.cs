@@ -11,9 +11,9 @@ using ZooMag.ViewModels;
 
 namespace ZooMag.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
     [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalsService _animalsService;
