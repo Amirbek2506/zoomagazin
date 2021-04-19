@@ -148,7 +148,7 @@ namespace ZooMag
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Зоомагазин v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "Зоомагазин v1"));
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions()
             {
