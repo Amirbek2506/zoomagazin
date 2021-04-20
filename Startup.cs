@@ -137,6 +137,19 @@ namespace ZooMag
             services.AddControllers().AddNewtonsoftJson(options =>
              options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("MyAllowSpecificOrigins",
+                builder =>
+                {
+                    builder.WithOrigins("http://zoomag.tj",
+                                        "http://www.zoomag.tj",
+                                        "http://localhost:3000")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.  
@@ -162,7 +175,8 @@ namespace ZooMag
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(x => x.AllowAnyOrigin());
+
+            app.UseCors("MyAllowSpecificOrigins");
 
             app.UseEndpoints(endpoints =>
             {
