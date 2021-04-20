@@ -19,7 +19,7 @@
     namespace ZooMag.Controllers
     {
         [ApiController]
-        [Route("api/[controller]")]
+        [Route("Auth")]
     public class AuthenticateController : ControllerBase
         {
             private readonly UserManager<User> userManager;

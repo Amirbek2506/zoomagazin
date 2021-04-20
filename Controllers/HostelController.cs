@@ -16,7 +16,7 @@ using ZooMag.ViewModels;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class HostelController : ControllerBase
     {
         private readonly IHostelService _hostelService;

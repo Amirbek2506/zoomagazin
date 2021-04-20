@@ -11,7 +11,6 @@ using ZooMag.ViewModels;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoriesService _categoriesService;

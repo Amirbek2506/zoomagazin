@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Authorize(Roles = "Администратор")]
     public class AdminController : Controller
     {

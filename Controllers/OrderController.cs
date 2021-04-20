@@ -12,7 +12,7 @@ using ZooMag.Services.Interfaces;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class OrderController : ControllerBase
     {
 

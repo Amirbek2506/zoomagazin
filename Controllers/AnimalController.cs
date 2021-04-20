@@ -13,7 +13,7 @@ namespace ZooMag.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalsService _animalsService;

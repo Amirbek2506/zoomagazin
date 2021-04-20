@@ -14,7 +14,7 @@ namespace ZooMag.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ChatController : ControllerBase
     {
         private readonly IChatsService _chatsService;
