@@ -37,7 +37,7 @@ namespace ZooMag.Services
             }
             prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
             prod.IsActive = true;
-            prod.Image = "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/image.png";
+            prod.Image = "http://api.zoomag.tj/Resources/Images/Products/image.png";
             _context.Products.Add(prod);
             await Save();
             return prod.Id;
@@ -103,7 +103,8 @@ namespace ZooMag.Services
 
          public async Task<List<OutProductModel>> FetchSales(int count)
          {
-            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).OrderBy(arg => Guid.NewGuid()).Take(count).ToListAsync();
+            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).Take(count * 3).ToListAsync();
+            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
@@ -115,7 +116,8 @@ namespace ZooMag.Services
         
          public async Task<List<OutProductModel>> FetchNew(int count)
          {
-            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).OrderBy(arg => Guid.NewGuid()).Take(count).ToListAsync();
+            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).Take(count*3).ToListAsync();
+            products = products.OrderBy(x=> Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
@@ -280,7 +282,7 @@ namespace ZooMag.Services
             {
                 await file.CopyToAsync(stream);
             }
-            return "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/" + productId + "/" + fName;
+            return "http://api.zoomag.tj/Resources/Images/Products/" + productId + "/" + fName;
         }
 
         public async Task CreateProductGaleries(int productId, IFormFile[] images)
@@ -293,7 +295,7 @@ namespace ZooMag.Services
                     Product product = _context.Products.FirstOrDefault(p => p.Id == productId);
                     if (product != null)
                     {
-                        if(String.IsNullOrEmpty(product.Image) || product.Image == "https://u1190523.plsk.regruhosting.ru/Resources/Images/Products/image.png")
+                        if(String.IsNullOrEmpty(product.Image) || product.Image == "http://api.zoomag.tj/Resources/Images/Products/image.png")
                         {
                             product.Image = fileName;
                             await Save();
