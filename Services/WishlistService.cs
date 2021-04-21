@@ -37,6 +37,10 @@ namespace ZooMag.Services
             {
                 return null;
             }
+            if(await _context.Wishlists.Where(p=>p.UserKey==model.UserKey&&p.ProductId==model.ProductId).FirstOrDefaultAsync()!=null)
+            {
+                return null;
+            }
             _context.Wishlists.Add(model);
             await Save();
             return new WishlistModel {Id = model.Id,Product = _mapper.Map<Product, OutProductModel>(product) };
