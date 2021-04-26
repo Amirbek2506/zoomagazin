@@ -26,6 +26,9 @@ namespace ZooMag.Models.ViewModels.Products
         public DateTime SaleEndDate { get; set; }
         public int Quantity { get; set; }
         public string Image { get; set; }
+        public int BrandId { get; set; }
+        public bool IsTop { get; set; }
+        public bool IsRecommended { get; set; }
 
         public Category category { get; set; }
         public Measure measure { get; set; }

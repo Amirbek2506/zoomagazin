@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ZooMag.Migrations
 {
-    public partial class initialCreating : Migration
+    public partial class initialcreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,10 +12,10 @@ namespace ZooMag.Migrations
                 name: "AnimalGenders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -25,10 +26,10 @@ namespace ZooMag.Migrations
                 name: "AnimalTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,13 +40,13 @@ namespace ZooMag.Migrations
                 name: "Articles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    ShortDescription = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,11 +57,11 @@ namespace ZooMag.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -71,11 +72,11 @@ namespace ZooMag.Migrations
                 name: "Banners",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    CategoryName = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,11 +87,11 @@ namespace ZooMag.Migrations
                 name: "BoxTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<double>(type: "float", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,15 +99,29 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Brands",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Brands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ParentId = table.Column<int>(type: "int", nullable: false),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ParentId = table.Column<int>(type: "integer", nullable: false),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -117,13 +132,13 @@ namespace ZooMag.Migrations
                 name: "Chats",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FromAnimalId = table.Column<int>(type: "int", nullable: false),
-                    ToAnimalId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsReaded = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FromAnimalId = table.Column<int>(type: "integer", nullable: false),
+                    ToAnimalId = table.Column<int>(type: "integer", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    IsReaded = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -134,10 +149,10 @@ namespace ZooMag.Migrations
                 name: "Genders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,10 +163,10 @@ namespace ZooMag.Migrations
                 name: "Measures",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -162,9 +177,9 @@ namespace ZooMag.Migrations
                 name: "OrderStatuses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -175,9 +190,9 @@ namespace ZooMag.Migrations
                 name: "PaymentMethods",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MethodName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MethodName = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,11 +203,11 @@ namespace ZooMag.Migrations
                 name: "PetOrders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Details = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,30 +218,33 @@ namespace ZooMag.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsSale = table.Column<bool>(type: "bit", nullable: false),
-                    SaleStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    SaleEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NameRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDiscriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDiscriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ColorEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ColorRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MeasureId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsNew = table.Column<bool>(type: "bit", nullable: false),
-                    PreOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Weight = table.Column<double>(type: "float", nullable: false)
+                    IsSale = table.Column<bool>(type: "boolean", nullable: false),
+                    SaleStartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    SaleEndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    NameEn = table.Column<string>(type: "text", nullable: true),
+                    NameRu = table.Column<string>(type: "text", nullable: true),
+                    DiscriptionEn = table.Column<string>(type: "text", nullable: true),
+                    DiscriptionRu = table.Column<string>(type: "text", nullable: true),
+                    ShortDiscriptionEn = table.Column<string>(type: "text", nullable: true),
+                    ShortDiscriptionRu = table.Column<string>(type: "text", nullable: true),
+                    ColorEn = table.Column<string>(type: "text", nullable: true),
+                    ColorRu = table.Column<string>(type: "text", nullable: true),
+                    MeasureId = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    IsNew = table.Column<bool>(type: "boolean", nullable: false),
+                    PreOrder = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Weight = table.Column<double>(type: "double precision", nullable: false),
+                    BrandId = table.Column<int>(type: "integer", nullable: false),
+                    IsTop = table.Column<bool>(type: "boolean", nullable: false),
+                    IsRecommended = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -237,11 +255,11 @@ namespace ZooMag.Migrations
                 name: "SiteProperties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PropKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PropValueEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PropValueRu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PropKey = table.Column<string>(type: "text", nullable: true),
+                    PropValueEn = table.Column<string>(type: "text", nullable: true),
+                    PropValueRu = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -252,9 +270,9 @@ namespace ZooMag.Migrations
                 name: "Sizes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -265,18 +283,18 @@ namespace ZooMag.Migrations
                 name: "SlideShows",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TitleRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImageMobile = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    DescriptionEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DescriptionRu = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateShow = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TitleEn = table.Column<string>(type: "text", nullable: true),
+                    TitleRu = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    ImageMobile = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    DescriptionEn = table.Column<string>(type: "text", nullable: true),
+                    DescriptionRu = table.Column<string>(type: "text", nullable: true),
+                    DateShow = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -287,11 +305,11 @@ namespace ZooMag.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -308,11 +326,11 @@ namespace ZooMag.Migrations
                 name: "Boxes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BoxTypeId = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Status = table.Column<string>(type: "text", nullable: true),
+                    BoxTypeId = table.Column<int>(type: "integer", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -329,27 +347,27 @@ namespace ZooMag.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GenderId = table.Column<int>(type: "int", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    BirthDay = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    GenderId = table.Column<int>(type: "integer", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -366,17 +384,17 @@ namespace ZooMag.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserKey = table.Column<string>(type: "text", nullable: true),
                     OrderSumm = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OrderStatusId = table.Column<int>(type: "int", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    PaymentMethodId = table.Column<int>(type: "int", nullable: false),
-                    DeliveryType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeliveryAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    OrderStatusId = table.Column<int>(type: "integer", nullable: false),
+                    PhoneNumber = table.Column<int>(type: "integer", nullable: false),
+                    PaymentMethodId = table.Column<int>(type: "integer", nullable: false),
+                    DeliveryType = table.Column<string>(type: "text", nullable: true),
+                    DeliveryAddress = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -399,14 +417,14 @@ namespace ZooMag.Migrations
                 name: "Carts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    SizeId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserKey = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    SizeId = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -423,10 +441,10 @@ namespace ZooMag.Migrations
                 name: "ProductGaleries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -443,10 +461,10 @@ namespace ZooMag.Migrations
                 name: "Wishlists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserKey = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -463,10 +481,10 @@ namespace ZooMag.Migrations
                 name: "ProductSizes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    SizeId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    SizeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -489,17 +507,17 @@ namespace ZooMag.Migrations
                 name: "Animals",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AnimalTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Breed = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Color = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AnimalGenderId = table.Column<int>(type: "int", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    AnimalTypeId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    Breed = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<string>(type: "text", nullable: true),
+                    AnimalGenderId = table.Column<int>(type: "integer", nullable: false),
+                    Age = table.Column<int>(type: "integer", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -528,11 +546,11 @@ namespace ZooMag.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -549,10 +567,10 @@ namespace ZooMag.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -569,8 +587,8 @@ namespace ZooMag.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -593,10 +611,10 @@ namespace ZooMag.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -613,17 +631,17 @@ namespace ZooMag.Migrations
                 name: "BoxOrders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    BoxTypeId = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BoxId = table.Column<int>(type: "int", nullable: false),
-                    FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    BoxTypeId = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: true),
+                    BoxId = table.Column<int>(type: "integer", nullable: false),
+                    FromDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ToDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -646,17 +664,17 @@ namespace ZooMag.Migrations
                 name: "PetTransports",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderStatusId = table.Column<int>(type: "int", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    AnimalTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FromAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ToAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderStatusId = table.Column<int>(type: "integer", nullable: false),
+                    PhoneNumber = table.Column<int>(type: "integer", nullable: false),
+                    AnimalTypeId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: true),
+                    FromAddress = table.Column<string>(type: "text", nullable: true),
+                    ToAddress = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -685,12 +703,12 @@ namespace ZooMag.Migrations
                 name: "Reviews",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -713,13 +731,13 @@ namespace ZooMag.Migrations
                 name: "OrderItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    SizeId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    SizeId = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    Quantity = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -762,9 +780,18 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "cb4e7432-adc2-4333-a976-c48cc6d3a443", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "039b1231-f1bb-4d11-9988-44d767def729", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "771cad1f-cd7d-452a-8a89-0569753a7d44", "Клиент", "КЛИЕНТ" }
+                    { 1, "a2d803c6-78b6-449c-ad5e-bb4432a1b874", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "fbd036a0-6f4e-429b-a2cb-b81ecad63e03", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "7a6d315a-c81a-450b-b533-26d5359bde29", "Клиент", "КЛИЕНТ" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "BoxTypes",
+                columns: new[] { "Id", "Price", "TitleEn", "TitleRu" },
+                values: new object[,]
+                {
+                    { 2, 0.0, "For dog", "Для собак" },
+                    { 1, 0.0, "For cat", "Для кошек" }
                 });
 
             migrationBuilder.InsertData(
@@ -772,9 +799,9 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "TitleEn", "TitleRu" },
                 values: new object[,]
                 {
+                    { 3, "woman", "женщина" },
                     { 1, "not chosen", "не выбрано" },
-                    { 2, "man", "мужчина" },
-                    { 3, "woman", "женщина" }
+                    { 2, "man", "мужчина" }
                 });
 
             migrationBuilder.InsertData(
@@ -796,7 +823,7 @@ namespace ZooMag.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "142e265f-8a0d-45e1-bdd0-dfd231ae65f8", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEKBqtO99x4TCc6jMByLL4nss4fvSt4XVIY2ymN2KNej5PX8lZ9zTDgsW90vM9BEi3A==", null, false, "", false, "admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "7dd5d56f-6c13-4a42-9a78-5885a3aee72b", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "USER@EXAMPLE.COM", "USER@EXAMPLE.COM", "AQAAAAEAACcQAAAAEEdw90deI3G90kilgNuqk4JeWcu6XhbuwcLO7zWQIHeTK4Hr2moqWgJTCHETM08Dbw==", null, false, "", false, "user@example.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -827,8 +854,7 @@ namespace ZooMag.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -859,8 +885,7 @@ namespace ZooMag.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Boxes_BoxTypeId",
@@ -979,6 +1004,9 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "BoxOrders");
+
+            migrationBuilder.DropTable(
+                name: "Brands");
 
             migrationBuilder.DropTable(
                 name: "Carts");

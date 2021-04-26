@@ -35,6 +35,10 @@ namespace ZooMag.Models
         public string Link { get; set; }
         public bool IsActive { get; set; }
         public double Weight { get; set; }
+        public int BrandId { get; set; }
+        public bool IsTop { get; set; }
+        public bool IsRecommended { get; set; }
+
 
 
         //public virtual Category Category { get; set; }

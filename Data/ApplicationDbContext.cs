@@ -44,6 +44,7 @@ namespace ZooMag.Data
         public DbSet<BoxType> BoxTypes { get; set; }
         public DbSet<PetOrder> PetOrders { get; set; }
         public DbSet<PetTransport> PetTransports { get; set; }
+        public DbSet<Brand> Brands { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -95,9 +96,9 @@ namespace ZooMag.Data
             {
                 Id = 1,
                 UserName = "user@example.com",
-                NormalizedUserName = "user@example.com",
+                NormalizedUserName = "user@example.com".ToUpper(),
                 Email = "user@example.com",
-                NormalizedEmail = "user@example.com",
+                NormalizedEmail = "user@example.com".ToUpper(),
                 EmailConfirmed = false,
                 PasswordHash = hasher.HashPassword(null, "string"),
                 SecurityStamp = string.Empty,

@@ -42,10 +42,10 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Route("fetch")]
-        public async Task<IActionResult> GetProducts(int offset=0, int limit=20,int categoryId=0,int minp=0,int maxp=0,bool issale=false,bool isnew=false)
+        public async Task<IActionResult> GetProducts(int offset=0, int limit=20,int categoryId=0,int brandId=0, int minp=0,int maxp=0,bool issale=false,bool isnew=false,bool istop=false,bool isrecommended=false)
         {
-            var products = await _productsService.FetchProducts(limit<1?1:limit,offset<1?0:offset,categoryId,minp,maxp,issale,isnew);
-            int count = await _productsService.CountProducts(categoryId,minp,maxp,issale,isnew);
+            var products = await _productsService.FetchProducts(limit<1?1:limit,offset<1?0:offset,categoryId, brandId,minp, maxp,issale,isnew,istop,isrecommended);
+            int count = await _productsService.CountProducts(categoryId,brandId,minp,maxp,issale,isnew,istop,isrecommended);
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
@@ -69,6 +69,33 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
+        [Route("fetchtopes/{count}")]
+        public async Task<IActionResult> GetTopes(int count = 10)
+        {
+            var products = await _productsService.FetchTopes(count);
+            foreach (var product in products)
+            {
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
+            }
+            return Ok(products);
+        }
+        
+        [HttpGet]
+        [Route("fetchrecommended/{count}")]
+        public async Task<IActionResult> GetRecommended(int count = 10)
+        {
+            var products = await _productsService.FetchRecommended(count);
+            foreach (var product in products)
+            {
+                product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
+                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
+            }
+            return Ok(products);
+        }
+
+
+        [HttpGet]
         [Route("fetchnew/{count}")]
         public async Task<IActionResult> GetNew(int count=10)
         {
@@ -80,6 +107,7 @@ namespace ZooMag.Controllers
             }
             return Ok(products);
         }
+
 
         [HttpGet]
         [Route("search")]
@@ -110,6 +138,7 @@ namespace ZooMag.Controllers
 
             return Ok(productModel);
         }
+
 
         [HttpPost]
         [Route("fetchbyids")]
@@ -180,6 +209,8 @@ namespace ZooMag.Controllers
             return BadRequest(ress);
         }
 
+
+
         [HttpDelete]
         [Route("delete/{id}")]
         [Authorize(Roles = "Администратор")]
@@ -192,6 +223,8 @@ namespace ZooMag.Controllers
             }
             return BadRequest(ress);
         }
+
+
 
         [HttpDelete]
         [Route("deleteImage")]

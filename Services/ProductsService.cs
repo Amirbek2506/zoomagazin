@@ -66,44 +66,52 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId, int minp, int maxp,bool issale, bool isnew)
+         public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId, int brandId, int minp, int maxp,bool issale, bool isnew,bool istop,bool isrecommended)
         {
-            List<Product> products = new List<Product>();
-           
-            if(minp!=maxp)
-            {
-                if (categoryId != 0)
-                {
-                    products = await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).Skip(rows_offset).Take(rows_limit).ToListAsync();
-                }
-                else
-                {
-                    products = await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).Skip(rows_offset).Take(rows_limit).ToListAsync();
-                }
-            }
-            else
-            {
-                if (categoryId != 0)
-                {
-                    products = await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).Skip(rows_offset).Take(rows_limit).ToListAsync();
-                }
-                else
-                {
-                    products = await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).Skip(rows_offset).Take(rows_limit).ToListAsync();
-                }
-            }
-            
+            List<Product> products = await _context.Products
+                .Where(p => 
+            p.IsActive && 
+            (categoryId != 0 ? p.CategoryId == categoryId : true) &&
+            (brandId != 0 ? p.BrandId == brandId : true) &&
+            (issale ? p.IsSale : true) && 
+            (isnew ? p.IsNew : true) && 
+            (istop ? p.IsTop : true) && 
+            (isrecommended ? p.IsRecommended : true) && 
+            (minp != maxp?(p.SellingPrice >= minp && p.SellingPrice <= maxp):true))
+                .Skip(rows_offset).Take(rows_limit).ToListAsync();
+
+            return _mapper.Map<List<Product>, List<OutProductModel>>(products);
+        }
+
+
+         public async Task<List<OutProductModel>> FetchSales(int count)
+         {
+            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).Take(count * 3).ToListAsync();
+            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
                 prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
-        }
+         }
+        
 
-         public async Task<List<OutProductModel>> FetchSales(int count)
+         public async Task<List<OutProductModel>> FetchTopes(int count)
          {
-            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).Take(count * 3).ToListAsync();
+            var products = await _context.Products.Where(p => p.IsActive && p.IsTop).Take(count * 3).ToListAsync();
+            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
+            List<OutProductModel> prods = new List<OutProductModel>();
+            foreach (var prod in products)
+            {
+                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
+            }
+            return prods;
+         }
+
+        public async Task<List<OutProductModel>> FetchRecommended(int count)
+         {
+            var products = await _context.Products.Where(p => p.IsActive && p.IsRecommended).Take(count * 3).ToListAsync();
             products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
@@ -416,82 +424,43 @@ namespace ZooMag.Services
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> CountProducts(int categoryId,int minp, int maxp, bool issale, bool isnew)
+        public async Task<int> CountProducts(int categoryId,int brandId,int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
         {
-            if (minp != maxp)
-            {
-                if (categoryId != 0)
-                {
-                    return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).CountAsync();
-                }
-                else
-                {
-                    return await _context.Products.Where(p => p.IsActive &&(issale ? p.IsSale : true)&& (isnew ? p.IsNew : true) && p.SellingPrice >= minp && p.SellingPrice <= maxp).CountAsync();
-                }
-            }
-            if (categoryId != 0)
-            {
-                return await _context.Products.Where(p => p.IsActive && p.CategoryId == categoryId && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).CountAsync();
-            }
-            else
-            {
-                return await _context.Products.Where(p => p.IsActive && (issale ? p.IsSale : true) && (isnew ? p.IsNew : true)).CountAsync();
-            }
-            
+            return await _context.Products
+                 .Where(p =>
+             p.IsActive &&
+             (categoryId != 0 ? p.CategoryId == categoryId : true) &&
+             (brandId != 0 ? p.BrandId == brandId : true) &&
+             (issale ? p.IsSale : true) &&
+             (isnew ? p.IsNew : true) &&
+             (istop ? p.IsTop : true) &&
+             (isrecommended ? p.IsRecommended : true) &&
+             (minp != maxp ? (p.SellingPrice >= minp && p.SellingPrice <= maxp) : true)).CountAsync();
+
         }
         
         public async Task<int> SearchCount(int categoryId,string q)
         {
-            if (categoryId != 0)
-            {
                 return await _context.Products
-                    .Where(p => p.IsActive
-                    && p.CategoryId == categoryId
-                    && (p.NameRu.Contains(q)
-                    || p.NameEn.Contains(q)))
+                    .Where(p => 
+                    p.IsActive &&
+                    (categoryId != 0 ? p.CategoryId == categoryId : true) &&
+                    (p.NameRu.Contains(q) || p.NameEn.Contains(q)))
                     .CountAsync();
-            }
-            else
-            {
-                return await _context.Products
-                    .Where(p => p.IsActive
-                    && (p.NameRu.Contains(q)
-                    || p.NameEn.Contains(q)))
-                    .CountAsync();
-            }
         }
 
         public async Task<List<OutProductModel>> Search(int rows_limit, int rows_offset, int categoryId,string q)
         {
-            List<Product> products = new List<Product>();
-            if (categoryId != 0)
-            {
-                products = await _context.Products
-                    .Where(p => p.IsActive 
-                    && p.CategoryId == categoryId 
-                    && (p.NameRu.Contains(q)
-                    || p.NameEn.Contains(q)))
-                    .Skip(rows_offset)
-                    .Take(rows_limit)
-                    .ToListAsync();
-            }
-            else
-            {
-                products = await _context.Products
+            List<Product> products = await _context.Products
                     .Where(p => p.IsActive
+                    && (categoryId != 0 ? p.CategoryId == categoryId : true) 
                     && (p.NameRu.Contains(q)
                     || p.NameEn.Contains(q)))
                     .Skip(rows_offset)
                     .Take(rows_limit)
                     .ToListAsync();
-            }
-            List<OutProductModel> prods = new List<OutProductModel>();
-            foreach (var prod in products)
-            {
-                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
-            }
 
-            return prods;
+            return _mapper.Map<List<Product>, List<OutProductModel>>(products);
         }
     }
 }

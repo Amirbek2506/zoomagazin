@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ZooMag.Models;
 using ZooMag.Models.Entity;
+using ZooMag.Models.ViewModels.Brands;
 using ZooMag.Models.ViewModels.Carts;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Models.ViewModels.Hostel;
@@ -17,6 +18,7 @@ namespace ZooMag.Mapping
         {
             CreateMap<ProductImagesModel, ProductGalery>().ReverseMap();
             CreateMap<Category, InpCategoryModel>().ReverseMap();
+            CreateMap<Brand, InpBrandModel>().ReverseMap();
             CreateMap<Product, InpProductModel>().ReverseMap();
             CreateMap<Order, OutOrderModel>().ReverseMap();
             CreateMap<Product, OutProductModel>().ReverseMap();
