@@ -142,23 +142,12 @@ namespace ZooMag.Services
             {
                 return 0;
             }
-            if (await _context.Categories.FindAsync(prod.CategoryId) == null)
-            {
-                prod.CategoryId = 0;
-            }else
-            {
-                prod.CategoryId = product.CategoryId;
-            }
 
-            if (await _context.Measures.FindAsync(prod.MeasureId) == null)
-            {
-                prod.MeasureId = 0;
-            }
-            else
-            {
-                prod.MeasureId = product.MeasureId;
-            }
+            prod.CategoryId = await _context.Categories.FindAsync(prod.CategoryId) == null?0:product.CategoryId;
 
+            prod.MeasureId = await _context.Measures.FindAsync(prod.MeasureId) == null?0:product.MeasureId;
+
+            prod.BrandId = await _context.Brands.FindAsync(prod.BrandId) == null?0:product.BrandId;
 
             prod.NameRu = product.NameRu;
             prod.NameEn = product.NameEn;
@@ -176,6 +165,9 @@ namespace ZooMag.Services
             prod.SaleStartDate = product.SaleStartDate;
             prod.SaleEndDate = product.SaleEndDate;
             prod.Quantity = product.Quantity;
+            prod.IsTop = product.IsTop;
+            prod.IsRecommended = product.IsRecommended;
+            prod.BrandId = product.BrandId;
             await Save();
 
             return prod.Id;
@@ -271,7 +263,6 @@ namespace ZooMag.Services
             }
             return new Response {Status = "error", Message = "Размер не найден!"};
         }
-
 
         #endregion
 
