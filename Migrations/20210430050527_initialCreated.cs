@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ZooMag.Migrations
 {
-    public partial class initialcreated : Migration
+    public partial class initialCreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -200,11 +200,27 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PetCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ParentId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PetCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PetOrders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PetId = table.Column<int>(type: "integer", nullable: false),
                     Details = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
@@ -212,6 +228,28 @@ namespace ZooMag.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PetOrders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Discription = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<string>(type: "text", nullable: true),
+                    PetCategoryId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Breed = table.Column<string>(type: "text", nullable: true),
+                    Age = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -285,16 +323,9 @@ namespace ZooMag.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true),
-                    Link = table.Column<string>(type: "text", nullable: true),
+                    Category = table.Column<string>(type: "text", nullable: true),
                     Image = table.Column<string>(type: "text", nullable: true),
-                    ImageMobile = table.Column<string>(type: "text", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    DescriptionEn = table.Column<string>(type: "text", nullable: true),
-                    DescriptionRu = table.Column<string>(type: "text", nullable: true),
-                    DateShow = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ImageMobile = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -409,6 +440,26 @@ namespace ZooMag.Migrations
                         name: "FK_Orders_PaymentMethods_PaymentMethodId",
                         column: x => x.PaymentMethodId,
                         principalTable: "PaymentMethods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PetGaleries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PetId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PetGaleries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PetGaleries_Pets_PetId",
+                        column: x => x.PetId,
+                        principalTable: "Pets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -780,9 +831,9 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "a2d803c6-78b6-449c-ad5e-bb4432a1b874", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "fbd036a0-6f4e-429b-a2cb-b81ecad63e03", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "7a6d315a-c81a-450b-b533-26d5359bde29", "Клиент", "КЛИЕНТ" }
+                    { 1, "53851ba6-b228-420b-90a7-1be66fc28987", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "d3bcdba6-2239-4bac-bbd2-f86c551bd1d0", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "1cb9f043-c09b-48f2-aa5f-d51ed11229a3", "Клиент", "КЛИЕНТ" }
                 });
 
             migrationBuilder.InsertData(
@@ -823,7 +874,7 @@ namespace ZooMag.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "7dd5d56f-6c13-4a42-9a78-5885a3aee72b", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "USER@EXAMPLE.COM", "USER@EXAMPLE.COM", "AQAAAAEAACcQAAAAEEdw90deI3G90kilgNuqk4JeWcu6XhbuwcLO7zWQIHeTK4Hr2moqWgJTCHETM08Dbw==", null, false, "", false, "user@example.com" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "f342a8d8-0b92-460d-9f1d-5151e4e7a101", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "USER@EXAMPLE.COM", "USER@EXAMPLE.COM", "AQAAAAEAACcQAAAAECqrJVEYONfF2G6/k0g1GE3sLiuD+p4TDtj5H478SrXQt9vM/C3Jc4iWiRYWooydxQ==", null, false, "", false, "user@example.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -928,6 +979,11 @@ namespace ZooMag.Migrations
                 column: "PaymentMethodId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PetGaleries_PetId",
+                table: "PetGaleries",
+                column: "PetId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PetTransports_AnimalTypeId",
                 table: "PetTransports",
                 column: "AnimalTypeId");
@@ -1024,6 +1080,12 @@ namespace ZooMag.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
+                name: "PetCategories");
+
+            migrationBuilder.DropTable(
+                name: "PetGaleries");
+
+            migrationBuilder.DropTable(
                 name: "PetOrders");
 
             migrationBuilder.DropTable(
@@ -1058,6 +1120,9 @@ namespace ZooMag.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Pets");
 
             migrationBuilder.DropTable(
                 name: "AnimalTypes");

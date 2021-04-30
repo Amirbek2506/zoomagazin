@@ -45,6 +45,10 @@ namespace ZooMag.Data
         public DbSet<PetOrder> PetOrders { get; set; }
         public DbSet<PetTransport> PetTransports { get; set; }
         public DbSet<Brand> Brands { get; set; }
+        public DbSet<Pet> Pets { get; set; }
+        public DbSet<PetCategory> PetCategories { get; set; }
+        public DbSet<PetGalery> PetGaleries { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)

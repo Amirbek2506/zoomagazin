@@ -50,6 +50,8 @@ namespace ZooMag
             services.AddTransient<IPetOrdersService, PetOrdersService>();
             services.AddTransient<IHostelService, HostelService>();
             services.AddTransient<IBrandsService, BrandsService>();
+            services.AddTransient<IPetsService, PetsService>();
+            services.AddTransient<IPetCategoriesService, PetCategoriesService>();
 
             services.AddControllers();
             services.Configure<IdentityOptions>(options =>

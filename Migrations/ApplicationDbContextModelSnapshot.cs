@@ -507,6 +507,9 @@ namespace ZooMag.Migrations
                     b.Property<string>("Details")
                         .HasColumnType("text");
 
+                    b.Property<int>("PetId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PhoneNumber")
                         .HasColumnType("integer");
 
@@ -749,6 +752,89 @@ namespace ZooMag.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ZooMag.Models.Pet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<int>("Age")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Breed")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Discription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PetCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pets");
+                });
+
+            modelBuilder.Entity("ZooMag.Models.PetCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PetCategories");
+                });
+
+            modelBuilder.Entity("ZooMag.Models.PetGalery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PetId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetId");
+
+                    b.ToTable("PetGaleries");
+                });
+
             modelBuilder.Entity("ZooMag.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -937,21 +1023,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "a2d803c6-78b6-449c-ad5e-bb4432a1b874",
+                            ConcurrencyStamp = "53851ba6-b228-420b-90a7-1be66fc28987",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "fbd036a0-6f4e-429b-a2cb-b81ecad63e03",
+                            ConcurrencyStamp = "d3bcdba6-2239-4bac-bbd2-f86c551bd1d0",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "7a6d315a-c81a-450b-b533-26d5359bde29",
+                            ConcurrencyStamp = "1cb9f043-c09b-48f2-aa5f-d51ed11229a3",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -1000,34 +1086,13 @@ namespace ZooMag.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
-                    b.Property<DateTime>("DateEnd")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DateShow")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DescriptionRu")
+                    b.Property<string>("Category")
                         .HasColumnType("text");
 
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
                     b.Property<string>("ImageMobile")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TitleEn")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TitleRu")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -1123,7 +1188,7 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "7dd5d56f-6c13-4a42-9a78-5885a3aee72b",
+                            ConcurrencyStamp = "f342a8d8-0b92-460d-9f1d-5151e4e7a101",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
@@ -1131,7 +1196,7 @@ namespace ZooMag.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEdw90deI3G90kilgNuqk4JeWcu6XhbuwcLO7zWQIHeTK4Hr2moqWgJTCHETM08Dbw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECqrJVEYONfF2G6/k0g1GE3sLiuD+p4TDtj5H478SrXQt9vM/C3Jc4iWiRYWooydxQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1343,6 +1408,17 @@ namespace ZooMag.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ZooMag.Models.PetGalery", b =>
+                {
+                    b.HasOne("ZooMag.Models.Pet", "Pet")
+                        .WithMany("PetGaleries")
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+                });
+
             modelBuilder.Entity("ZooMag.Models.ProductGalery", b =>
                 {
                     b.HasOne("ZooMag.Models.Product", "Product")
@@ -1453,6 +1529,11 @@ namespace ZooMag.Migrations
             modelBuilder.Entity("ZooMag.Models.PaymentMethod", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("ZooMag.Models.Pet", b =>
+                {
+                    b.Navigation("PetGaleries");
                 });
 
             modelBuilder.Entity("ZooMag.Models.Product", b =>

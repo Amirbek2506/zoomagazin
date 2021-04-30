@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ZooMag.Models
 {
-    public class SlideShow
+    public class PetCategory
     {
         [Key]
         public int Id { get; set; }
-        public string Category { get; set; }
+        public int ParentId { get; set; }
+        public string Title { get; set; }
         public string Image { get; set; }
-        public string ImageMobile { get; set; }
     }
 }

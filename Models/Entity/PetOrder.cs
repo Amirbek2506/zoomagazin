@@ -10,6 +10,7 @@ namespace ZooMag.Models.Entity
     {
         [Key]
         public int Id { get; set; }
+        public int PetId { get; set; }
         public string Details { get; set; }
         public int PhoneNumber { get; set; }
         public DateTime CreatedAt { get; set; }

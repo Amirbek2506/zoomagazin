@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ZooMag.Data;
 using ZooMag.Mapping;
@@ -41,6 +42,7 @@ namespace ZooMag.Services
             }
             var petorder = new PetOrder
             {
+                PetId = await _context.Pets.Where(p=> p.Id == model.PetId &&p.IsActive).FirstOrDefaultAsync() != null ? model.PetId : 0,
                 Details = model.Details,
                 PhoneNumber = model.PhoneNumber,
                 CreatedAt = DateTime.Now

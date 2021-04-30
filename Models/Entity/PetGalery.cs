@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace ZooMag.Models
 {
-    public class SlideShow
+    public class PetGalery
     {
         [Key]
         public int Id { get; set; }
-        public string Category { get; set; }
+        public int PetId { get; set; }
         public string Image { get; set; }
-        public string ImageMobile { get; set; }
+
+        public virtual Pet Pet { get; set; }
     }
 }
