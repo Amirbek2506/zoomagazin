@@ -15,10 +15,17 @@ namespace ZooMag.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal OrderSumm { get; set; }
         public int OrderStatusId { get; set; }
+        public string Name { get; set; }
         public int PhoneNumber { get; set; }
+        public int AdditionalPhoneNumber1 { get; set; }
+        public int AdditionalPhoneNumber2 { get; set; }
+        public string City { get; set; }
+        public string Email { get; set; }
         public int PaymentMethodId { get; set; }
         public string DeliveryType { get; set; }
         public string DeliveryAddress { get; set; }
+        public DateTime DeliveryStartDate { get; set; }
+        public DateTime DeliveryEndDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

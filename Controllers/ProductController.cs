@@ -25,16 +25,12 @@ namespace ZooMag.Controllers
         [HttpPost]
         [Route("create")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> CreateProduct([FromForm] InpProductModel model)
+        public async Task<IActionResult> CreateProduct([FromBody] InpProductModel model)
         {
             int productId = await _productsService.CreateProduct(model);
             if (model.Images != null)
                 await _productsService.CreateProductGaleries(productId, model.Images);
-            if (model.Sizes!=null)
-            {
-                List<int> Ids = await _productsService.CreateSizes(model.Sizes);
-                await _productsService.CreateProductSizes(productId, Ids);
-            }
+            
             return Ok(new Response { Status = "Success", Message = "Товар успешно добавлен!" });
         }
 
@@ -49,7 +45,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(new { count = count, products = products });
         }
@@ -63,7 +58,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(products);
         }
@@ -76,7 +70,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(products);
         }
@@ -89,7 +82,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(products);
         }
@@ -103,7 +95,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(products);
         }
@@ -118,7 +109,6 @@ namespace ZooMag.Controllers
             foreach (var product in products)
             {
                 product.Images = await _productsService.FetchProductGaleriesByProductId(product.Id);
-                product.Sizes = await _productsService.FetchSizesByProductId(product.Id);
             }
             return Ok(new { count = count, products = products });
         }
@@ -134,7 +124,6 @@ namespace ZooMag.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
             }
             productModel.Images = await _productsService.FetchProductGaleriesByProductId(id);
-            productModel.Sizes = await _productsService.FetchSizesByProductId(productModel.Id);
 
             return Ok(productModel);
         }
@@ -152,7 +141,6 @@ namespace ZooMag.Controllers
             foreach(var productModel in productModels)
             {
                 productModel.Images = await _productsService.FetchProductGaleriesByProductId(productModel.Id);
-                productModel.Sizes = await _productsService.FetchSizesByProductId(productModel.Id);
             }
             return Ok(productModels);
         }
@@ -169,11 +157,6 @@ namespace ZooMag.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "Товар не найден!" });
             }
            
-            if (model.Sizes!=null)
-            {
-                List<int> Ids = await _productsService.CreateSizes(model.Sizes);
-                await _productsService.CreateProductSizes(productId, Ids);
-            }
             return Ok(new Response { Status = "Success", Message = "Товар успешно изменен!" });
         }
 
@@ -238,27 +221,5 @@ namespace ZooMag.Controllers
             }
             return BadRequest(ress);
         }
-
-        [HttpDelete]
-        [Route("deleteSize")]
-        [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> DeleteSize([FromForm] int sizeId,[FromForm] int productId)
-        {
-            var ress = await _productsService.DeleteProductSize(productId,sizeId);
-            if (ress.Status == "success")
-            {
-                return Ok(ress);
-            }
-            return BadRequest(ress);
-        }
-
-
-        [HttpGet]
-        [Route("fetchsizes/{productid}")]
-        public async Task<IActionResult> FetchSizes(int productid)
-        {
-            return Ok(await _productsService.FetchSizesByProductId(productid));
-        }
-
     }
 }

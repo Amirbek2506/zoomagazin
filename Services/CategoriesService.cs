@@ -29,7 +29,7 @@ namespace ZooMag.Services
 
         public async Task<Response> Create(InpCategoryModel categoryModel)
         {
-            if (String.IsNullOrEmpty(categoryModel.TitleRu) || String.IsNullOrEmpty(categoryModel.TitleEn))
+            if (String.IsNullOrEmpty(categoryModel.Title))
                 return new Response { Status = "error", Message = "Invalid Category!" };
 
             var cat = _mapper.Map<InpCategoryModel, Category>(categoryModel);
@@ -38,7 +38,7 @@ namespace ZooMag.Services
             if (categoryModel.Image != null)
             {
                 string image = await UploadImage(cat.Id, categoryModel.Image);
-                cat.Image = "Resources/Images/Categories/"+ cat.Id + "/" + image;
+                cat.Image = "Resources/Images/Categories/" + cat.Id + "/" + image;
                 await Save();
             }
             return new Response { Status = "success", Message = "Категория успешно добавлена!" };
@@ -56,15 +56,14 @@ namespace ZooMag.Services
 
         public async Task<Response> Update(UpdCategoryModel categoryModel)
         {
-            if (String.IsNullOrEmpty(categoryModel.TitleRu) || String.IsNullOrEmpty(categoryModel.TitleEn))
+            if (String.IsNullOrEmpty(categoryModel.Title))
             {
                 return new Response { Status = "error", Message = "Invalid Category!" };
             }
             var category = await _context.Categories.FindAsync(categoryModel.Id);
             if (category != null)
             {
-                category.TitleRu = categoryModel.TitleRu;
-                category.TitleEn = categoryModel.TitleEn;
+                category.Title = categoryModel.Title;
                 if (categoryModel.Image != null)
                 {
                     string image = await UploadImage(categoryModel.Id, categoryModel.Image);
@@ -82,15 +81,15 @@ namespace ZooMag.Services
             if (category != null)
             {
                 List<Product> products = await _context.Products.Where(p => p.CategoryId == id).ToListAsync();
-                products.ForEach(p=>p.CategoryId = category.ParentId);
+                products.ForEach(p => p.CategoryId = category.ParentId);
                 string path = "Resources/Images/Categories/" + category.Id;
                 if (Directory.Exists(path))
                     Directory.Delete(path, true);
                 _context.Categories.Remove(category);
                 var cats = await _context.Categories.Where(x => x.ParentId == category.Id).ToListAsync();
-                cats.ForEach(p=>p.ParentId = category.ParentId);
+                cats.ForEach(p => p.ParentId = category.ParentId);
                 await Save();
-                    return new Response { Status = "success", Message = "Категория успешно удалена!" };
+                return new Response { Status = "success", Message = "Категория успешно удалена!" };
             }
             else
             {
@@ -107,8 +106,8 @@ namespace ZooMag.Services
         public async Task<List<OutCategoryModel>> FetchWithSubcategories()
         {
             var categories = await _context.Categories.ToListAsync();
-            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn,Image = x.Image}).ToList();
-            foreach(var superCategory in superCategories)
+            var superCategories = categories.Where(x => x.ParentId == 0).Select(x => new OutCategoryModel { Id = x.Id, Title = x.Title,Image = x.Image }).ToList();
+            foreach (var superCategory in superCategories)
             {
                 await GetSubcategories(superCategory, categories);
             }
@@ -117,8 +116,8 @@ namespace ZooMag.Services
 
         private async Task GetSubcategories(OutCategoryModel superCategory, IList<Category> categories)
         {
-            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutCategoryModel { Id = x.Id, TitleRu = x.TitleRu,TitleEn = x.TitleEn,Image = x.Image}).ToList();
-            foreach(var category in superCategory.SubCategories)
+            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x => new OutCategoryModel { Id = x.Id, Title = x.Title,Image = x.Image }).ToList();
+            foreach (var category in superCategory.SubCategories)
             {
                 await GetSubcategories(category, categories);
             }

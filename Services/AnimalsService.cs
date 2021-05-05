@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿/*using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,8 +39,6 @@ namespace ZooMag.Services
                     Name = animal.Name,
                     UserId = userid,
                     Age = animal.Age,
-                    AnimalGenderId = animal.AnimalGenderId,
-                    AnimalTypeId = animal.AnimalTypeId,
                     CreateAt = DateTime.Now,
                     Breed = animal.Breed,
                     Color = animal.Color,
@@ -85,11 +83,6 @@ namespace ZooMag.Services
         }
 
 
-        public async Task<List<AnimalGender>> GetAnimalGenders()
-        {
-            return await _context.AnimalGenders.ToListAsync();
-        }
-
         public async Task<List<Animal>> GetAnimals(int typeid,int userid)
         {
             List<Animal> animals = new List<Animal>();
@@ -99,41 +92,24 @@ namespace ZooMag.Services
             }
             else
             {
-                animals = await _context.Animals.Where(p => p.AnimalTypeId == typeid && p.UserId != userid).ToListAsync();
+                animals = await _context.Animals.Where(p => p.AnimalType == typeid && p.UserId != userid).ToListAsync();
             }
-            foreach (var animal in animals)
-            {
-                animal.AnimalGender = null;
-                animal.AnimalType = null;
-            }
+
             return animals;
         }
 
         public async Task<Animal> GetAnimalById(int id)
         {
             var animal = await _context.Animals.FindAsync(id);
-            if (animal != null)
-            {
-                animal.AnimalGender = null;
-                animal.AnimalType = null;
-            }
             return animal;
         }
 
-        public async Task<List<AnimalType>> GetAnimalTypes()
-        {
-            return await _context.AnimalTypes.ToListAsync();
-        }
 
         public async Task<List<Animal>> GetMyAnimals(int userid)
         {
             List<Animal> animals = new List<Animal>();
             animals = await _context.Animals.Where(p => p.UserId == userid).ToListAsync();
-            foreach (var animal in animals)
-            {
-                animal.AnimalGender = null;
-                animal.AnimalType = null;
-            }
+
             return animals;
         }
 
@@ -151,8 +127,8 @@ namespace ZooMag.Services
                 animal.Breed = model.Breed;
                 animal.Color = model.Color;
                 animal.Age = model.Age;
-                animal.AnimalGenderId = model.AnimalGenderId;
-                animal.AnimalTypeId = model.AnimalTypeId;
+                animal.AnimalGender = model.AnimalGenderId;
+                animal.AnimalType = model.AnimalTypeId;
                 if (model.image != null)
                 {
                     animal.Image = await UploadImage(animal.Id, model.image);
@@ -192,3 +168,4 @@ namespace ZooMag.Services
         }
     }
 }
+*/

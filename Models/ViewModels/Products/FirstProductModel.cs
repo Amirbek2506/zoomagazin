@@ -31,7 +31,6 @@ namespace ZooMag.Models.ViewModels.Products
         public bool IsRecommended { get; set; }
 
         public Category category { get; set; }
-        public Measure measure { get; set; }
 
         public List<ProductImagesModel> Images { get; set; }
         public List<SizeModel> Sizes { get; set; }

@@ -16,6 +16,5 @@ namespace ZooMag.Services.Interfaces
         Task<List<OutCategoryModel>> FetchWithSubcategories();
         Task<Response> Update(UpdCategoryModel categoryModel);
         Task<Response> Delete(int id);
-        Task<int> Save();
     }
 }

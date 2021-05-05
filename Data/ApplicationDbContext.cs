@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Models;
@@ -17,38 +14,60 @@ namespace ZooMag.Data
             this.Database.EnsureCreated();
         }
 
+        #region products
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductItem> ProductItems { get; set; }
+        public DbSet<ProductGalery> ProductGaleries { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        #endregion
+
+
+        #region product orders
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<SlideShow> SlideShows { get; set; }
-        public DbSet<Cart> Carts { get; set; }
-        public DbSet<Size> Sizes { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductGalery> ProductGaleries { get; set; }
-        public DbSet<ProductSize> ProductSizes { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<SiteProperty> SiteProperties { get; set; }
-        public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<Banner> Banners { get; set; }
-        public DbSet<Measure> Measures { get; set; }
-        public DbSet<Gender> Genders { get; set; }
-        public DbSet<Chat> Chats { get; set; }
-        public DbSet<AnimalType> AnimalTypes { get; set; }
-        public DbSet<AnimalGender> AnimalGenders { get; set; }
-        public DbSet<Animal> Animals { get; set; }
-        public DbSet<Article> Articles { get; set; }
-        public DbSet<Box> Boxes { get; set; }
-        public DbSet<BoxOrder> BoxOrders { get; set; }
-        public DbSet<BoxType> BoxTypes { get; set; }
-        public DbSet<PetOrder> PetOrders { get; set; }
-        public DbSet<PetTransport> PetTransports { get; set; }
-        public DbSet<Brand> Brands { get; set; }
-        public DbSet<Pet> Pets { get; set; }
-        public DbSet<PetCategory> PetCategories { get; set; }
-        public DbSet<PetGalery> PetGaleries { get; set; }
+        #endregion
+       
 
+        #region chat
+        public DbSet<Animal> Animals { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        #endregion
+
+
+        #region hotel
+        public DbSet<Box> Boxes { get; set; }
+        public DbSet<BoxType> BoxTypes { get; set; }
+        public DbSet<BoxOrder> BoxOrders { get; set; }
+        #endregion
+
+
+        #region pet order
+        public DbSet<PetCategory> PetCategories { get; set; }
+        public DbSet<Pet> Pets { get; set; }
+        public DbSet<PetGalery> PetGaleries { get; set; }
+        public DbSet<PetOrder> PetOrders { get; set; }
+        #endregion
+
+
+        #region additional
+        public DbSet<SlideShow> SlideShows { get; set; }
+        public DbSet<Banner> Banners { get; set; }
+
+
+        public DbSet<Gender> Genders { get; set; }
+        public DbSet<SiteProperty> SiteProperties { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        #endregion
+
+
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<PetTransport> PetTransports { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -78,20 +97,17 @@ namespace ZooMag.Data
             builder.Entity<Gender>().HasData(new Gender
             {
                 Id = 1,
-                TitleRu = "не выбрано",
-                TitleEn = "not chosen"
+                Title = "не выбрано",
             });
             builder.Entity<Gender>().HasData(new Gender
             {
                 Id = 2,
-                TitleRu = "мужчина",
-                TitleEn = "man"
+                Title = "мужчина",
             });
             builder.Entity<Gender>().HasData(new Gender
             {
                 Id = 3,
-                TitleRu = "женщина",
-                TitleEn = "woman"
+                Title = "женщина",
             });
 
 
@@ -99,8 +115,8 @@ namespace ZooMag.Data
             builder.Entity<User>().HasData(new User
             {
                 Id = 1,
-                UserName = "user@example.com",
-                NormalizedUserName = "user@example.com".ToUpper(),
+                UserName = "admin",
+                NormalizedUserName = "admin".ToUpper(),
                 Email = "user@example.com",
                 NormalizedEmail = "user@example.com".ToUpper(),
                 EmailConfirmed = false,
@@ -137,6 +153,8 @@ namespace ZooMag.Data
                 Id = 4,
                 Title = "Доставлен"
             });
+
+
             builder.Entity<PaymentMethod>().HasData(new PaymentMethod
             {
                 Id = 1,
@@ -144,53 +162,15 @@ namespace ZooMag.Data
             });
 
 
-
-             builder.Entity<AnimalGender>().HasData(new AnimalGender
-             {
-                Id = 1,
-                TitleRu = "женский",
-                TitleEn = "female"
-             });
-             builder.Entity<AnimalGender>().HasData(new AnimalGender
-             {
-                Id = 2,
-                TitleRu = "мужской",
-                TitleEn = "male"
-             });
-             builder.Entity<AnimalGender>().HasData(new AnimalGender
-             {
-                Id = 3,
-                TitleRu = "гермафродит (такими животные тоже бывают)",
-                TitleEn = "hermaphrodite"
-             });
- 
-            
-             builder.Entity<AnimalType>().HasData(new AnimalType
-             {
-                Id = 1,
-                TitleRu = "кошка(кот)",
-                TitleEn = "cat"
-             });
-             builder.Entity<AnimalType>().HasData(new AnimalType
-             {
-                Id = 2,
-                TitleRu = "собака(кобель)",
-                TitleEn = "dog"
-             });
- 
-            
              builder.Entity<BoxType>().HasData(new BoxType
              {
                 Id = 1,
-                TitleRu = "Для кошек",
-                TitleEn = "For cat"
+                Title = "Для кошек",
              });
-
              builder.Entity<BoxType>().HasData(new BoxType
              {
                 Id = 2,
-                TitleRu = "Для собак",
-                TitleEn = "For dog"
+                Title = "Для собак",
              });
  
             base.OnModelCreating(builder);

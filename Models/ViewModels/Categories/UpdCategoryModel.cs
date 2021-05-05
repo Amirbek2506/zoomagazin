@@ -9,8 +9,7 @@ namespace ZooMag.Models.ViewModels.Categories
     public class UpdCategoryModel
     {
         public int Id { get; set; }
-        public string TitleEn { get; set; }
-        public string TitleRu { get; set; }
+        public string Title { get; set; }
         public IFormFile Image { get; set; }
     }
 }

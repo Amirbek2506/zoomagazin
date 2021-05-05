@@ -13,8 +13,6 @@ namespace ZooMag.Services.Interfaces
         Task<Response> Delete(int id,int userid);
         Task<List<Animal>> GetMyAnimals(int userid);
         Task<List<Animal>> GetAnimals(int typeid,int userid);
-        Task<List<AnimalType>> GetAnimalTypes();
-        Task<List<AnimalGender>> GetAnimalGenders();
         Task<Animal> GetAnimalById(int id);
         Task<Response> UpdateAnimal(UpdAnimalModel model,int userid);
     }

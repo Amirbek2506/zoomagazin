@@ -4,16 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZooMag.Models
+namespace ZooMag.Models.Entity
 {
-    public class SlideShow
+    public class Promotion
     {
         [Key]
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Link { get; set; }
-        public string Category { get; set; }
         public string Image { get; set; }
-        public string ImageMobile { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

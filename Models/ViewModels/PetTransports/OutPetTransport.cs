@@ -18,7 +18,6 @@ namespace ZooMag.Models.ViewModels.PetTransports
         public DateTime CreatedAt { get; set; }
 
         public virtual OrderStatus OrderStatus { get; set; }
-        public virtual AnimalType AnimalType { get; set; }
         public virtual UserModel User { get; set; }
     }
 }

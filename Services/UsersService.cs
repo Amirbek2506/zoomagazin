@@ -38,7 +38,7 @@ namespace ZooMag.Services
                  .Join(_context.UserRoles.Where(t => t.RoleId != 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
                  .CountAsync();
         }
-        public async Task<List<UserModel>> FetchWorkers(int offset,int limit)
+        public async Task<List<UserModel>> FetchWorkers(int offset, int limit)
         {
             var userList = new List<UserModel>();
             var users = await _context.Users
@@ -46,13 +46,13 @@ namespace ZooMag.Services
                  .Skip(offset)
                  .Take(limit)
                  .ToListAsync();
-            foreach (var user in users.OrderBy(p=>p.Id).ToList())
+            foreach (var user in users.OrderBy(p => p.Id).ToList())
             {
                 var userRolesIds = await _context.UserRoles
                     .Where(m => m.UserId == user.Id && m.RoleId != 3)
-                    .Select(p=>p.RoleId)
+                    .Select(p => p.RoleId)
                     .ToListAsync();
-                if(userRolesIds.Count()!=0)
+                if (userRolesIds.Count() != 0)
                 {
                     var model = _mapper.Map<User, UserModel>(user);
                     model.Roles = await _context.Roles.Where(r => userRolesIds.Contains(r.Id)).ToListAsync();
@@ -62,19 +62,19 @@ namespace ZooMag.Services
             return userList;
         }
 
-        public async Task<List<UserModel>> FetchСlients(int offset,int limit)
+        public async Task<List<UserModel>> FetchСlients(int offset, int limit)
         {
             var userList = new List<UserModel>();
             var users = await _context.Users
                 .Join(_context.UserRoles.Where(t => t.RoleId == 3), us => us.Id, ur => ur.UserId, (us, ur) => us)
                 .Skip(offset)
-                .Take(limit)                
+                .Take(limit)
                 .ToListAsync();
             foreach (var user in users)
             {
                 var userRole = await _context.UserRoles.FirstOrDefaultAsync(m => m.UserId == user.Id && m.RoleId == 3);
-                    var model = _mapper.Map<User, UserModel>(user);
-                if(userRole!=null)
+                var model = _mapper.Map<User, UserModel>(user);
+                if (userRole != null)
                 {
                     model.Roles = await _context.Roles.Where(r => r.Id == userRole.RoleId).ToListAsync();
                 }
@@ -88,32 +88,32 @@ namespace ZooMag.Services
             var userrole = await _context.UserRoles.Where(p => p.UserId == userId).ToListAsync();
             _context.RemoveRange(userrole);
             await Save();
-            if(await _context.UserRoles.FirstOrDefaultAsync(p=>p.RoleId == roleId && p.UserId == userId) == null)
+            if (await _context.UserRoles.FirstOrDefaultAsync(p => p.RoleId == roleId && p.UserId == userId) == null)
             {
-                if(await _context.Roles.FirstOrDefaultAsync(p => p.Id == roleId) == null)
+                if (await _context.Roles.FirstOrDefaultAsync(p => p.Id == roleId) == null)
                 {
                     return new Response { Status = "error", Message = "Такой рол не существует!" };
-                } 
-                if(await _context.Users.FirstOrDefaultAsync(p => p.Id == userId) == null)
+                }
+                if (await _context.Users.FirstOrDefaultAsync(p => p.Id == userId) == null)
                 {
                     return new Response { Status = "error", Message = "Ползователь не существует!" };
                 }
                 _context.UserRoles.Add(new IdentityUserRole<int> { UserId = userId, RoleId = roleId });
                 await Save();
-                return new Response { Status="success",Message= "Рол успешно присвоен!" };
+                return new Response { Status = "success", Message = "Рол успешно присвоен!" };
             }
-            return new Response { Status="error",Message="Рол был присвоен!"};
+            return new Response { Status = "error", Message = "Рол был присвоен!" };
         }
 
         public async Task<Response> UpdateUser(UserModel userModel)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(p=>p.Id == userModel.Id);
-            if(user!=null)
+            User user = await _context.Users.FirstOrDefaultAsync(p => p.Id == userModel.Id);
+            if (user != null)
             {
-                if(userModel.file!=null)
+                if (userModel.file != null)
                 {
                     string fileName = await UploadImage(user.Id, userModel.file);
-                    user.Image = "Resources/Images/Users/"+ user.Id+"/" + fileName;
+                    user.Image = "Resources/Images/Users/" + user.Id + "/" + fileName;
                 }
                 user.LastName = userModel.LastName;
                 user.FirstName = userModel.FirstName;
@@ -132,7 +132,7 @@ namespace ZooMag.Services
             {
                 Directory.Delete(path, true);
             }
-                Directory.CreateDirectory(path);
+            Directory.CreateDirectory(path);
             path = Path.Combine(path, file.FileName);
             using (var stream = new FileStream(path, FileMode.Create))
             {
@@ -179,22 +179,23 @@ namespace ZooMag.Services
                         _context.OrderItems.RemoveRange(await _context.OrderItems.Where(p => p.OrderId == item.Id).ToListAsync());
                     }
                 }
-               
+
                 DeleteDirectory(id);
                 await DeleteAnimals(id);
                 _context.Users.Remove(user);
                 await Save();
                 return new Response { Status = "success", Message = "Пользователь успешно удален!" };
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                return new Response { Status = "error", Message = ex.Message};
+                return new Response { Status = "error", Message = ex.Message };
             }
         }
 
         private async Task DeleteAnimals(int userid)
         {
-            var animals = await _context.Animals.Where(p =>p.UserId == userid).ToListAsync();
-            foreach(var animal in animals)
+            var animals = await _context.Animals.Where(p => p.UserId == userid).ToListAsync();
+            foreach (var animal in animals)
             {
                 string path = Path.GetFullPath("Resources/Images/Animals/" + animal.Id);
                 if (Directory.Exists(path))
@@ -216,7 +217,7 @@ namespace ZooMag.Services
         private void DeleteDirectory(int id)
         {
             string path = "Resources/Images/Users/" + id;
-            if(Directory.Exists(path))
+            if (Directory.Exists(path))
                 Directory.Delete(path, true);
         }
     }

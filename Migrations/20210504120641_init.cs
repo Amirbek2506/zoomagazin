@@ -4,38 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ZooMag.Migrations
 {
-    public partial class initialCreated : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "AnimalGenders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AnimalGenders", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AnimalTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AnimalTypes", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Articles",
                 columns: table => new
@@ -75,7 +47,9 @@ namespace ZooMag.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: true),
-                    CategoryName = table.Column<string>(type: "text", nullable: true),
+                    Category = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    ImageMobile = table.Column<string>(type: "text", nullable: true),
                     Link = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -89,8 +63,7 @@ namespace ZooMag.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
@@ -105,7 +78,8 @@ namespace ZooMag.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: true),
-                    Image = table.Column<string>(type: "text", nullable: true)
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,8 +93,7 @@ namespace ZooMag.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ParentId = table.Column<int>(type: "integer", nullable: false),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
                     Image = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -151,26 +124,11 @@ namespace ZooMag.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true)
+                    Title = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genders", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Measures",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TitleEn = table.Column<string>(type: "text", nullable: true),
-                    TitleRu = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Measures", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -253,40 +211,66 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VendorCode = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: true),
+                    Weight = table.Column<string>(type: "text", nullable: true),
+                    Discount = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsSale = table.Column<bool>(type: "boolean", nullable: false),
-                    SaleStartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    SaleEndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    NameEn = table.Column<string>(type: "text", nullable: true),
-                    NameRu = table.Column<string>(type: "text", nullable: true),
-                    DiscriptionEn = table.Column<string>(type: "text", nullable: true),
-                    DiscriptionRu = table.Column<string>(type: "text", nullable: true),
-                    ShortDiscriptionEn = table.Column<string>(type: "text", nullable: true),
-                    ShortDiscriptionRu = table.Column<string>(type: "text", nullable: true),
-                    ColorEn = table.Column<string>(type: "text", nullable: true),
-                    ColorRu = table.Column<string>(type: "text", nullable: true),
-                    MeasureId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Discription = table.Column<string>(type: "text", nullable: true),
+                    ShortDiscription = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<string>(type: "text", nullable: true),
                     CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    BrandId = table.Column<int>(type: "integer", nullable: false),
                     Image = table.Column<string>(type: "text", nullable: true),
                     IsNew = table.Column<bool>(type: "boolean", nullable: false),
-                    PreOrder = table.Column<string>(type: "text", nullable: true),
-                    Link = table.Column<string>(type: "text", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Weight = table.Column<double>(type: "double precision", nullable: false),
-                    BrandId = table.Column<int>(type: "integer", nullable: false),
+                    IsSale = table.Column<bool>(type: "boolean", nullable: false),
                     IsTop = table.Column<bool>(type: "boolean", nullable: false),
-                    IsRecommended = table.Column<bool>(type: "boolean", nullable: false)
+                    IsRecommended = table.Column<bool>(type: "boolean", nullable: false),
+                    Discount = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    PromotionId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Promotions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Promotions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -305,24 +289,13 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sizes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sizes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SlideShows",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
                     Category = table.Column<string>(type: "text", nullable: true),
                     Image = table.Column<string>(type: "text", nullable: true),
                     ImageMobile = table.Column<string>(type: "text", nullable: true)
@@ -420,10 +393,17 @@ namespace ZooMag.Migrations
                     UserKey = table.Column<string>(type: "text", nullable: true),
                     OrderSumm = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OrderStatusId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<int>(type: "integer", nullable: false),
+                    AdditionalPhoneNumber1 = table.Column<int>(type: "integer", nullable: false),
+                    AdditionalPhoneNumber2 = table.Column<int>(type: "integer", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
                     PaymentMethodId = table.Column<int>(type: "integer", nullable: false),
                     DeliveryType = table.Column<string>(type: "text", nullable: true),
                     DeliveryAddress = table.Column<string>(type: "text", nullable: true),
+                    DeliveryStartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DeliveryEndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -465,6 +445,26 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductGaleries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductItemId = table.Column<int>(type: "integer", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductGaleries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductGaleries_ProductItems_ProductItemId",
+                        column: x => x.ProductItemId,
+                        principalTable: "ProductItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Carts",
                 columns: table => new
                 {
@@ -482,26 +482,6 @@ namespace ZooMag.Migrations
                     table.PrimaryKey("PK_Carts", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Carts_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductGaleries",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    Image = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductGaleries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductGaleries_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -529,62 +509,24 @@ namespace ZooMag.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductSizes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    SizeId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductSizes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductSizes_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProductSizes_Sizes_SizeId",
-                        column: x => x.SizeId,
-                        principalTable: "Sizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Animals",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    AnimalTypeId = table.Column<int>(type: "integer", nullable: false),
+                    AnimalType = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Image = table.Column<string>(type: "text", nullable: true),
                     Breed = table.Column<string>(type: "text", nullable: true),
                     Color = table.Column<string>(type: "text", nullable: true),
-                    AnimalGenderId = table.Column<int>(type: "integer", nullable: false),
+                    AnimalGender = table.Column<int>(type: "integer", nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Animals", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Animals_AnimalGenders_AnimalGenderId",
-                        column: x => x.AnimalGenderId,
-                        principalTable: "AnimalGenders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Animals_AnimalTypes_AnimalTypeId",
-                        column: x => x.AnimalTypeId,
-                        principalTable: "AnimalTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Animals_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -719,7 +661,7 @@ namespace ZooMag.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderStatusId = table.Column<int>(type: "integer", nullable: false),
                     PhoneNumber = table.Column<int>(type: "integer", nullable: false),
-                    AnimalTypeId = table.Column<int>(type: "integer", nullable: false),
+                    AnimalType = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Comment = table.Column<string>(type: "text", nullable: true),
                     FromAddress = table.Column<string>(type: "text", nullable: true),
@@ -730,12 +672,6 @@ namespace ZooMag.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PetTransports", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PetTransports_AnimalTypes_AnimalTypeId",
-                        column: x => x.AnimalTypeId,
-                        principalTable: "AnimalTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PetTransports_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -756,10 +692,12 @@ namespace ZooMag.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<double>(type: "double precision", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -769,7 +707,7 @@ namespace ZooMag.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reviews_Products_ProductId",
                         column: x => x.ProductId,
@@ -785,8 +723,7 @@ namespace ZooMag.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderId = table.Column<int>(type: "integer", nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    SizeId = table.Column<int>(type: "integer", nullable: false),
+                    ProductItemId = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -800,30 +737,11 @@ namespace ZooMag.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItems_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
+                        name: "FK_OrderItems_ProductItems_ProductItemId",
+                        column: x => x.ProductItemId,
+                        principalTable: "ProductItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "AnimalGenders",
-                columns: new[] { "Id", "TitleEn", "TitleRu" },
-                values: new object[,]
-                {
-                    { 1, "female", "женский" },
-                    { 2, "male", "мужской" },
-                    { 3, "hermaphrodite", "гермафродит (такими животные тоже бывают)" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AnimalTypes",
-                columns: new[] { "Id", "TitleEn", "TitleRu" },
-                values: new object[,]
-                {
-                    { 1, "cat", "кошка(кот)" },
-                    { 2, "dog", "собака(кобель)" }
                 });
 
             migrationBuilder.InsertData(
@@ -831,28 +749,28 @@ namespace ZooMag.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "53851ba6-b228-420b-90a7-1be66fc28987", "Администратор", "АДМИНИСТРАТОР" },
-                    { 2, "d3bcdba6-2239-4bac-bbd2-f86c551bd1d0", "Бухгалтер", "БУХГАЛТЕР" },
-                    { 3, "1cb9f043-c09b-48f2-aa5f-d51ed11229a3", "Клиент", "КЛИЕНТ" }
+                    { 1, "fc8cd510-d90a-4980-93e8-9fc716332f77", "Администратор", "АДМИНИСТРАТОР" },
+                    { 2, "dbfd7b0e-98b9-4d64-8e2a-011b7507a417", "Бухгалтер", "БУХГАЛТЕР" },
+                    { 3, "533c4a3a-3beb-47b9-bb5f-9af80586dbbe", "Клиент", "КЛИЕНТ" }
                 });
 
             migrationBuilder.InsertData(
                 table: "BoxTypes",
-                columns: new[] { "Id", "Price", "TitleEn", "TitleRu" },
+                columns: new[] { "Id", "Price", "Title" },
                 values: new object[,]
                 {
-                    { 2, 0.0, "For dog", "Для собак" },
-                    { 1, 0.0, "For cat", "Для кошек" }
+                    { 1, 0.0, "Для кошек" },
+                    { 2, 0.0, "Для собак" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Genders",
-                columns: new[] { "Id", "TitleEn", "TitleRu" },
+                columns: new[] { "Id", "Title" },
                 values: new object[,]
                 {
-                    { 3, "woman", "женщина" },
-                    { 1, "not chosen", "не выбрано" },
-                    { 2, "man", "мужчина" }
+                    { 1, "не выбрано" },
+                    { 2, "мужчина" },
+                    { 3, "женщина" }
                 });
 
             migrationBuilder.InsertData(
@@ -874,22 +792,12 @@ namespace ZooMag.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDay", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "GenderId", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "f342a8d8-0b92-460d-9f1d-5151e4e7a101", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "USER@EXAMPLE.COM", "USER@EXAMPLE.COM", "AQAAAAEAACcQAAAAECqrJVEYONfF2G6/k0g1GE3sLiuD+p4TDtj5H478SrXQt9vM/C3Jc4iWiRYWooydxQ==", null, false, "", false, "user@example.com" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "fdff831a-c38d-4121-995f-02579f96aa02", "user@example.com", false, null, 1, "Resources/Images/Users/useravatar.svg", null, false, null, "user@example.com", "admin", "AQAAAAEAACcQAAAAEIbedB5htFz1uVxRwIH7D0H6UIR5KQ+VYOgjQD+Rhga0G1E1vFnZKhZLmTCi1N0W1w==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { 1, 1 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Animals_AnimalGenderId",
-                table: "Animals",
-                column: "AnimalGenderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Animals_AnimalTypeId",
-                table: "Animals",
-                column: "AnimalTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Animals_UserId",
@@ -964,9 +872,9 @@ namespace ZooMag.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_ProductId",
+                name: "IX_OrderItems_ProductItemId",
                 table: "OrderItems",
-                column: "ProductId");
+                column: "ProductItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_OrderStatusId",
@@ -984,11 +892,6 @@ namespace ZooMag.Migrations
                 column: "PetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PetTransports_AnimalTypeId",
-                table: "PetTransports",
-                column: "AnimalTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PetTransports_OrderStatusId",
                 table: "PetTransports",
                 column: "OrderStatusId");
@@ -999,19 +902,9 @@ namespace ZooMag.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductGaleries_ProductId",
+                name: "IX_ProductGaleries_ProductItemId",
                 table: "ProductGaleries",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductSizes_ProductId",
-                table: "ProductSizes",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductSizes_SizeId",
-                table: "ProductSizes",
-                column: "SizeId");
+                column: "ProductItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ProductId",
@@ -1074,9 +967,6 @@ namespace ZooMag.Migrations
                 name: "Chats");
 
             migrationBuilder.DropTable(
-                name: "Measures");
-
-            migrationBuilder.DropTable(
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
@@ -1095,7 +985,7 @@ namespace ZooMag.Migrations
                 name: "ProductGaleries");
 
             migrationBuilder.DropTable(
-                name: "ProductSizes");
+                name: "Promotions");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -1110,9 +1000,6 @@ namespace ZooMag.Migrations
                 name: "Wishlists");
 
             migrationBuilder.DropTable(
-                name: "AnimalGenders");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -1125,10 +1012,7 @@ namespace ZooMag.Migrations
                 name: "Pets");
 
             migrationBuilder.DropTable(
-                name: "AnimalTypes");
-
-            migrationBuilder.DropTable(
-                name: "Sizes");
+                name: "ProductItems");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

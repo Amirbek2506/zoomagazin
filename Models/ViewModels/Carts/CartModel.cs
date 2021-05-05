@@ -18,6 +18,5 @@ namespace ZooMag.Models.ViewModels.Carts
         public DateTime CreatedAt { get; set; }
 
         public OutProductModel Product { get; set; }
-        public virtual Size Size { get; set; }
     }
 }

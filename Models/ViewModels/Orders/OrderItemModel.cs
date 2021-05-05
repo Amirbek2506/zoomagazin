@@ -15,6 +15,5 @@ namespace ZooMag.Models.ViewModels.Orders
         public int Quantity { get; set; }
 
         public OutProductModel Product { get; set; }
-        public Size Size { get; set; }
     }
 }

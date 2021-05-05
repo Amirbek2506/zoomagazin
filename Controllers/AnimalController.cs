@@ -86,19 +86,5 @@ namespace ZooMag.Controllers
             return BadRequest(ress);
         }
 
-        [HttpGet]
-        [Route("fetchgenders")]
-        public async Task<IActionResult> FetchAnimalGenders()
-        {
-            return Ok(await _animalsService.GetAnimalGenders());
-        }
-        
-        [HttpGet]
-        [Route("fetchtypes")]
-        public async Task<IActionResult> FetchAnimalTypes()
-        {
-            return Ok(await _animalsService.GetAnimalTypes());
-        }
-
     }
 }

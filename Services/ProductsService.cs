@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.Mapping;
 using ZooMag.Models;
+using ZooMag.Models.Entity;
+using ZooMag.Models.ViewModels.ProductItems;
 using ZooMag.Models.ViewModels.Products;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
@@ -30,18 +32,34 @@ namespace ZooMag.Services
         #region CRUD products
         public async Task<int> CreateProduct(InpProductModel product)
         {
+            if(product.ProductItems.Count()==0)
+            {
+                return 0;
+            }
             Product prod = _mapper.Map<InpProductModel, Product>(product);
-            if (await _context.Categories.FindAsync(prod.CategoryId)==null)
+            if (await _context.Categories.FindAsync(prod.CategoryId) == null)
             {
                 prod.CategoryId = 0;
             }
-            prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
             prod.IsActive = true;
+            prod.PromotionId = 0;
             prod.Image = "http://api.zoomag.tj/Resources/Images/Products/image.png";
             _context.Products.Add(prod);
             await Save();
+
+            foreach(var item in product.ProductItems)
+            {
+                ProductItem prodItem = _mapper.Map<ProductItemModel, ProductItem>(item);
+                prodItem.IsActive = true;
+                prodItem.ProductId = prod.Id;
+                _context.ProductItems.Add(prodItem);
+                await Save();
+                await CreateProductGaleries(prod.Id,prodItem.Id,item.Images);
+            }
+
             return prod.Id;
         }
+
 
 
         public FirstProductModel FetchProductById(int id)
@@ -51,41 +69,39 @@ namespace ZooMag.Services
                 return null;
 
             var product = _mapper.Map<Product, FirstProductModel>(prod);
-            product.measure = _context.Measures.Find(prod.MeasureId);
             product.category = _context.Categories.Find(prod.CategoryId);
 
             return product;
         }
-        
+
         public async Task<List<OutProductModel>> FetchProductByIds(int[] ids)
         {
-            var prods = await _context.Products.Where(p => ids.Contains(p.Id)&& p.IsActive).ToListAsync<Product>();
-            if (prods.Count()==0)
+            var prods = await _context.Products.Where(p => ids.Contains(p.Id) && p.IsActive).ToListAsync<Product>();
+            if (prods.Count() == 0)
                 return null;
-            return _mapper.Map<List<Product>,List<OutProductModel>>(prods);
+            return _mapper.Map<List<Product>, List<OutProductModel>>(prods);
         }
 
 
-         public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset,int categoryId, int brandId, int minp, int maxp,bool issale, bool isnew,bool istop,bool isrecommended)
+        public async Task<List<OutProductModel>> FetchProducts(int rows_limit, int rows_offset, int categoryId, int brandId, int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
         {
             List<Product> products = await _context.Products
-                .Where(p => 
-            p.IsActive && 
+                .Where(p =>
+            p.IsActive &&
             (categoryId != 0 ? p.CategoryId == categoryId : true) &&
             (brandId != 0 ? p.BrandId == brandId : true) &&
-            (issale ? p.IsSale : true) && 
-            (isnew ? p.IsNew : true) && 
-            (istop ? p.IsTop : true) && 
-            (isrecommended ? p.IsRecommended : true) && 
-            (minp != maxp?(p.SellingPrice >= minp && p.SellingPrice <= maxp):true))
+            (issale ? p.IsSale : true) &&
+            (isnew ? p.IsNew : true) &&
+            (istop ? p.IsTop : true) &&
+            (isrecommended ? p.IsRecommended : true))
                 .Skip(rows_offset).Take(rows_limit).ToListAsync();
 
             return _mapper.Map<List<Product>, List<OutProductModel>>(products);
         }
 
 
-         public async Task<List<OutProductModel>> FetchSales(int count)
-         {
+        public async Task<List<OutProductModel>> FetchSales(int count)
+        {
             var products = await _context.Products.Where(p => p.IsActive && p.IsSale).Take(count * 3).ToListAsync();
             products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
@@ -94,11 +110,11 @@ namespace ZooMag.Services
                 prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
-         }
-        
+        }
 
-         public async Task<List<OutProductModel>> FetchTopes(int count)
-         {
+
+        public async Task<List<OutProductModel>> FetchTopes(int count)
+        {
             var products = await _context.Products.Where(p => p.IsActive && p.IsTop).Take(count * 3).ToListAsync();
             products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
@@ -107,10 +123,10 @@ namespace ZooMag.Services
                 prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
-         }
+        }
 
         public async Task<List<OutProductModel>> FetchRecommended(int count)
-         {
+        {
             var products = await _context.Products.Where(p => p.IsActive && p.IsRecommended).Take(count * 3).ToListAsync();
             products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
@@ -119,20 +135,20 @@ namespace ZooMag.Services
                 prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
-         }
+        }
 
-        
-         public async Task<List<OutProductModel>> FetchNew(int count)
-         {
-            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).Take(count*3).ToListAsync();
-            products = products.OrderBy(x=> Guid.NewGuid()).Take(count).ToList();
+
+        public async Task<List<OutProductModel>> FetchNew(int count)
+        {
+            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).Take(count * 3).ToListAsync();
+            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
             List<OutProductModel> prods = new List<OutProductModel>();
             foreach (var prod in products)
             {
                 prods.Add(_mapper.Map<Product, OutProductModel>(prod));
             }
             return prods;
-         }
+        }
 
 
         public async Task<int> UpdateProduct(UpdProductModel product)
@@ -143,11 +159,11 @@ namespace ZooMag.Services
                 return 0;
             }
 
-            prod.CategoryId = await _context.Categories.FindAsync(prod.CategoryId) == null?0:product.CategoryId;
+            prod.CategoryId = await _context.Categories.FindAsync(prod.CategoryId) == null ? 0 : product.CategoryId;
 
-            prod.MeasureId = await _context.Measures.FindAsync(prod.MeasureId) == null?0:product.MeasureId;
+            prod.MeasureId = await _context.Measures.FindAsync(prod.MeasureId) == null ? 0 : product.MeasureId;
 
-            prod.BrandId = await _context.Brands.FindAsync(prod.BrandId) == null?0:product.BrandId;
+            prod.BrandId = await _context.Brands.FindAsync(prod.BrandId) == null ? 0 : product.BrandId;
 
             prod.NameRu = product.NameRu;
             prod.NameEn = product.NameEn;
@@ -161,7 +177,7 @@ namespace ZooMag.Services
             prod.IsNew = product.IsNew;
             prod.IsSale = product.IsSale;
             prod.OriginalPrice = product.OriginalPrice;
-            prod.SellingPrice = (product.SellingPrice!=0 && product.IsSale)?product.SellingPrice:product.OriginalPrice;
+            prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
             prod.SaleStartDate = product.SaleStartDate;
             prod.SaleEndDate = product.SaleEndDate;
             prod.Quantity = product.Quantity;
@@ -186,84 +202,8 @@ namespace ZooMag.Services
                 await Save();
                 return new Response { Status = "success", Message = "Продукт успешно удален!" };
             }
-                return new Response { Status = "error", Message = "Продукт не существует!" };
-        }       
-        #endregion
-
-
-
-        #region product sizes
-        public async Task<List<int>> CreateSizes(List<string> sizes)
-        {
-            List<int> sizeIds = new List<int>();
-            foreach (var item in sizes)
-            {
-                if(String.IsNullOrEmpty(item))
-                {
-                    continue;
-                }
-                Size size = await _context.Sizes.FirstOrDefaultAsync(p => p.Title == item);
-                if (size == null)
-                {
-                    size = new Size();
-                    size.Title = item;
-                    _context.Sizes.Add(size);
-                    await Save();
-                }
-                sizeIds.Add(size.Id);
-            }
-            return sizeIds;
+            return new Response { Status = "error", Message = "Продукт не существует!" };
         }
-
-        public async Task CreateProductSizes(int productId, List<int> sizeIds)
-        {
-            foreach (int sizeid in sizeIds)
-            {
-                await _context.ProductSizes.AddAsync(new ProductSize { ProductId = productId, SizeId = sizeid });
-            }
-            await Save();
-            return;
-        }
-
-        public async Task DeleteProductSizes(int productId)
-        {
-            var sizes = await _context.ProductSizes.Where(p => p.ProductId == productId).ToListAsync();
-            _context.ProductSizes.RemoveRange(sizes);
-            await Save();
-            return;
-        }
-
-        public async Task<List<ProductSize>> FetchProductSizesByProductId(int productId)
-        {
-            return await _context.ProductSizes.Where(p => p.ProductId == productId).ToListAsync();
-        }
-
-        public async Task<List<SizeModel>> FetchSizesByProductId(int productId)
-        {
-            List<Size> sizes = new List<Size>();
-            List<ProductSize> ProductSize = await FetchProductSizesByProductId(productId);
-            foreach (var item in ProductSize)
-            {
-                Size size = await _context.Sizes.Where(s => s.Id == item.SizeId).FirstOrDefaultAsync();
-                if (size != null)
-                    sizes.Add(size);
-            }
-            return _mapper.Map<List<Size>, List<SizeModel>>(sizes); ;
-        }
-
-
-        public async Task<Response> DeleteProductSize(int productId,int sizeId)
-        {
-            var productSize = await _context.ProductSizes.FirstOrDefaultAsync(p=>p.ProductId == productId && p.SizeId == sizeId);
-            if(productSize!=null)
-            {
-                _context.ProductSizes.Remove(productSize);
-                await Save();
-                return new Response {Status = "success",Message = "Размер успешно удален!" };
-            }
-            return new Response {Status = "error", Message = "Размер не найден!"};
-        }
-
         #endregion
 
 
@@ -284,7 +224,7 @@ namespace ZooMag.Services
             return "http://api.zoomag.tj/Resources/Images/Products/" + productId + "/" + fName;
         }
 
-        public async Task CreateProductGaleries(int productId, IFormFile[] images)
+        public async Task CreateProductGaleries(int productId,int productItemId, IFormFile[] images)
         {
             for (int i = 1; i <= images.Length; i++)
             {
@@ -294,7 +234,7 @@ namespace ZooMag.Services
                     Product product = _context.Products.FirstOrDefault(p => p.Id == productId);
                     if (product != null)
                     {
-                        if(String.IsNullOrEmpty(product.Image) || product.Image == "http://api.zoomag.tj/Resources/Images/Products/image.png")
+                        if (String.IsNullOrEmpty(product.Image) || product.Image == "http://api.zoomag.tj/Resources/Images/Products/image.png")
                         {
                             product.Image = fileName;
                             await Save();
@@ -313,12 +253,12 @@ namespace ZooMag.Services
             return;
         }
 
-        public async Task<Response> SetMainImage(int productid,int imageid)
+        public async Task<Response> SetMainImage(int productid, int imageid)
         {
             var product = await _context.Products.FindAsync(productid);
-            if(product==null)
+            if (product == null)
             {
-                return new Response { Status = "error",Message = "Товар не найден!"};
+                return new Response { Status = "error", Message = "Товар не найден!" };
             }
             var galery = await _context.ProductGaleries.FindAsync(imageid);
             if (galery == null)
@@ -329,13 +269,13 @@ namespace ZooMag.Services
             product.Image = galery.Image;
             galery.Image = img;
             await Save();
-            return new Response {Status = "success",Message = "Фото успешно присвоен!" }; ;
+            return new Response { Status = "success", Message = "Фото успешно присвоен!" }; ;
         }
 
         private async Task DeleteProductGaleries(int productId)
         {
             var galeries = await _context.ProductGaleries.Where(p => p.ProductId == productId).ToListAsync();
-                _context.ProductGaleries.RemoveRange(galeries);
+            _context.ProductGaleries.RemoveRange(galeries);
             await Save();
             return;
         }
@@ -368,7 +308,7 @@ namespace ZooMag.Services
             if (id != 0)
             {
                 var galery = _context.ProductGaleries.FirstOrDefault(p => p.Id == id);
-                if(galery!=null)
+                if (galery != null)
                 {
                     DeleteImage(galery.Image);
                     await DeleteProductGalery(id);
@@ -377,8 +317,8 @@ namespace ZooMag.Services
             }
             else
             {
-                var product = await _context.Products.FirstOrDefaultAsync(p=>p.Id == productId);
-                if (product!=null)
+                var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+                if (product != null)
                 {
                     DeleteImage(product.Image);
                     var galery = _context.ProductGaleries.FirstOrDefault(p => p.ProductId == productId);
@@ -387,7 +327,8 @@ namespace ZooMag.Services
                         product.Image = galery.Image;
                         await Save();
                         await DeleteProductGalery(galery.Id);
-                    }else
+                    }
+                    else
                     {
                         product.Image = null;
                         await Save();
@@ -400,8 +341,8 @@ namespace ZooMag.Services
 
         private async Task<int> DeleteProductGalery(int id)
         {
-            var galery = await _context.ProductGaleries.FirstOrDefaultAsync(p=>p.Id == id);
-            if(galery!=null)
+            var galery = await _context.ProductGaleries.FirstOrDefaultAsync(p => p.Id == id);
+            if (galery != null)
             {
                 _context.ProductGaleries.Remove(galery);
             }
@@ -410,12 +351,13 @@ namespace ZooMag.Services
 
         #endregion
 
+
         public async Task<int> Save()
         {
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> CountProducts(int categoryId,int brandId,int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
+        public async Task<int> CountProducts(int categoryId, int brandId, int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
         {
             return await _context.Products
                  .Where(p =>
@@ -425,28 +367,26 @@ namespace ZooMag.Services
              (issale ? p.IsSale : true) &&
              (isnew ? p.IsNew : true) &&
              (istop ? p.IsTop : true) &&
-             (isrecommended ? p.IsRecommended : true) &&
-             (minp != maxp ? (p.SellingPrice >= minp && p.SellingPrice <= maxp) : true)).CountAsync();
+             (isrecommended ? p.IsRecommended : true)).CountAsync();
 
         }
-        
-        public async Task<int> SearchCount(int categoryId,string q)
+
+        public async Task<int> SearchCount(int categoryId, string q)
         {
-                return await _context.Products
-                    .Where(p => 
-                    p.IsActive &&
-                    (categoryId != 0 ? p.CategoryId == categoryId : true) &&
-                    (p.NameRu.Contains(q) || p.NameEn.Contains(q)))
-                    .CountAsync();
+            return await _context.Products
+                .Where(p =>
+                p.IsActive &&
+                (categoryId != 0 ? p.CategoryId == categoryId : true) &&
+                (p.Name.Contains(q)))
+                .CountAsync();
         }
 
-        public async Task<List<OutProductModel>> Search(int rows_limit, int rows_offset, int categoryId,string q)
+        public async Task<List<OutProductModel>> Search(int rows_limit, int rows_offset, int categoryId, string q)
         {
             List<Product> products = await _context.Products
                     .Where(p => p.IsActive
-                    && (categoryId != 0 ? p.CategoryId == categoryId : true) 
-                    && (p.NameRu.Contains(q)
-                    || p.NameEn.Contains(q)))
+                    && (categoryId != 0 ? p.CategoryId == categoryId : true)
+                    && (p.Name.Contains(q)))
                     .Skip(rows_offset)
                     .Take(rows_limit)
                     .ToListAsync();

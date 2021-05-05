@@ -36,11 +36,12 @@ namespace ZooMag
         // This method gets called by the runtime. Use this method to add services to the container.  
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<ICategoriesService, CategoriesService>();
+          /*
             services.AddTransient<ICartsService, CartsService>();
             services.AddTransient<IMeasuresService, MeasuresService>();
             services.AddTransient<IProductsService, ProductsService>();
-            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IWishlistService, WishlistService>();
             services.AddTransient<IOrdersService, OrdersService>();
             services.AddTransient<IAnimalsService, AnimalsService>();
@@ -52,7 +53,7 @@ namespace ZooMag
             services.AddTransient<IBrandsService, BrandsService>();
             services.AddTransient<IPetsService, PetsService>();
             services.AddTransient<IPetCategoriesService, PetCategoriesService>();
-            services.AddTransient<ISlideShowsService, SlideShowsService>();
+            services.AddTransient<ISlideShowsService, SlideShowsService>();*/
 
             services.AddControllers();
             services.Configure<IdentityOptions>(options =>
