@@ -14,8 +14,8 @@ namespace ZooMag.ViewModels
     public class InpProductModel
     {
         public string Name { get; set; }
-        public string Discription { get; set; }
-        public string ShortDiscription { get; set; }
+        public string Description { get; set; }
+        public string ShortDescription { get; set; }
         public string Color { get; set; }
         public int CategoryId { get; set; }
         public int BrandId { get; set; }

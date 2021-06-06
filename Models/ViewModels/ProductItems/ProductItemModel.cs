@@ -19,7 +19,7 @@ namespace ZooMag.Models.ViewModels.ProductItems
         public string Measure { get; set; }
         public string Weight { get; set; }
         public int Discount { get; set; }
-
+        
         public IFormFile[] Images { get; set; }
     }
 }

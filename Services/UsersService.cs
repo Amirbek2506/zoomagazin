@@ -160,7 +160,7 @@ namespace ZooMag.Services
                 User user = _context.Users.Find(id);
                 if (user == null)
                     return new Response { Status = "error", Message = "Ползователь не существует!" };
-                List<Wishlist> wishlist = await _context.Wishlists.Where(p => p.UserKey == id.ToString()).ToListAsync();
+                List<Entities.WishList> wishlist = await _context.Wishlists.Where(p => p.UserId == id.ToString()).ToListAsync();
                 if (wishlist.Count() > 0)
                 {
                     _context.Wishlists.RemoveRange(wishlist);

@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ZooMag.Models;
+using ZooMag.Entities;
+//using ZooMag.Models;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
@@ -42,6 +43,14 @@ namespace ZooMag.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "Категория не найдена!" });
             }
             return Ok(category);
+        }
+
+        [HttpGet]
+        [Route("category/getcategorybrands/{id}")]
+        public async Task<IActionResult> GetCategoryBrands(int id)
+        {
+            var response = await _categoriesService.GetCategoryBrands(id);
+            return Ok(response); 
         }
 
         [HttpPost]

@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ZooMag.Entities;
 using ZooMag.Models;
 using ZooMag.Models.Entity;
+using Banner = ZooMag.Models.Banner;
+using Order = ZooMag.Models.Order;
+using Promotion = ZooMag.Models.Entity.Promotion;
+using Review = ZooMag.Models.Review;
 
 namespace ZooMag.Data
 {
@@ -15,15 +20,22 @@ namespace ZooMag.Data
         }
 
         #region products
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Brand> Brands { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductItem> ProductItems { get; set; }
+
+        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<Description> Descriptions { get; set; }
+        public DbSet<Entities.Callback> Callbacks { get; set; }
+        public DbSet<Entities.Category> Categories { get; set; }
+        public DbSet<Entities.BrandCategory> BrandCategories { get; set; }
+        public DbSet<Entities.Brand> Brands { get; set; }
+        public DbSet<Entities.Product> Products { get; set; }
+        public DbSet<Entities.ProductItem> ProductItems { get; set; }
         public DbSet<ProductGalery> ProductGaleries { get; set; }
         public DbSet<Cart> Carts { get; set; }
-        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Entities.WishList> Wishlists { get; set; }
         public DbSet<Review> Reviews { get; set; }
         #endregion
+
+        public DbSet<ProductItemImage> ProductItemImages { get; set; }
 
 
         #region product orders
@@ -72,7 +84,11 @@ namespace ZooMag.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
+            builder.Entity<Basket>().HasKey(x => new {x.UserId, x.ProductItemId});
+            builder.Entity<Entities.WishList>().HasKey(x => new {x.UserId, x.ProductItemId});
+            builder.Entity<Entities.Category>().HasOne(x => x.ParentCategory).WithMany(x=>x.Categories)
+                .HasForeignKey(x => x.ParentCategoryId).IsRequired(false);
+            builder.Entity<Entities.BrandCategory>().HasKey(x => new { x.BrandId, x.CategoryId });
             builder.Entity<Role>().HasData(new Role
             {
                 Id = 1,

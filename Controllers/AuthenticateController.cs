@@ -13,7 +13,9 @@
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
+    using ZooMag.Helpers;
     using ZooMag.Models;
+    using ZooMag.Services.Interfaces;
     using ZooMag.ViewModels;
 
     namespace ZooMag.Controllers
@@ -22,32 +24,35 @@
         [Route("Auth")]
     public class AuthenticateController : ControllerBase
         {
-            private readonly UserManager<User> userManager;
+            private readonly UserManager<User> _userManager;
             private readonly IConfiguration _configuration;
+            private readonly IProductsService _productsService;
 
-            public AuthenticateController(UserManager<User> userManager, IConfiguration configuration)
+            public AuthenticateController(UserManager<User> userManager, IConfiguration configuration, IProductsService productsService)
             {
-                this.userManager = userManager;
+                this._userManager = userManager;
                 _configuration = configuration;
+                _productsService = productsService;
             }
 
             [HttpPost]
             [Route("login")]
             public async Task<IActionResult> Login(LoginModel model)
             {
-                var user = await userManager.FindByEmailAsync(model.Email);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user == null)
                 {
                     return Unauthorized(new Response { Status = "Error", Message = "Неправильный логин!" });
                 }
-                if (await userManager.CheckPasswordAsync(user, model.Password))
+                if (await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    var userRoles = await userManager.GetRolesAsync(user);
+                    var userRoles = await _userManager.GetRolesAsync(user);
 
                     var authClaims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Email, user.Email),
-                        new Claim("UserId", user.Id.ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Name,user.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     };
 
@@ -66,6 +71,11 @@
                         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                         );
 
+                    string key = IpHelper.GetIpAddress();
+
+                    await _productsService.ChangeBasketProductsUserIdAsync(key,user.Id.ToString());
+                    await _productsService.ChangeWishlistProductsUserIdAsync(key,user.Id.ToString());
+
                     return Ok(new
                     {
                         Position = userRoles,
@@ -80,7 +90,7 @@
             [Authorize]
             public async Task<IActionResult> GetUserData()
             {
-                var user = await userManager.FindByEmailAsync(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value);
+                var user = await _userManager.FindByEmailAsync(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value);
                 if(user==null)
                 {
                     return BadRequest();
@@ -95,7 +105,7 @@
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                 };
-                var userRoles = await userManager.GetRolesAsync(user);
+                var userRoles = await _userManager.GetRolesAsync(user);
                 userModel.Position = userRoles.ToList<string>();
                 return Ok(userModel);
             }
@@ -108,7 +118,7 @@
             {
                 if (model.Password == model.ConfirmPassword && model.Password != null)
                 {
-                    var userExists = await userManager.FindByEmailAsync(model.Email);
+                    var userExists = await _userManager.FindByEmailAsync(model.Email);
                     if (userExists != null)
                     {
                         return Unauthorized(new Response { Status = "Error", Message = "Пользователь с таким логин существует!" });
@@ -122,10 +132,10 @@
                         GenderId = 1,
                         Image = "Resources/Images/Users/useravatar.svg"
                     };
-                    var result = await userManager.CreateAsync(user, model.Password);
+                    var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(user, "Клиент");
+                        await _userManager.AddToRoleAsync(user, "Клиент");
                         return await Login(new LoginModel { Email = model.Email, Password = model.Password });
                         //Ok(new Response { Status = "Success", Message = "Пользователь успешно добавлен!" });
                     }
@@ -148,12 +158,12 @@
             {
                 try
                 {
-                    var user = await userManager.FindByEmailAsync(Email);
+                    var user = await _userManager.FindByEmailAsync(Email);
                     if (user == null)
                     {
                         return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Такого пользователья нет в нашей базе" });
                     }
-                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                     var emailMessage = new MimeMessage();
                     emailMessage.From.Add(new MailboxAddress("Администрация сайта", "ZooMagazin"));
                     emailMessage.To.Add(new MailboxAddress(user.UserName, user.Email));
@@ -181,11 +191,11 @@
             [Route("resetpassword")]
             public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
             {
-                var user = await userManager.FindByEmailAsync(model.Email);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 var ress = new List<Response>();
                 if (user != null)
                 {
-                    var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
                     if (result.Succeeded)
                         return Ok(new Response { Status = "Success", Message = "Пароль успешно иземенен" });
                     foreach (var item in result.Errors)

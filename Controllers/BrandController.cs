@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ZooMag.DTOs.Brand;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Brands;
 using ZooMag.Models.ViewModels.Categories;
@@ -12,74 +13,66 @@ using ZooMag.ViewModels;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class BrandController : ControllerBase
     {
         private readonly IBrandsService _brandsService;
 
         public BrandController(IBrandsService brandsService)
         {
-            this._brandsService = brandsService;
-        }
-
-        [HttpGet]
-        [Route("fetch")]
-        public async Task<IActionResult> GetBrands()
-        {
-            return Ok(await _brandsService.Fetch());
-        }
-
-
-        [HttpGet]
-        [Route("fetchbyid/{id}")]
-        public IActionResult GetById(int id)
-        {
-            var brand = _brandsService.FetchById(id);
-            if (brand == null)
-            {
-                return BadRequest(new Response { Status = "Error", Message = "Бренд не найдена!" });
-            }
-            return Ok(brand);
+            _brandsService = brandsService;
         }
 
         [HttpPost]
-        [Route("create")]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Create([FromForm] InpBrandModel model)
+        public async Task<IActionResult> Create([FromForm]CreateBrandRequest request)
         {
-            var ress = await _brandsService.Create(model);
-            if(ress.Status == "success")
-            {
-                return Ok(ress);
-            }
-            return BadRequest(ress);
+            var response = await _brandsService.CreateAsync(request);
+            return Ok(response);
         }
-        
-        [HttpPut]
-        [Route("update")]
-        [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Update([FromForm] UpdBrandModel model)
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            Response ress = await _brandsService.Update(model);
-            if (ress.Status == "success")
-            {
-                return Ok(ress);
-            }
-            return BadRequest(ress);
+            var response = await _brandsService.GetAllAsync();
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllWithCategories()
+        {
+            var response = await _brandsService.GetAllWithCategoriesAsync();
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var response = await _brandsService.GetByIdAsync(id);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBrandCategories(int id)
+        {
+            var response = await _brandsService.GetBrandCategoriesAsync(id);
+            return Ok(response);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> Update([FromForm]UpdateBrandRequest request)
+        {
+            var response = await _brandsService.UpdateAsync(request);
+            return Ok(response);
         }
 
         [HttpDelete]
-        [Route("delete/{id}")]
         [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Delete(int id)
         {
-             Response ress = await _brandsService.Delete(id);
-            if (ress.Status == "success")
-            {
-                return Ok(ress);
-            }
-            return BadRequest(ress);
+            var response = await _brandsService.DeleteAsync(id);
+            return Ok(response);
         }
-
     }
 }

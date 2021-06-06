@@ -1,21 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using ZooMag.Models;
-using ZooMag.Models.Entity;
-using ZooMag.Models.ViewModels.Brands;
-using ZooMag.Models.ViewModels.Categories;
+using ZooMag.DTOs.Brand;
 using ZooMag.ViewModels;
 
 namespace ZooMag.Services.Interfaces
 {
     public interface IBrandsService
     {
-        Task<Response> Create(InpBrandModel model);
-        Task<List<Brand>> Fetch();
-        Brand FetchById(int Id);
-        Task<Response> Update(UpdBrandModel model);
-        Task<Response> Delete(int id);
+        Task<Response> CreateAsync(CreateBrandRequest request);
+        Task<Response> UpdateAsync(UpdateBrandRequest request);
+        Task<List<BrandResponse>> GetAllAsync();
+        Task<List<BrandWithCategoryResponse>> GetAllWithCategoriesAsync();
+        Task<BrandResponse> GetByIdAsync(int id);
+        Task<List<int>> GetBrandCategoriesAsync(int id);
+        Task<Response> DeleteAsync(int id);
     }
 }

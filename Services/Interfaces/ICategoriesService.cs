@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using ZooMag.Models;
+using ZooMag.DTOs.Brand;
+using ZooMag.Entities;
+//using ZooMag.Models;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.ViewModels;
 
@@ -16,5 +18,6 @@ namespace ZooMag.Services.Interfaces
         Task<List<OutCategoryModel>> FetchWithSubcategories();
         Task<Response> Update(UpdCategoryModel categoryModel);
         Task<Response> Delete(int id);
+        Task<List<BrandWithoutImageResponse>> GetCategoryBrands(int id);
     }
 }

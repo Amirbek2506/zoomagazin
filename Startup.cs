@@ -3,15 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IO;
@@ -38,22 +35,26 @@ namespace ZooMag
         {
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ICategoriesService, CategoriesService>();
-          /*
-            services.AddTransient<ICartsService, CartsService>();
-            services.AddTransient<IMeasuresService, MeasuresService>();
             services.AddTransient<IProductsService, ProductsService>();
-            services.AddTransient<IWishlistService, WishlistService>();
-            services.AddTransient<IOrdersService, OrdersService>();
-            services.AddTransient<IAnimalsService, AnimalsService>();
-            services.AddTransient<IChatsService, ChatsService>();
-            services.AddTransient<IArticlesService, ArticlesService>();
-            services.AddTransient<IPetTransportsService, PetTransportsService>();
-            services.AddTransient<IPetOrdersService, PetOrdersService>();
-            services.AddTransient<IHostelService, HostelService>();
+            services.AddTransient<IProductItemService, ProductItemService>();
+            services.AddTransient<IDescriptionService, DescriptionService>();
+            services.AddTransient<ICallbackService, CallbackService>();
+            /*
+              services.AddTransient<ICartsService, CartsService>();
+              services.AddTransient<IMeasuresService, MeasuresService>();
+              services.AddTransient<IWishlistService, WishlistService>();
+              services.AddTransient<IOrdersService, OrdersService>();
+              services.AddTransient<IAnimalsService, AnimalsService>();
+              services.AddTransient<IChatsService, ChatsService>();
+              services.AddTransient<IArticlesService, ArticlesService>();
+              services.AddTransient<IPetTransportsService, PetTransportsService>();
+              services.AddTransient<IPetOrdersService, PetOrdersService>();
+              services.AddTransient<IHostelService, HostelService>();
+              services.AddTransient<IPetsService, PetsService>();
+              services.AddTransient<IPetCategoriesService, PetCategoriesService>();
+              services.AddTransient<ISlideShowsService, SlideShowsService>();*/
             services.AddTransient<IBrandsService, BrandsService>();
-            services.AddTransient<IPetsService, PetsService>();
-            services.AddTransient<IPetCategoriesService, PetCategoriesService>();
-            services.AddTransient<ISlideShowsService, SlideShowsService>();*/
+            services.AddTransient<IFileService, FileService>();
 
             services.AddControllers();
             services.Configure<IdentityOptions>(options =>
@@ -71,6 +72,7 @@ namespace ZooMag
                 options.User.AllowedUserNameCharacters += "абвгдеёжзийклмнопрстуфхцшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦШЩЬЫЪЭЮЯ ";
             });
 
+            services.AddRouting(opt => opt.LowercaseUrls = true);
 
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("ConnStr")));

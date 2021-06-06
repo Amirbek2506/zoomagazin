@@ -24,7 +24,7 @@ namespace ZooMag.Models.Entity
 
         public bool IsActive { get; set; }
 
-
+        public virtual Product Product { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<ProductGalery> ProductGaleries { get; set; }
     }
