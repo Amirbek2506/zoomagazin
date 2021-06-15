@@ -1,19 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using ZooMag.DTOs;
 using ZooMag.DTOs.Product;
 using ZooMag.DTOs.ProductItem;
+using ZooMag.Entities;
 using ZooMag.Helpers;
-using ZooMag.Models;
-using ZooMag.Models.ViewModels.Products;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
-using Product = ZooMag.Entities.Product;
 
 namespace ZooMag.Controllers
 {
@@ -56,9 +52,16 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMostPopular([FromQuery] int categoryId)
+        public async Task<IActionResult> GetProductsByBrandId([FromQuery]GenericPagedRequest<int> request)
         {
-            List<MostPopularProductResponse> response = await _productsService.GetMostPopularAsync(categoryId);
+            var response = await _productsService.GetProductsByBrandIdAsync(request);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMostPopularByCategoryId([FromQuery]GenericPagedRequest<int> request)
+        {
+            var response = await _productsService.GetMostPopularAsync(request);
             return Ok(response);
         }
         
@@ -70,9 +73,9 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(PagedRequest request)
         {
-            List<ProductResponse> response = await _productsService.GetAllAsync();
+            var response = await _productsService.GetAllAsync(request);
             return Ok(response);
         }
 
@@ -154,9 +157,9 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilteredProducts([FromQuery]ProductFiltersRequest request)
+        public async Task<IActionResult> GetFilteredProducts([FromQuery]GenericPagedRequest<ProductFiltersRequest> request)
         {
-            List<ProductResponse> response = await _productsService.GetFilteredProductsAsync(request);
+            var response = await _productsService.GetFilteredProductsAsync(request);
             return Ok(response);
         }
 

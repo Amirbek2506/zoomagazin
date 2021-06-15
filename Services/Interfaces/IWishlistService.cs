@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ZooMag.Models;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Wishlist;
 using ZooMag.ViewModels;
 

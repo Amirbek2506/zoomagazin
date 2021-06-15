@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ZooMag.Models.Entity;
 using ZooMag.Models.ViewModels.Animals;
 using ZooMag.Models.ViewModels.Articles;
 using ZooMag.Services.Interfaces;

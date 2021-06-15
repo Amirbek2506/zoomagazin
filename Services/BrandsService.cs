@@ -29,7 +29,7 @@ namespace ZooMag.Services
             {
                 Name = request.Name,
                 ImagePath = request.Image != null ? await _fileService.AddBrandFileAsync(request.Image) : default,
-                BrandCategories = request.BrandCategories.Select(x=> new BrandCategory{ CategoryId = x}).ToList()
+                BrandCategories = request.BrandCategories?.Select(x=> new BrandCategory{ CategoryId = x}).ToList() ?? new List<BrandCategory>()
             };
 
             await _context.Brands.AddAsync(brand);

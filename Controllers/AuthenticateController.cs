@@ -13,8 +13,8 @@
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
+    using ZooMag.Entities;
     using ZooMag.Helpers;
-    using ZooMag.Models;
     using ZooMag.Services.Interfaces;
     using ZooMag.ViewModels;
 
@@ -106,7 +106,7 @@
                     LastName = user.LastName,
                 };
                 var userRoles = await _userManager.GetRolesAsync(user);
-                userModel.Position = userRoles.ToList<string>();
+                userModel.Position = userRoles.ToList();
                 return Ok(userModel);
             }
 
@@ -139,26 +139,22 @@
                         return await Login(new LoginModel { Email = model.Email, Password = model.Password });
                         //Ok(new Response { Status = "Success", Message = "Пользователь успешно добавлен!" });
                     }
-                    else
-                    {
-                        var errorMessages = result.Errors.FirstOrDefault();
-                        return Unauthorized(new Response { Status = errorMessages.Code, Message = errorMessages.Description });
-                    }
+                    
+                    var errorMessages = result.Errors.FirstOrDefault();
+                    return Unauthorized(new Response { Status = errorMessages.Code, Message = errorMessages.Description });
                 }
-                else
-                {
-                    return Unauthorized(new Response { Status = "Password", Message = "Пароль не совподает!" });
-                }
+                
+                return Unauthorized(new Response { Status = "Password", Message = "Пароль не совподает!" });
             }
 
 
             [HttpPost]
             [Route("forgotpassword")]
-            public async Task<IActionResult> ForgotPassword(string Email)
+            public async Task<IActionResult> ForgotPassword(string email)
             {
                 try
                 {
-                    var user = await _userManager.FindByEmailAsync(Email);
+                    var user = await _userManager.FindByEmailAsync(email);
                     if (user == null)
                     {
                         return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Такого пользователья нет в нашей базе" });
@@ -170,7 +166,7 @@
                     emailMessage.Subject = "Введите новый пароль";
                     emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                     {
-                        Text = $"Введите новый пароль, перейдя по ссылке: <a href='http://localhost:3000/resetpwd?email=" + Email + "&token=" + token + "'>link</a>"
+                        Text = $"Введите новый пароль, перейдя по ссылке: <a href='http://localhost:3000/resetpwd?email=" + email + "&token=" + token + "'>link</a>"
                     };
                     using (var client = new SmtpClient())
                     {

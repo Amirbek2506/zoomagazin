@@ -12,7 +12,7 @@ namespace ZooMag.Entities
         public int ProductId { get; set; }
         public bool Removed { get; set; }
         public int? PromotionId { get; set; }
-        public virtual List<Review> Reviews { get; set; }
+        public virtual List<Comment> Reviews { get; set; }
         public virtual Product Product { get; set; }
         public virtual List<Description> Descriptions { get; set; }
         public virtual List<ProductItemImage> ProductItemImages { get; set; }

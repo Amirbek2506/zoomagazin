@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ZooMag.Models.Entity;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Animals;
-using ZooMag.Models.ViewModels.Carts;
 using ZooMag.ViewModels;
 
 namespace ZooMag.Services.Interfaces

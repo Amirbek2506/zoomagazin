@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using ZooMag.Models;
+using ZooMag.Entities;
 
 namespace ZooMag.ViewModels
 {

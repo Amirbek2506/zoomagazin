@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
+using ZooMag.DTOs;
 using ZooMag.DTOs.Description;
 using ZooMag.DTOs.Product;
 using ZooMag.DTOs.ProductItem;
 using ZooMag.Entities;
-using ZooMag.Mapping;
-//using ZooMag.Models;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -22,15 +19,11 @@ namespace ZooMag.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileService _fileService;
-        private readonly IProductItemService _productItemService;
-        private readonly IMapper _mapper;
 
-        public ProductsService(ApplicationDbContext context, IFileService fileService, IProductItemService productItemService)
+        public ProductsService(ApplicationDbContext context, IFileService fileService)
         {
             _context = context;
             _fileService = fileService;
-            _productItemService = productItemService;
-            _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
 
         public async Task<Response> CreateAsync(CreateProductRequest request)
@@ -48,10 +41,10 @@ namespace ZooMag.Services
             }
 
             Dictionary<string, List<Description>> productItemDescriptions = request.ProductItems.ToDictionary(
-                x => x.VendorCode, x => x.Descriptions.Select(x => new Description
+                x => x.VendorCode, x => x.Descriptions.Select(d => new Description
                 {
-                    Content = x.Content,
-                    Title = x.Title
+                    Content = d.Content,
+                    Title = d.Title
                 }).ToList());
 
             var product = new Product
@@ -136,13 +129,14 @@ namespace ZooMag.Services
             return new Response {Message = "Успешно", Status = "success"};
         }
 
-        public async Task<List<MostPopularProductResponse>> GetMostPopularAsync(int categoryId)
+        public async Task<GenericResponse< List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request)
         {
             var categories = await _context.Categories.ToListAsync();
-            List<int> categoryIds = new List<int> {categoryId};
-            GetParentCategoryCategories(ref categoryIds,categoryId,categories);
+            List<int> categoryIds = new List<int> {request.Query};
+            GetParentCategoryCategories(ref categoryIds,request.Query,categories);
 
-            return await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed)
+            var products = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed).OrderByDescending(x=>x.CreateDate)
+                .Skip(request.Offset).Take(request.Limit)
                 .Include(x => x.ProductItems).ThenInclude(x=>x.ProductItemImages)
                 .Select(x => new MostPopularProductResponse
                 {
@@ -159,6 +153,12 @@ namespace ZooMag.Services
                         Id = pi.Id
                     }).ToList()
                 }).ToListAsync();
+
+            return new()
+            {
+                Payload = products,
+                Count = products.Count
+            };
         }
 
         public async Task<List<SearchProductResponse>> SearchAsync(string query)
@@ -178,24 +178,32 @@ namespace ZooMag.Services
                 }).ToListAsync();
         }
 
-        public async Task<List<ProductResponse>> GetAllAsync()
+        public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(PagedRequest request)
         {
-            return await _context.Products.Where(x=>!x.Removed).Include(x=>x.ProductItems).ThenInclude(x=>x.ProductItemImages)
+            var products = await _context.Products.Where(x => !x.Removed).Include(x => x.ProductItems)
+                .ThenInclude(x => x.ProductItemImages)
+                .Skip(request.Offset)
+                .Take(request.Limit)
                 .Select(x => new ProductResponse
                 {
                     Id = x.Id,
                     Title = x.Title,
                     TitleDescription = x.TitleDescription,
-                    ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath,
-                    ProductItems = x.ProductItems.Where(pi=>!pi.Removed).Select(pi => new ProductItemResponse
+                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
                     {
                         Discount = pi.Percent,
                         Measure = pi.Measure,
                         Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100,2),
+                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2),
                         Id = pi.Id
                     }).ToList()
                 }).ToListAsync();
+            return new ()
+            {
+                Payload = products,
+                Count = products.Count
+            };
         }
 
         public async Task<List<WishListProductItemResponse>> GetWishListAsync(string key)
@@ -224,7 +232,7 @@ namespace ZooMag.Services
                 await _context.Wishlists.FirstOrDefaultAsync(x => x.UserId == key && x.ProductItemId == productItemId);
             if (wishlist != null)
                 return new Response {Status = "error", Message = "Продукт уже добавлен"};
-            wishlist = new WishList
+            wishlist = new Wishlist
             {
                 UserId = key,
                 ProductItemId = productItemId
@@ -295,7 +303,7 @@ namespace ZooMag.Services
             var wishListsId = await _context.Wishlists.Where(x => x.UserId == key).Select(x=> x.ProductItemId).ToListAsync();
             var oldWishlists = await _context.Wishlists.Where(x => x.UserId == newKey).Select(x=> x.ProductItemId).ToListAsync();
             
-            var newWishlists = wishListsId.Except(oldWishlists).Select(x => new WishList {UserId = newKey, ProductItemId = x}).ToList();
+            var newWishlists = wishListsId.Except(oldWishlists).Select(x => new Wishlist {UserId = newKey, ProductItemId = x}).ToList();
             _context.Wishlists.RemoveRange(wishLists);
             await _context.Wishlists.AddRangeAsync(newWishlists);
             await _context.SaveChangesAsync();
@@ -350,36 +358,52 @@ namespace ZooMag.Services
             return new Response {Status = "success", Message = "Успешно"};
         }
 
-        public async Task<List<ProductResponse>> GetFilteredProductsAsync(ProductFiltersRequest request)
+        public async Task<GenericResponse<List<ProductResponse>>> GetFilteredProductsAsync(GenericPagedRequest<ProductFiltersRequest> request)
         {
-            if (request.MaxPrice < request.MinPrice)
-                return new List<ProductResponse>();
+            if (request.Query.MaxPrice < request.Query.MinPrice)
+                return new()
+                {
+                    Payload = new List<ProductResponse>(),
+                    Count = 0
+                };
             var categories = await _context.Categories.ToListAsync();
-            List<int> categoryIds = request.CategoriesId;
-            for (int i = 0; i < request.CategoriesId?.Count; i++)
+            List<int> categoryIds = request.Query.CategoriesId;
+            for (int i = 0; i < request.Query.CategoriesId?.Count; i++)
             {
-                GetParentCategoryCategories(ref categoryIds,request.CategoriesId[i],categories);
+                GetParentCategoryCategories(ref categoryIds,request.Query.CategoriesId[i],categories);
             }
-            return await _context.Products
-                .Where(x => !x.Removed && (request.CategoriesId == null || categoryIds.Contains(x.CategoryId)) && (request.BrandsId == null || request.BrandsId.Contains(x.BrandId)))
+
+            var products = await _context.Products
+                .Where(x => !x.Removed &&
+                            (request.Query.CategoriesId == null || categoryIds.Contains(x.CategoryId)) &&
+                            (request.Query.BrandsId == null || request.Query.BrandsId.Contains(x.BrandId)))
                 .Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
                 .Where(x => x.ProductItems.Any(pi =>
-                    request.MaxPrice >= (pi.Price - pi.Price * pi.Percent / 100) &&
-                    request.MinPrice <= (pi.Price - pi.Price * pi.Percent / 100))).Select(x => new ProductResponse
+                    request.Query.MaxPrice >= (pi.Price - pi.Price * pi.Percent / 100) &&
+                    request.Query.MinPrice <= (pi.Price - pi.Price * pi.Percent / 100)))
+                .Skip(request.Offset)
+                .Take(request.Limit)
+                .Select(x => new ProductResponse
                 {
                     Id = x.Id,
                     Title = x.Title,
-                    ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath,
+                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
                     TitleDescription = x.TitleDescription,
-                    ProductItems = x.ProductItems.Where(pi=>!pi.Removed).Select(pi => new ProductItemResponse
+                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
                     {
                         Id = pi.Id,
                         Discount = pi.Percent,
                         Measure = pi.Measure,
                         Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100,2)
+                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
                     }).ToList()
                 }).ToListAsync();
+
+            return new()
+            {
+                Payload = products,
+                Count = products.Count
+            };
         }
 
         public async Task<ProductItemDetailsResponse> GetProductItemDetailsAsync(int productItemId)
@@ -443,6 +467,35 @@ namespace ZooMag.Services
             };
         }
 
+        public async Task<GenericResponse< List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request)
+        {
+            var products = await _context.Products.Where(x => !x.Removed && x.BrandId == request.Query)
+                .Skip(request.Offset)
+                .Take(request.Limit)
+                .Include(x => x.ProductItems)
+                .ThenInclude(x => x.ProductItemImages)
+                .Select(x => new ProductResponse
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    TitleDescription = x.TitleDescription,
+                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
+                    {
+                        Id = pi.Id,
+                        Discount = pi.Percent,
+                        Measure = pi.Measure,
+                        Price = pi.Price,
+                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
+                    }).ToList()
+                }).ToListAsync();
+            return new()
+            {
+                Payload = products,
+                Count = products.Count
+            };
+        }
+
         private void GetParentCategoryCategories(ref List<int> categoryIds, int parentCategoryId, List<Category> categories)
         {
             var childCategories = categories.Where(x => x.ParentCategoryId == parentCategoryId).Select(x => x.Id)
@@ -456,415 +509,5 @@ namespace ZooMag.Services
                 }
             }
         }
-
-        //        #region CRUD products
-        //        public async Task<int> CreateProduct(InpProductModel product)
-        //        {
-        //            if(product.ProductItems.Count()==0)
-        //            {
-        //                return 0;
-        //            }
-        //            Product prod = _mapper.Map<InpProductModel, Product>(product);
-        //            prod.Removed = true;
-        //            prod.PromotionId = 0;
-        //            prod.Discount = product.Discount;
-        //            prod.Image = "http://api.zoomag.tj/Resources/Images/Products/image.png";
-        //            _context.Products.Add(prod);
-        //            await Save();
-
-        //            foreach(var item in product.ProductItems)
-        //            {
-        //                ProductItem prodItem = _mapper.Map<ProductItemModel, ProductItem>(item);
-        //                prodItem.IsActive = true;
-        //                prodItem.ProductId = prod.Id;
-        //                _context.ProductItems.Add(prodItem);
-        //                await Save();
-        //                await CreateProductGaleries(prod.Id,prodItem.Id,item.Images);
-        //            }
-
-        //            return prod.Id;
-        //        }
-
-        //        public Task<int> UpdateProduct(UpdProductModel product)
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-
-        //        public Task<Response> DeleteImage(int id, int productId)
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-        //        public FirstProductModel FetchProductById(int id)
-        //        {
-        //            Product prod = _context.Products.FirstOrDefault(p => p.Id == id && p.IsActive);
-        //            if (prod == null)
-        //                return null;
-
-        //            var product = _mapper.Map<Product, FirstProductModel>(prod);
-        //            product.category = _context.Categories.Find(prod.CategoryId);
-
-        //            return product;
-        //        }
-
-        //        public async Task<List<OutProductModel>> FetchProductByIds(int[] ids)
-        //        {
-        //            var prods = await _context.Products.Where(p => ids.Contains(p.Id) && p.IsActive).ToListAsync<Product>();
-        //            if (prods.Count() == 0)
-        //                return null;
-        //            return _mapper.Map<List<Product>, List<OutProductModel>>(prods);
-        //        }
-
-
-        //        public async Task<List<OutProductModel>> FetchProducts(FetchProductsRequest request) //int rows_limit, int rows_offset, int categoryId, int brandId, int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
-        //        {
-        //            return await _context.Products.Where(x => x.IsActive &&
-        //                                                      (!request.IsNew || x.IsNew) &&
-        //                                                      (!request.IsRecommended || x.IsRecommended) &&
-        //                                                      (!request.IsSale || x.IsSale) &&
-        //                                                      (!request.IsTop || x.IsTop) &&
-        //                                                      (request.CategoriesId == null ||
-        //                                                       request.CategoriesId.Contains(x.CategoryId)) &&
-        //                                                      (request.BrandsId == null ||
-        //                                                       request.BrandsId.Contains(x.BrandId)))
-        //                .Include(x => x.ProductItems)
-        //                .Select(x => new OutProductModel
-        //                {
-        //                    Id = x.Id,
-        //                    Image = x.Image,
-        //                    Name = x.Name,
-        //                    SellingPrice = x.ProductItems.First().SellingPrice,
-        //                    ShortDescription = x.ShortDescription
-        //                }).Skip(request.Offset)
-        //                .Take(request.Limit)
-        //                .ToListAsync();
-        //            // List<Product> products = await _context.Products
-        //            //     .Where(p =>
-        //            // p.IsActive &&
-        //            // (categoryId != 0 ? p.CategoryId == categoryId : true) &&
-        //            // (brandId != 0 ? p.BrandId == brandId : true) &&
-        //            // (issale ? p.IsSale : true) &&
-        //            // (isnew ? p.IsNew : true) &&
-        //            // (istop ? p.IsTop : true) &&
-        //            // (isrecommended ? p.IsRecommended : true))
-        //            //     .Skip(rows_offset).Take(rows_limit).ToListAsync();
-        //            //
-        //            // return _mapper.Map<List<Product>, List<OutProductModel>>(products);
-        //        }
-
-
-        //        public async Task<List<OutProductModel>> FetchSales(int count)
-        //        {
-        //            var products = await _context.Products.Where(p => p.IsActive && p.IsSale).Take(count * 3).ToListAsync();
-        //            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
-        //            List<OutProductModel> prods = new List<OutProductModel>();
-        //            foreach (var prod in products)
-        //            {
-        //                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
-        //            }
-        //            return prods;
-        //        }
-
-
-        //        public async Task<List<OutProductModel>> FetchTopes(int count)
-        //        {
-        //            var products = await _context.Products.Where(p => p.IsActive && p.IsTop).Take(count * 3).ToListAsync();
-        //            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
-        //            List<OutProductModel> prods = new List<OutProductModel>();
-        //            foreach (var prod in products)
-        //            {
-        //                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
-        //            }
-        //            return prods;
-        //        }
-
-        //        public async Task<List<OutProductModel>> FetchRecommended(int count)
-        //        {
-        //            var products = await _context.Products.Where(p => p.IsActive && p.IsRecommended).Take(count * 3).ToListAsync();
-        //            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
-        //            List<OutProductModel> prods = new List<OutProductModel>();
-        //            foreach (var prod in products)
-        //            {
-        //                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
-        //            }
-        //            return prods;
-        //        }
-
-
-        //        public async Task<List<OutProductModel>> FetchNew(int count)
-        //        {
-        //            var products = await _context.Products.Where(p => p.IsActive && p.IsNew).Take(count * 3).ToListAsync();
-        //            products = products.OrderBy(x => Guid.NewGuid()).Take(count).ToList();
-        //            List<OutProductModel> prods = new List<OutProductModel>();
-        //            foreach (var prod in products)
-        //            {
-        //                prods.Add(_mapper.Map<Product, OutProductModel>(prod));
-        //            }
-        //            return prods;
-        //        }
-
-
-        //        // public async Task<int> UpdateProduct(UpdProductModel product)
-        //        // {
-        //        //     Product prod = await _context.Products.SingleOrDefaultAsync(p => p.Id == product.Id && p.IsActive);
-        //        //     if (prod == null)
-        //        //     {
-        //        //         return 0;
-        //        //     }
-        //        //
-        //        //     prod.CategoryId = await _context.Categories.FindAsync(prod.CategoryId) == null ? 0 : product.CategoryId;
-        //        //
-        //        //     prod.MeasureId = await _context.Measures.FindAsync(prod.MeasureId) == null ? 0 : product.MeasureId;
-        //        //
-        //        //     prod.BrandId = await _context.Brands.FindAsync(prod.BrandId) == null ? 0 : product.BrandId;
-        //        //
-        //        //     prod.NameRu = product.NameRu;
-        //        //     prod.NameEn = product.NameEn;
-        //        //     prod.DiscriptionRu = product.DiscriptionRu;
-        //        //     prod.DiscriptionEn = product.DiscriptionEn;
-        //        //     prod.ShortDiscriptionRu = product.ShortDiscriptionRu;
-        //        //     prod.ShortDiscriptionEn = product.ShortDiscriptionEn;
-        //        //     prod.ColorRu = product.ColorRu;
-        //        //     prod.ColorEn = product.ColorEn;
-        //        //     prod.Weight = product.Weight;
-        //        //     prod.IsNew = product.IsNew;
-        //        //     prod.IsSale = product.IsSale;
-        //        //     prod.OriginalPrice = product.OriginalPrice;
-        //        //     prod.SellingPrice = (product.SellingPrice != 0 && product.IsSale) ? product.SellingPrice : product.OriginalPrice;
-        //        //     prod.SaleStartDate = product.SaleStartDate;
-        //        //     prod.SaleEndDate = product.SaleEndDate;
-        //        //     prod.Quantity = product.Quantity;
-        //        //     prod.IsTop = product.IsTop;
-        //        //     prod.IsRecommended = product.IsRecommended;
-        //        //     prod.BrandId = product.BrandId;
-        //        //     await Save();
-        //        //
-        //        //     return prod.Id;
-        //        // }
-
-        //        public async Task<Response> DeleteProduct(int id)
-        //        {
-        //            Product product = _context.Products.FirstOrDefault(p => p.Id == id);
-        //            if (product != null)
-        //            {
-        //                var productItems = await _context.ProductItems.Where(x => x.ProductId == product.Id).Select(x=>x.Id ).ToListAsync();
-        //                foreach (var productItem in productItems)
-        //                {
-        //                    DeleteDirectory(productItem);
-        //                    await DeleteProductGaleries(productItem);
-        //                }
-        //                product.Image = "Resources/Images/deleted.png";
-        //                product.IsActive = false;
-        //                await Save();
-        //                return new Response { Status = "success", Message = "Продукт успешно удален!" };
-        //            }
-        //            return new Response { Status = "error", Message = "Продукт не существует!" };
-        //        }
-        //        #endregion
-
-
-        //        #region product images
-        //        public async Task<string> UploadImage(int productItemId, IFormFile file)
-        //        {
-        //            string fName = Guid.NewGuid().ToString() + file.FileName;
-        //            string path = Path.GetFullPath("Resources/Images/Products/" + productItemId);
-        //            if (!Directory.Exists(path))
-        //            {
-        //                Directory.CreateDirectory(path);
-        //            }
-        //            path = Path.Combine(path, fName);
-        //            using (var stream = new FileStream(path, FileMode.Create))
-        //            {
-        //                await file.CopyToAsync(stream);
-        //            }
-        //            return "http://api.zoomag.tj/Resources/Images/Products/" + productItemId + "/" + fName;
-        //        }
-
-        //        public async Task CreateProductGaleries(int productId,int productItemId, IFormFile[] images)
-        //        {
-        //            for (int i = 1; i <= images.Length; i++)
-        //            {
-        //                string fileName = await UploadImage(productItemId, images[i - 1]);
-        //                if (i == 1)
-        //                {
-        //                    Product product = await _context.Products.FindAsync(productId);
-        //                    if (product != null)
-        //                    {
-        //                        if (String.IsNullOrEmpty(product.Image) || product.Image == "http://api.zoomag.tj/Resources/Images/Products/image.png")
-        //                        {
-        //                            product.Image = fileName;
-        //                            await Save();
-        //                            continue;
-        //                        }
-        //                    }
-        //                }
-        //                _context.ProductGaleries.Add(
-        //                    new ProductGalery
-        //                    {
-        //                        ProductItemId = productItemId,
-        //                        Image = fileName
-        //                    });
-        //            }
-        //            await Save();
-        //        }
-
-        //        public async Task<Response> SetMainImage(int productid, int imageid)
-        //        {
-        //            var product = await _context.Products.FindAsync(productid);
-        //            if (product == null)
-        //            {
-        //                return new Response { Status = "error", Message = "Товар не найден!" };
-        //            }
-        //            var galery = await _context.ProductGaleries.FindAsync(imageid);
-        //            if (galery == null)
-        //            {
-        //                return new Response { Status = "error", Message = "Фото не найдено!" };
-        //            }
-        //            string img = product.Image;
-        //            product.Image = galery.Image;
-        //            galery.Image = img;
-        //            await Save();
-        //            return new Response { Status = "success", Message = "Фото успешно присвоен!" }; ;
-        //        }
-
-        //        private async Task DeleteProductGaleries(int productItemId)
-        //        {
-        //            var galeries = await _context.ProductGaleries.Where(p => p.ProductItemId == productItemId).ToListAsync();
-        //            _context.ProductGaleries.RemoveRange(galeries);
-        //            await Save();
-        //            return;
-        //        }
-
-        //        // public async Task<List<ProductImagesModel>> FetchProductGaleriesByProductId(int productId)
-        //        // {
-        //        //     var res = await _context.ProductGaleries.Where(p => p.ProductId == productId).ToListAsync();
-        //        //     return _mapper.Map<List<ProductGalery>, List<ProductImagesModel>>(res);
-        //        // }
-
-        //        private void DeleteDirectory(int productId)
-        //        {
-        //            string path = "Resources/Images/Products/" + productId;
-        //            if (Directory.Exists(path))
-        //                Directory.Delete(path, true);
-        //        }
-
-        //        private void DeleteImage(string path)
-        //        {
-        //            FileInfo fileInfo = new FileInfo(path);
-        //            if (fileInfo.Exists)
-        //            {
-        //                fileInfo.Delete();
-        //            }
-        //        }
-
-
-        //        // public async Task<Response> DeleteImage(int id, int productId)
-        //        // {
-        //        //     if (id != 0)
-        //        //     {
-        //        //         var galery = _context.ProductGaleries.FirstOrDefault(p => p.Id == id);
-        //        //         if (galery != null)
-        //        //         {
-        //        //             DeleteImage(galery.Image);
-        //        //             await DeleteProductGalery(id);
-        //        //             return new Response { Status = "success", Message = "Фотография успешно удалено!" };
-        //        //         }
-        //        //     }
-        //        //     else
-        //        //     {
-        //        //         var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
-        //        //         if (product != null)
-        //        //         {
-        //        //             DeleteImage(product.Image);
-        //        //             var galery = _context.ProductGaleries.FirstOrDefault(p => p.ProductId == productId);
-        //        //             if (galery != null)
-        //        //             {
-        //        //                 product.Image = galery.Image;
-        //        //                 await Save();
-        //        //                 await DeleteProductGalery(galery.Id);
-        //        //             }
-        //        //             else
-        //        //             {
-        //        //                 product.Image = null;
-        //        //                 await Save();
-        //        //             }
-        //        //             return new Response { Status = "success", Message = "Фотография успешно удалено!" };
-        //        //         }
-        //        //     }
-        //        //     return new Response { Status = "error", Message = "Фотография не найдена!" };
-        //        // }
-
-        //        private async Task<int> DeleteProductGalery(int id)
-        //        {
-        //            var galery = await _context.ProductGaleries.FirstOrDefaultAsync(p => p.Id == id);
-        //            if (galery != null)
-        //            {
-        //                _context.ProductGaleries.Remove(galery);
-        //            }
-        //            return await _context.SaveChangesAsync();
-        //        }
-
-        //        #endregion
-
-
-        //        public Task<List<ProductImagesModel>> FetchProductGaleriesByProductId(int productId)
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-        //        public async Task<int> Save()
-        //        {
-        //            return await _context.SaveChangesAsync();
-        //        }
-
-        //        public async Task<int> CountProducts(int categoryId, int brandId, int minp, int maxp, bool issale, bool isnew, bool istop, bool isrecommended)
-        //        {
-        //            return await _context.Products
-        //                 .Where(p =>
-        //             p.IsActive &&
-        //             (categoryId != 0 ? p.CategoryId == categoryId : true) &&
-        //             (brandId != 0 ? p.BrandId == brandId : true) &&
-        //             (issale ? p.IsSale : true) &&
-        //             (isnew ? p.IsNew : true) &&
-        //             (istop ? p.IsTop : true) &&
-        //             (isrecommended ? p.IsRecommended : true)).CountAsync();
-
-        //        }
-
-        //        public async Task<int> SearchCount(int categoryId, string q)
-        //        {
-        //            return await _context.Products
-        //                .Where(p =>
-        //                p.IsActive &&
-        //                (categoryId != 0 ? p.CategoryId == categoryId : true) &&
-        //                (p.Name.Contains(q)))
-        //                .CountAsync();
-        //        }
-
-        //        public async Task<List<OutProductModel>> Search(int rows_limit, int rows_offset, int categoryId, string q)
-        //        {
-        //            return await _context.Products
-        //                    .Where(p => p.IsActive
-        //                    && (categoryId != 0 ? p.CategoryId == categoryId : true)
-        //                    && (p.Name.Contains(q)))
-        //                    .Skip(rows_offset)
-        //                    .Take(rows_limit)
-        //                    .Include(x=>x.ProductItems)
-        //                    .Select(x=> new OutProductModel()
-        //                    {
-        //                        Id = x.Id,
-        //                        Image = x.Image,
-        //                        Name = x.Name,
-        //                        SellingPrice = x.ProductItems.FirstOrDefault().SellingPrice,
-        //                        ShortDescription = x.ShortDescription
-        //                    })
-        //                    .ToListAsync();
-        //        }
-
-        //        public Task CreateProductGaleries(int productId, IFormFile[] images)
-        //        {
-        //            throw new NotImplementedException();
-        //        }
     }
 }

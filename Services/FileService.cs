@@ -25,15 +25,15 @@ namespace ZooMag.Services
         public async Task<string> AddBrandFileAsync(IFormFile image)
         {
             string dirPath = GetDirectory("Brand");
-            string imageName = $"{DateTime.Now.ToString("dd-MM-yyyy-H-m")}_{image.FileName}";
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{image.FileName}";
             string imagePath = dirPath + imageName;
-            await CoptyFileAsync(imagePath, image);
+            await CopyFileAsync(imagePath, image);
             return imagePath;
         }
 
-        private async Task CoptyFileAsync(string imagePath, IFormFile file)
+        private async Task CopyFileAsync(string imagePath, IFormFile file)
         {
-            using var fs = new FileStream(imagePath, FileMode.Create);
+            await using var fs = new FileStream(imagePath, FileMode.Create);
             await file.CopyToAsync(fs);
         }
 
@@ -49,20 +49,29 @@ namespace ZooMag.Services
 
         public async Task<List<string>> AddProductItemFilesASync(List<IFormFile> files)
         {
-            List<string> imagePathes = new List<string>();
+            List<string> imagePaths = new List<string>();
             foreach(var file in files)
             {
-                imagePathes.Add(await AddProductItemFileASync(file));
+                imagePaths.Add(await AddProductItemFileASync(file));
             }
-            return imagePathes;
+            return imagePaths;
         }
 
         public async Task<string> AddProductItemFileASync(IFormFile file)
         {
             string dirPath = GetDirectory("Product");
-            string imageName = $"{DateTime.Now.ToString("dd-MM-yyyy-H-m")}_{file.FileName}";
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
             string imagePath = dirPath + imageName;
-            await CoptyFileAsync(imagePath, file);
+            await CopyFileAsync(imagePath, file);
+            return imagePath;
+        }
+
+        public async Task<string> AddPromotionFileAsync(IFormFile file)
+        {
+            string dirPath = GetDirectory("Promotion");
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
+            string imagePath = dirPath + imageName;
+            await CopyFileAsync(imagePath, file);
             return imagePath;
         }
     }

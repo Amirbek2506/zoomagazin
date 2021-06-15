@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using ZooMag.DTOs.Brand;
-using ZooMag.Models;
-using ZooMag.Models.Entity;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Brands;
 using ZooMag.Models.ViewModels.Carts;
 using ZooMag.Models.ViewModels.Categories;

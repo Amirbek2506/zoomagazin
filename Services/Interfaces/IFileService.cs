@@ -11,6 +11,7 @@ namespace ZooMag.Services.Interfaces
         Task<string> AddBrandFileAsync(IFormFile image);
         void Delete(string imagePath);
         Task<List<string>> AddProductItemFilesASync(List<IFormFile> files);
-        Task<string> AddProductItemFileASync(IFormFile file); 
+        Task<string> AddProductItemFileASync(IFormFile file);
+        Task<string> AddPromotionFileAsync(IFormFile requestImage);
     }
 }

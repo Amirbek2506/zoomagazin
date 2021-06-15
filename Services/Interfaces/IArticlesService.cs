@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ZooMag.Models.Entity;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Articles;
 using ZooMag.ViewModels;
 

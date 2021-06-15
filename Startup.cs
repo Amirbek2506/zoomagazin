@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Text;
 using ZooMag.Data;
+using ZooMag.Entities;
 using ZooMag.Mapping;
 using ZooMag.Models;
 using ZooMag.Services;
@@ -39,6 +40,9 @@ namespace ZooMag
             services.AddTransient<IProductItemService, ProductItemService>();
             services.AddTransient<IDescriptionService, DescriptionService>();
             services.AddTransient<ICallbackService, CallbackService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IPromotionService, PromotionService>();
+            services.AddHostedService<RemoveOldPromotionsWorker>();
             /*
               services.AddTransient<ICartsService, CartsService>();
               services.AddTransient<IMeasuresService, MeasuresService>();

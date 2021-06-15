@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ZooMag.Models;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Models.ViewModels.PetCategories;
 using ZooMag.Services.Interfaces;

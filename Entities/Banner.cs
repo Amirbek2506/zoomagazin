@@ -10,5 +10,6 @@ namespace ZooMag.Entities
         public int Id { get; set; }
         public string ImagePath { get; set; }
         public int PromotionId { get; set; }
+        public virtual Promotion Promotion { get; set; }
     }
 }

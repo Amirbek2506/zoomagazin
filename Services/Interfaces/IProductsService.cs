@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using ZooMag.DTOs;
 using ZooMag.DTOs.Product;
 using ZooMag.DTOs.ProductItem;
 using ZooMag.Models;
@@ -36,9 +37,9 @@ namespace ZooMag.Services.Interfaces
 
         //// void Update(int id, string title);
         //Task<int> Save();
-        Task<List<MostPopularProductResponse>> GetMostPopularAsync(int categoryId);
+        Task<GenericResponse< List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request);
         Task<List<SearchProductResponse>> SearchAsync(string query);
-        Task<List<ProductResponse>> GetAllAsync();
+        Task<GenericResponse< List<ProductResponse>>> GetAllAsync(PagedRequest request);
         Task<List<WishListProductItemResponse>> GetWishListAsync(string key);
         Task<int> GetWishlistCountAsync(string key);
         Task<Response> AddToWishlistAsync(string key, int productItemId);
@@ -49,8 +50,9 @@ namespace ZooMag.Services.Interfaces
         Task ChangeBasketProductsUserIdAsync(string key,string newKey);
         Task<Response> DeleteBasketProductAsync(int productItemId,string key);
         Task<Response> DecreaseBasketProductAsync(int productItemId, string key);
-        Task<List<ProductResponse>> GetFilteredProductsAsync(ProductFiltersRequest request);
+        Task<GenericResponse< List<ProductResponse>>> GetFilteredProductsAsync(GenericPagedRequest<ProductFiltersRequest> request);
         Task<ProductItemDetailsResponse> GetProductItemDetailsAsync(int productItemId);
         Task<ProductDetailsResponse> GetProductDetailsAsync(int id);
+        Task<GenericResponse< List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request);
     }
 }

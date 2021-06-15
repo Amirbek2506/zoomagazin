@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ZooMag.Models.Entity;
+using ZooMag.Entities;
 using ZooMag.ViewModels;
 
 namespace ZooMag.Models.ViewModels.PetTransports

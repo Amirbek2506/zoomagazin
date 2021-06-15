@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ZooMag.ViewModels;
+using ZooMag.Entities;
 
 namespace ZooMag.Models.ViewModels.Products
 {

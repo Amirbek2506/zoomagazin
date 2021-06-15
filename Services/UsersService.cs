@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
+using ZooMag.Entities;
 using ZooMag.Mapping;
-using ZooMag.Models;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
 
@@ -160,7 +160,7 @@ namespace ZooMag.Services
                 User user = _context.Users.Find(id);
                 if (user == null)
                     return new Response { Status = "error", Message = "Ползователь не существует!" };
-                List<Entities.WishList> wishlist = await _context.Wishlists.Where(p => p.UserId == id.ToString()).ToListAsync();
+                List<Entities.Wishlist> wishlist = await _context.Wishlists.Where(p => p.UserId == id.ToString()).ToListAsync();
                 if (wishlist.Count() > 0)
                 {
                     _context.Wishlists.RemoveRange(wishlist);
@@ -170,7 +170,7 @@ namespace ZooMag.Services
                 {
                     _context.Carts.RemoveRange(carts);
                 }
-                List<Order> orders = await _context.Orders.Where(p => p.UserKey == id.ToString()).ToListAsync();
+                List<Order> orders = await _context.Orders.Where(p => p.UserId == id.ToString()).ToListAsync();
                 if (orders.Count() > 0)
                 {
                     foreach (var item in orders)

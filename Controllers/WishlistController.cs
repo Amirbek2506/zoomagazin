@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ZooMag.Models;
-using ZooMag.Models.ViewModels.Carts;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Wishlist;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
@@ -34,8 +32,8 @@ namespace ZooMag.Controllers
                 await _wishlistService.Create(
                 new Wishlist 
                 {
-                    ProductId = productid,
-                    UserKey = userKey
+                    ProductItemId = productid,
+                    UserId = userKey
                 });
             if (wishlistModel != null)
             {

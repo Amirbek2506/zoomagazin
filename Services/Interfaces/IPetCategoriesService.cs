@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using ZooMag.Models;
+using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Models.ViewModels.PetCategories;
 using ZooMag.ViewModels;
