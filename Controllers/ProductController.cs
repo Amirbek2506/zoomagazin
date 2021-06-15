@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using ZooMag.DTOs;
@@ -73,7 +75,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(PagedRequest request)
+        public async Task<IActionResult> GetAll([FromQuery]PagedRequest request)
         {
             var response = await _productsService.GetAllAsync(request);
             return Ok(response);
@@ -120,11 +122,19 @@ namespace ZooMag.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 return user.Id.ToString();
             }
-            return IpHelper.GetIpAddress();
+
+            string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
+                ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
+            KeyValuePair<string, string> userKey = new KeyValuePair<string, string>("","");
+            if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
+            {
+                HttpContext.Request.Cookies.Append(new KeyValuePair<string, string>("UserKey", key));
+            }
+            return key;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToBasket(AddToBusketRequest request)
+        public async Task<IActionResult> AddToBasket([FromBody]AddToBusketRequest request)
         {
             string key = await GetUserKey();
             Response response = await _productsService.AddToBasketAsync(key,request);

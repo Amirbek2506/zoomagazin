@@ -14,7 +14,7 @@ namespace ZooMag.Services.Interfaces
     {
         Task<Response> Create(InpCategoryModel categoryModel);
         Category FetchById(int id);
-        Task<List<Category>> Fetch();
+        Task<List<OutCategoryModel>> Fetch();
         Task<List<OutCategoryModel>> FetchWithSubcategories();
         Task<Response> Update(UpdCategoryModel categoryModel);
         Task<Response> Delete(int id);

@@ -37,7 +37,7 @@ namespace ZooMag.Services
             var cat = new Category 
             {
                 Name = categoryModel.Title,
-                ParentCategoryId = categoryModel.ParentId
+                ParentCategoryId = categoryModel.ParentId == 0 ? null : categoryModel.ParentId
             };
             _context.Categories.Add(cat);
             await Save();
@@ -55,9 +55,14 @@ namespace ZooMag.Services
             return _context.Categories.Find(id);
         }
 
-        public async Task<List<Category>> Fetch()
+        public async Task<List<OutCategoryModel>> Fetch()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.Select(x=> new OutCategoryModel
+            {
+                Id = x.Id,
+                Image = x.ImagePath,
+                Title = x.Name
+            }).ToListAsync();
         }
 
         public async Task<Response> Update(UpdCategoryModel categoryModel)
@@ -112,7 +117,7 @@ namespace ZooMag.Services
         public async Task<List<OutCategoryModel>> FetchWithSubcategories()
         {
             var categories = await _context.Categories.ToListAsync();
-            var superCategories = categories.Where(x => x.ParentCategoryId == 0).Select(x => new OutCategoryModel { Id = x.Id, Title = x.Name, Image = x.ImagePath }).ToList();
+            var superCategories = categories.Where(x => x.ParentCategoryId == null).Select(x => new OutCategoryModel { Id = x.Id, Title = x.Name, Image = x.ImagePath }).ToList();
             foreach (var superCategory in superCategories)
             {
                 await GetSubcategories(superCategory, categories);
