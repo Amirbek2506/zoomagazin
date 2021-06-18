@@ -25,7 +25,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Create([FromBody]CreateProductItemRequest request)
+        public async Task<IActionResult> Create([FromForm]CreateProductItemRequest request)
         {
             var response = await _productItemService.CreateAsync(request);
             return Ok(response);
@@ -33,7 +33,7 @@ namespace ZooMag.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Update([FromBody]UpdateProductItemRequest request)
+        public async Task<IActionResult> Update([FromForm]UpdateProductItemRequest request)
         {
             var response = await _productItemService.UpdateAsync(request);
             return Ok(response);

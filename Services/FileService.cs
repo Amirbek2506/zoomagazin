@@ -14,7 +14,7 @@ namespace ZooMag.Services
 
         private string GetDirectory(string model)
         {
-            string baseDirectory = Path.GetFullPath($"Resources/{model}/");
+            string baseDirectory = Path.Combine(Directory.GetCurrentDirectory(),$"Resources/{model}/");
             if(!Directory.Exists(baseDirectory))
             {
                 Directory.CreateDirectory(baseDirectory);
@@ -39,8 +39,8 @@ namespace ZooMag.Services
 
         public void Delete(string imagePath)
         {
-            string deletedFilePath = Path.GetFullPath("Resources/Images/deleted.png");
-            string emptyFilePath = Path.GetFullPath("Resources/Images/Products/image.png");
+            string deletedFilePath = Path.Combine(Directory.GetCurrentDirectory(),"Resources/Images/deleted.png");
+            string emptyFilePath = Path.Combine(Directory.GetCurrentDirectory(),"Resources/Images/Products/image.png");
             if(File.Exists(imagePath) && imagePath != deletedFilePath && imagePath != emptyFilePath)
             {
                 File.Delete(imagePath);

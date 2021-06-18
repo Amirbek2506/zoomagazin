@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.DTOs;
+using ZooMag.DTOs.Category;
 using ZooMag.DTOs.Description;
 using ZooMag.DTOs.Product;
 using ZooMag.DTOs.ProductItem;
@@ -28,24 +29,24 @@ namespace ZooMag.Services
 
         public async Task<Response> CreateAsync(CreateProductRequest request)
         {
-            if (request.ProductItems.Count == 0)
-                return new Response { Message = "", Status = "error" };
-            Dictionary<string, List<string>> productItemImages = new Dictionary<string, List<string>>();
-
-            string emptyFilePath = Path.GetFullPath("Resources/Images/Products/image.png");
-            
-            foreach(var productItem in request.ProductItems)
-            {
-                var productImages = await _fileService.AddProductItemFilesASync(productItem.Images);
-                productItemImages.Add(productItem.VendorCode, productImages.Count > 0 ? productImages : new List<string> { emptyFilePath });
-            }
-
-            Dictionary<string, List<Description>> productItemDescriptions = request.ProductItems.ToDictionary(
-                x => x.VendorCode, x => x.Descriptions.Select(d => new Description
-                {
-                    Content = d.Content,
-                    Title = d.Title
-                }).ToList());
+            // if (request.ProductItems.Count == 0)
+            //     return new Response { Message = "", Status = "error" };
+            // Dictionary<string, List<string>> productItemImages = new Dictionary<string, List<string>>();
+            //
+            // string emptyFilePath = Path.GetFullPath("Resources/Images/Products/image.png");
+            //
+            // foreach(var productItem in request.ProductItems)
+            // {
+            //     var productImages = await _fileService.AddProductItemFilesASync(productItem.Images);
+            //     productItemImages.Add(productItem.VendorCode, productImages.Count > 0 ? productImages : new List<string> { emptyFilePath });
+            // }
+            //
+            // Dictionary<string, List<Description>> productItemDescriptions = request.ProductItems.ToDictionary(
+            //     x => x.VendorCode, x => x.Descriptions.Select(d => new Description
+            //     {
+            //         Content = d.Content,
+            //         Title = d.Title
+            //     }).ToList());
 
             var product = new Product
             {
@@ -54,26 +55,26 @@ namespace ZooMag.Services
                 CreateDate = DateTime.Now,
                 Title = request.Title,
                 TitleDescription = request.TitleDescription,
-                Removed = false,
-                ProductItems = request.ProductItems.Select(x => new ProductItem
-                {
-                    Measure = x.Measure,
-                    Percent = x.Percent,
-                    Price = x.Price,
-                    VendorCode = x.VendorCode,
-                    ProductItemImages = productItemImages[x.VendorCode].Select(pi => new ProductItemImage
-                    {
-                        ImagePath = pi
-                    }).ToList(),
-                    Descriptions = productItemDescriptions[x.VendorCode]
-                }).ToList()
+                Removed = false
+                // ProductItems = request.ProductItems.Select(x => new ProductItem
+                // {
+                //     Measure = x.Measure,
+                //     Percent = x.Percent,
+                //     Price = x.Price,
+                //     VendorCode = x.VendorCode,
+                //     ProductItemImages = productItemImages[x.VendorCode].Select(pi => new ProductItemImage
+                //     {
+                //         ImagePath = pi
+                //     }).ToList(),
+                //     Descriptions = productItemDescriptions[x.VendorCode]
+                // }).ToList()
             };
 
             await _context.Products.AddAsync(product);
 
             await _context.SaveChangesAsync();
 
-            return new Response { Status = "success", Message = "" };
+            return new Response { Status = "success", Message = "Успешно" };
         }
 
         public async Task<Response> UpdateAsync(UpdateProductRequest request)
@@ -161,21 +162,61 @@ namespace ZooMag.Services
             };
         }
 
-        public async Task<List<SearchProductResponse>> SearchAsync(string query)
+        public async Task<SearchResponse> SearchAsync(GenericPagedRequest<string> request)
         {
-            var categories = await _context.Categories.Where(x => x.Name.Contains(query)).Select(x => x.Id)
-                .ToListAsync();
+            List<SearchCategoryResponse> searchCategoryResponses = new List<SearchCategoryResponse>();
 
-            return await _context.Products.Where(x=>!x.Removed).Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
-                .Where(x => categories.Contains(x.CategoryId) || x.Title.Contains(query) ||
-                                           x.ProductItems.Any(pi => pi.VendorCode.Contains(query)))
+            var categories = await _context.Categories.ToListAsync();
+            
+            var searchCategories = categories.Where(x => x.Name.Contains(request.Query))
+                .ToList();
+
+            for (int i = 0; i < searchCategories.Count; i++)
+            {
+                int? parentCategoryId = searchCategories[i].ParentCategoryId;
+
+                string categoryName = searchCategories[i].Name;
+                
+                while (parentCategoryId != null)
+                {
+                    var parentCategory = categories.First(x => x.Id == parentCategoryId);
+
+                    categoryName = $"{parentCategory.Name} / {categoryName}"; 
+
+                    parentCategoryId = parentCategory.ParentCategoryId;
+                }
+                
+                searchCategoryResponses.Add(new SearchCategoryResponse
+                {
+                    Id = searchCategories[i].Id,
+                    Name = categoryName
+                });
+            }
+            
+            var products = await _context.Products.Where(x=>!x.Removed).Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
+                .Where(x =>x.Title.Contains(request.Query) ||
+                            x.ProductItems.Any(pi => pi.VendorCode.Contains(request.Query)))
+                .Skip(request.Offset)
+                .Take(request.Limit)
                 .Select(x => new SearchProductResponse
                 {
-                    Id = x.Id,
+                    ProductId = x.Id,
                     Price = x.ProductItems.First(pi=>!pi.Removed).Price,
                     Title = x.Title,
                     ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath
                 }).ToListAsync();
+            
+            var productsCount = await _context.Products.Where(x => !x.Removed).Include(x => x.ProductItems)
+                .ThenInclude(x => x.ProductItemImages)
+                .Where(x => x.Title.Contains(request.Query) ||
+                            x.ProductItems.Any(pi => pi.VendorCode.Contains(request.Query))).CountAsync();
+            
+            return new()
+            {
+                Categories = searchCategoryResponses, 
+                Products = products, 
+                ProductsCount = productsCount
+            };
         }
 
         public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(PagedRequest request)
@@ -373,15 +414,30 @@ namespace ZooMag.Services
                 GetParentCategoryCategories(ref categoryIds,request.Query.CategoriesId[i],categories);
             }
 
-            var products = await _context.Products
+            var queryableProducts = _context.Products
                 .Where(x => !x.Removed &&
                             (request.Query.CategoriesId == null || categoryIds.Contains(x.CategoryId)) &&
                             (request.Query.BrandsId == null || request.Query.BrandsId.Contains(x.BrandId)))
                 .Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
                 .Where(x => x.ProductItems.Any(pi =>
                     request.Query.MaxPrice >= (pi.Price - pi.Price * pi.Percent / 100) &&
-                    request.Query.MinPrice <= (pi.Price - pi.Price * pi.Percent / 100)))
-                .Skip(request.Offset)
+                    request.Query.MinPrice <= (pi.Price - pi.Price * pi.Percent / 100)));
+
+            if (request.Query.SortType == "Алфавиту: от А до Я")
+                queryableProducts = queryableProducts.OrderBy(x => x.Title);
+            if(request.Query.SortType == "Алфавиту: от Я до А")
+                queryableProducts = queryableProducts.OrderByDescending(x => x.Title);
+            if(request.Query.SortType == "Новизне")
+                queryableProducts = queryableProducts.OrderByDescending(x => x.CreateDate);
+            if(request.Query.SortType == "Популярности")
+                queryableProducts = queryableProducts.OrderByDescending(x => x.ProductItems.Max(pi => pi.Reviews.Average(c => c.Rating)));
+            if(request.Query.SortType == "Цена по возрастанию")
+                queryableProducts = queryableProducts.OrderBy(x => x.ProductItems.Min(pi => pi.Price));
+            if(request.Query.SortType == "Цена по убыванию")
+                queryableProducts = queryableProducts.OrderByDescending(x => x.ProductItems.Min(pi=> pi.Price));
+                
+
+            var products = await queryableProducts.Skip(request.Offset)
                 .Take(request.Limit)
                 .Select(x => new ProductResponse
                 {

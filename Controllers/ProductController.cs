@@ -68,9 +68,9 @@ namespace ZooMag.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> Search([FromQuery] string query)
+        public async Task<IActionResult> Search([FromQuery]GenericPagedRequest<string> request)
         {
-            List<SearchProductResponse> response = await _productsService.SearchAsync(query);
+            var response = await _productsService.SearchAsync(request);
             return Ok(response);
         }
 

@@ -37,8 +37,8 @@ namespace ZooMag.Services.Interfaces
 
         //// void Update(int id, string title);
         //Task<int> Save();
-        Task<GenericResponse< List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request);
-        Task<List<SearchProductResponse>> SearchAsync(string query);
+        Task<GenericResponse<List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request);
+        Task<SearchResponse> SearchAsync(GenericPagedRequest<string> request);
         Task<GenericResponse< List<ProductResponse>>> GetAllAsync(PagedRequest request);
         Task<List<WishListProductItemResponse>> GetWishListAsync(string key);
         Task<int> GetWishlistCountAsync(string key);
