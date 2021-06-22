@@ -170,7 +170,7 @@ namespace ZooMag.Services
                 {
                     _context.Carts.RemoveRange(carts);
                 }
-                List<Order> orders = await _context.Orders.Where(p => p.UserId == id.ToString()).ToListAsync();
+                List<Order> orders = await _context.Orders.Where(p => p.UserId == id).ToListAsync();
                 if (orders.Count() > 0)
                 {
                     foreach (var item in orders)

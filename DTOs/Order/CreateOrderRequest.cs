@@ -1,15 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ZooMag.Entities
+namespace ZooMag.DTOs.Order
 {
-    public class Order
+    public class CreateOrderRequest
     {
-        public int Id { get; set; }
-        public bool IsDelivery { get; set; }
-        public int UserId { get; set; }
         public int? DeliveryTypeId { get; set; }
         public int OrderStatusId { get; set; }
         public string PhoneNumber { get; set; }
@@ -24,11 +19,6 @@ namespace ZooMag.Entities
         public DateTime DeliveryTime { get; set; }
         public string Comment { get; set; }
         public int PaymentMethodId { get; set; }
-        public virtual User User { get; set; }
-        public virtual OrderStatus OrderStatus { get; set; }
-        public virtual DeliveryType DeliveryType { get; set; }
-        public virtual PaymentMethod PaymentMethod { get; set; }
-        public virtual PickupPoint PickupPoint { get; set; }
-        public virtual ICollection<OrderProductItem> OrderProductItems { get; set; }
+        public List<int> ProductItemIds { get; set; }
     }
 }

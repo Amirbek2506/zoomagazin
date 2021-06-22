@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ZooMag.Data;
+using ZooMag.DTOs.Description;
 using ZooMag.DTOs.ProductItem;
 using ZooMag.Entities;
 using ZooMag.Services.Interfaces;
@@ -83,9 +85,10 @@ namespace ZooMag.Services
 
             if (request.ProductId != null)
             {
+                List<CreateDescriptionRequest> descriptionRequests = request.Descriptions.Select(JsonConvert.DeserializeObject<CreateDescriptionRequest>).ToList();
                 var productItem = new ProductItem
                 {
-                    Descriptions = request.Descriptions.Select(x => new Description
+                    Descriptions = descriptionRequests.Select(x => new Description
                     {
                         Content = x.Content,
                         Title = x.Title

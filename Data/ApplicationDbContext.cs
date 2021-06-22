@@ -30,11 +30,11 @@ namespace ZooMag.Data
         #endregion
 
         public DbSet<ProductItemImage> ProductItemImages { get; set; }
-
+        public DbSet<PickupPoint> PickupPoints { get; set; }
 
         #region product orders
         public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderProductItem> OrderItems { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         #endregion
@@ -78,6 +78,7 @@ namespace ZooMag.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<OrderProductItem>().HasKey(x => new {x.OrderId, x.ProductItemId});
             builder.Entity<Basket>().HasKey(x => new {x.UserId, x.ProductItemId});
             builder.Entity<Wishlist>().HasKey(x => new {x.UserId, x.ProductItemId});
             builder.Entity<Category>().HasOne(x => x.ParentCategory).WithMany(x=>x.Categories)

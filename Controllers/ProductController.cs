@@ -30,7 +30,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Create( CreateProductRequest request)
+        public async Task<IActionResult> Create([FromBody]CreateProductRequest request)
         {
             var response = await _productsService.CreateAsync(request);
             return Ok(response);
@@ -75,7 +75,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]PagedRequest request)
+        public async Task<IActionResult> GetAll([FromQuery]GenericPagedRequest<string> request)
         {
             var response = await _productsService.GetAllAsync(request);
             return Ok(response);

@@ -27,7 +27,7 @@ namespace ZooMag.Services
             _fileService = fileService;
         }
 
-        public async Task<Response> CreateAsync(CreateProductRequest request)
+        public async Task<int> CreateAsync(CreateProductRequest request)
         {
             // if (request.ProductItems.Count == 0)
             //     return new Response { Message = "", Status = "error" };
@@ -73,8 +73,13 @@ namespace ZooMag.Services
             await _context.Products.AddAsync(product);
 
             await _context.SaveChangesAsync();
-
-            return new Response { Status = "success", Message = "Успешно" };
+            return product.Id;
+            // return new
+            // {
+            //     Id = product.Id,
+            //     Title = product.Title,
+            //     TitleDescription = product.TitleDescription
+            // };
         }
 
         public async Task<Response> UpdateAsync(UpdateProductRequest request)
@@ -219,18 +224,21 @@ namespace ZooMag.Services
             };
         }
 
-        public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(PagedRequest request)
+        public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(GenericPagedRequest<string> request)
         {
-            var products = await _context.Products.Where(x => !x.Removed).Include(x => x.ProductItems)
-                .ThenInclude(x => x.ProductItemImages)
+            var products = await _context.Products.Where(x => !x.Removed && (string.IsNullOrEmpty(request.Query) || x.Title.Contains(request.Query)))
                 .Skip(request.Offset)
                 .Take(request.Limit)
+                .Include(x => x.ProductItems)
+                .ThenInclude(x => x.ProductItemImages)
                 .Select(x => new ProductResponse
                 {
                     Id = x.Id,
                     Title = x.Title,
                     TitleDescription = x.TitleDescription,
                     ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                    BrandId = x.BrandId,
+                    CategoryId = x.CategoryId,
                     ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
                     {
                         Discount = pi.Percent,

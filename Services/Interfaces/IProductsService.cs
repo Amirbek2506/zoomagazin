@@ -13,7 +13,7 @@ namespace ZooMag.Services.Interfaces
 {
     public interface IProductsService
     {
-        Task<Response> CreateAsync(CreateProductRequest request);
+        Task<int> CreateAsync(CreateProductRequest request);
         Task<Response> UpdateAsync(UpdateProductRequest request);
         Task<Response> DeleteAsync(int id);
         //Task<int> CreateProduct(InpProductModel product);
@@ -39,7 +39,7 @@ namespace ZooMag.Services.Interfaces
         //Task<int> Save();
         Task<GenericResponse<List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request);
         Task<SearchResponse> SearchAsync(GenericPagedRequest<string> request);
-        Task<GenericResponse< List<ProductResponse>>> GetAllAsync(PagedRequest request);
+        Task<GenericResponse< List<ProductResponse>>> GetAllAsync(GenericPagedRequest<string> request);
         Task<List<WishListProductItemResponse>> GetWishListAsync(string key);
         Task<int> GetWishlistCountAsync(string key);
         Task<Response> AddToWishlistAsync(string key, int productItemId);

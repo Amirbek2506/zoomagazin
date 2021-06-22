@@ -22,7 +22,7 @@
     {
         [ApiController]
         [Route("Auth")]
-    public class AuthenticateController : ControllerBase
+        public class AuthenticateController : ControllerBase
         {
             private readonly UserManager<User> _userManager;
             private readonly IConfiguration _configuration;
@@ -110,8 +110,6 @@
                 return Ok(userModel);
             }
 
-
-
             [HttpPost]
             [Route("register")]
             public async Task<IActionResult> Register([FromBody] RegisterModel model)
@@ -124,7 +122,7 @@
                         return Unauthorized(new Response { Status = "Error", Message = "Пользователь с таким логин существует!" });
                     }
 
-                    User user = new User()
+                    var user = new User()
                     {
                         Email = model.Email,
                         SecurityStamp = Guid.NewGuid().ToString(),
