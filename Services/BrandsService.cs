@@ -47,7 +47,7 @@ namespace ZooMag.Services
                 Id = x.Id,
                 ImagePath = x.ImagePath,
                 Name = x.Name
-            }).ToListAsync();
+            }).OrderByDescending(x=>x.Id).ToListAsync();
         }
 
         //Взятие всех брендов с их категориями
@@ -67,7 +67,9 @@ namespace ZooMag.Services
                         Name = c.Category.Name,
                         ImagePath = c.Category.ImagePath
                     }).ToList()
-                }).ToListAsync();
+                })
+                .OrderByDescending(x=>x.Id)
+                .ToListAsync();
         }
 
         //Взятие бренда по идентификатору

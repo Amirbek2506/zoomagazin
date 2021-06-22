@@ -81,11 +81,16 @@ namespace ZooMag.Services
 
         public async Task<Response> CreateAsync(CreateProductItemRequest request)
         {
-            var productItemImages = await _fileService.AddProductItemFilesASync(request.Images);
-
+            var productItemImages = new List<string>();
+            if(request.Images != null)
+                productItemImages = await _fileService.AddProductItemFilesASync(request.Images);
+            else 
+                productItemImages.Add("Resources/no-image.png");
             if (request.ProductId != null)
             {
-                List<CreateDescriptionRequest> descriptionRequests = request.Descriptions.Select(JsonConvert.DeserializeObject<CreateDescriptionRequest>).ToList();
+                List<CreateDescriptionRequest> descriptionRequests = new List<CreateDescriptionRequest>();
+                if(request.Descriptions.Any(x=> !string.IsNullOrEmpty(x)))
+                   descriptionRequests = request.Descriptions.Select(JsonConvert.DeserializeObject<CreateDescriptionRequest>).ToList();
                 var productItem = new ProductItem
                 {
                     Descriptions = descriptionRequests.Select(x => new Description
@@ -99,10 +104,7 @@ namespace ZooMag.Services
                     Removed = false,
                     VendorCode = request.VendorCode,
                     ProductId = (int) request.ProductId,
-                    ProductItemImages = productItemImages.Count > 0
-                        ? productItemImages.Select(x => new ProductItemImage {ImagePath = x}).ToList()
-                        : new List<ProductItemImage>
-                            {new ProductItemImage {ImagePath = Path.GetFullPath("Resources/Images/Products/image.png")}}
+                    ProductItemImages = productItemImages.Select(x => new ProductItemImage {ImagePath = x}).ToList()
                 };
                 
                 await _context.ProductItems.AddAsync(productItem);

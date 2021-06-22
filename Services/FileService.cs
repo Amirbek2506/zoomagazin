@@ -28,7 +28,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{image.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, image);
-            return imagePath;
+            return $"Resources/{imageName}";
         }
 
         private async Task CopyFileAsync(string imagePath, IFormFile file)
@@ -39,9 +39,8 @@ namespace ZooMag.Services
 
         public void Delete(string imagePath)
         {
-            string deletedFilePath = Path.Combine(Directory.GetCurrentDirectory(),"Resources/Images/deleted.png");
-            string emptyFilePath = Path.Combine(Directory.GetCurrentDirectory(),"Resources/Images/Products/image.png");
-            if(File.Exists(imagePath) && imagePath != deletedFilePath && imagePath != emptyFilePath)
+            string noImageFilePath = Path.Combine(Directory.GetCurrentDirectory(),"Resources/no-image.png");
+            if(File.Exists(imagePath) && imagePath != noImageFilePath)
             {
                 File.Delete(imagePath);
             }
@@ -63,7 +62,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, file);
-            return imagePath;
+            return $"Resources/{imageName}";
         }
 
         public async Task<string> AddPromotionFileAsync(IFormFile file)
@@ -72,7 +71,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, file);
-            return imagePath;
+            return $"Resources/{imageName}";
         }
     }
 }

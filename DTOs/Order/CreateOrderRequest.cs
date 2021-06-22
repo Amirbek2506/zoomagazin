@@ -6,14 +6,12 @@ namespace ZooMag.DTOs.Order
     public class CreateOrderRequest
     {
         public int? DeliveryTypeId { get; set; }
-        public int OrderStatusId { get; set; }
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string SecondAdditionalPhoneNumber { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public DateTime OrderDate { get; set; }
         public string City { get; set; }
         public int? PickupPointId { get; set; }
         public DateTime DeliveryTime { get; set; }

@@ -45,7 +45,7 @@ namespace ZooMag.Services
                 AdditionalPhoneNumber = request.AdditionalPhoneNumber,
                 SecondAdditionalPhoneNumber = request.SecondAdditionalPhoneNumber,
                 PickupPointId = request.PickupPointId,
-                OrderStatusId = request.OrderStatusId,
+                OrderStatusId = 1,
                 PaymentMethodId = request.PaymentMethodId,
                 OrderProductItems = request.ProductItemIds.Select(x => new OrderProductItem
                 {
@@ -59,6 +59,43 @@ namespace ZooMag.Services
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
             return new Response {Status = "success", Message = "Успешно"};
+        }
+
+        public async Task<Response> UpdateOrderStatusAsync(UpdateOrderStatusRequest request)
+        {
+            var order = await _context.Orders.FindAsync(request.OrderId);
+            if (order == null)
+                return new Response
+                {
+                    Message = "Не найден",
+                    Status = "error"
+                };
+            order.OrderStatusId = request.StatusId;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return new Response
+            {
+                Message = "Успешно",
+                Status = "success"
+            };
+        }
+
+        public async Task<List<OrderResponse>> GetUserOrders(int userId)
+        {
+            return await _context.Orders
+                .Where(x => x.UserId == userId)
+                .Include(x=>x.OrderStatus)
+                .Include(x=>x.PickupPoint)
+                .Include(x => x.OrderProductItems)
+                .ThenInclude(x => x.ProductItem)
+                .Select(x => new OrderResponse
+                {
+                    Id = x.Id,
+                    Status = x.OrderStatus.Title,
+                    DeliveryAddress = x.PickupPointId.HasValue ? x.PickupPoint.Name : x.Address,
+                    OrderDate = x.OrderDate,
+                    Summa = x.OrderProductItems.Sum(pi=>pi.ProductItem.Price)
+                }).ToListAsync();
         }
     }
 }

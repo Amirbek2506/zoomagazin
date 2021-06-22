@@ -28,10 +28,28 @@ namespace ZooMag.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
         {
             var user = await _userManager.GetUserAsync(User);
             var response = await _ordersService.CreateAsync(request,user.Id);
+            return Ok(response);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
+        {
+            var response = await _ordersService.UpdateOrderStatusAsync(request);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserOrders()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            List<OrderResponse> response = await _ordersService.GetUserOrders(user.Id);
             return Ok(response);
         }
         

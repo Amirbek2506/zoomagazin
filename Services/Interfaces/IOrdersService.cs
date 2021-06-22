@@ -11,6 +11,8 @@ namespace ZooMag.Services.Interfaces
     public interface IOrdersService
     {
         Task<Response> CreateAsync(CreateOrderRequest request,int userId);
+
+        Task<Response> UpdateOrderStatusAsync(UpdateOrderStatusRequest request);
         // Task<Response> Create(InpOrderModel orderModel, string userKey);
         // Task<List<Order>> FetchAll(int offset, int limit);
         // Task<OutOrderModel> FetchDetail(int orderid);
@@ -23,5 +25,6 @@ namespace ZooMag.Services.Interfaces
         // Task<Response> SetSize(int orderitemid,int sizeid);
         // Task<decimal> IncrQty(int itemid);
         // Task<decimal> DecrQty(int itemid);
+        Task<List<OrderResponse>> GetUserOrders(int userId);
     }
 }

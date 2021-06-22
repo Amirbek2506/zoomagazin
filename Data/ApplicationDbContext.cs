@@ -31,6 +31,7 @@ namespace ZooMag.Data
 
         public DbSet<ProductItemImage> ProductItemImages { get; set; }
         public DbSet<PickupPoint> PickupPoints { get; set; }
+        public DbSet<DeliveryType> DeliveryTypes { get; set; }
 
         #region product orders
         public DbSet<Order> Orders { get; set; }

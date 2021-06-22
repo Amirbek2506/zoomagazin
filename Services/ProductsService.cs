@@ -135,13 +135,14 @@ namespace ZooMag.Services
             return new Response {Message = "Успешно", Status = "success"};
         }
 
-        public async Task<GenericResponse< List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request)
+        public async Task<GenericResponse<List<MostPopularProductResponse>>> GetMostPopularAsync(GenericPagedRequest<int> request)
         {
             var categories = await _context.Categories.ToListAsync();
             List<int> categoryIds = new List<int> {request.Query};
             GetParentCategoryCategories(ref categoryIds,request.Query,categories);
 
-            var products = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed).OrderByDescending(x=>x.CreateDate)
+            var products = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed)
+                .OrderByDescending(x=>x.CreateDate)
                 .Skip(request.Offset).Take(request.Limit)
                 .Include(x => x.ProductItems).ThenInclude(x=>x.ProductItemImages)
                 .Select(x => new MostPopularProductResponse
@@ -201,6 +202,7 @@ namespace ZooMag.Services
             var products = await _context.Products.Where(x=>!x.Removed).Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
                 .Where(x =>x.Title.Contains(request.Query) ||
                             x.ProductItems.Any(pi => pi.VendorCode.Contains(request.Query)))
+                .OrderByDescending(x=>x.Id)
                 .Skip(request.Offset)
                 .Take(request.Limit)
                 .Select(x => new SearchProductResponse
@@ -227,6 +229,7 @@ namespace ZooMag.Services
         public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(GenericPagedRequest<string> request)
         {
             var products = await _context.Products.Where(x => !x.Removed && (string.IsNullOrEmpty(request.Query) || x.Title.Contains(request.Query)))
+                .OrderByDescending(x=>x.Id)
                 .Skip(request.Offset)
                 .Take(request.Limit)
                 .Include(x => x.ProductItems)
@@ -531,9 +534,10 @@ namespace ZooMag.Services
             };
         }
 
-        public async Task<GenericResponse< List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request)
+        public async Task<GenericResponse<List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request)
         {
             var products = await _context.Products.Where(x => !x.Removed && x.BrandId == request.Query)
+                .OrderByDescending(x=>x.Id)
                 .Skip(request.Offset)
                 .Take(request.Limit)
                 .Include(x => x.ProductItems)
