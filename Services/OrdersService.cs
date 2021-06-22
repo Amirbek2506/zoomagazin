@@ -94,7 +94,7 @@ namespace ZooMag.Services
                     Status = x.OrderStatus.Title,
                     DeliveryAddress = x.PickupPointId.HasValue ? x.PickupPoint.Name : x.Address,
                     OrderDate = x.OrderDate,
-                    Summa = x.OrderProductItems.Sum(pi=>pi.ProductItem.Price)
+                    Summa = x.OrderProductItems.Sum(pi=>Math.Round(pi.ProductItem.Price - pi.ProductItem.Price * pi.ProductItem.Percent / 100, 2))
                 }).ToListAsync();
         }
     }

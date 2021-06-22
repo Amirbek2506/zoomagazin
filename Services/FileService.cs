@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using ZooMag.Services.Interfaces;
 
@@ -28,7 +27,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{image.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, image);
-            return $"Resources/{imageName}";
+            return $"Resources/Brand/{imageName}";
         }
 
         private async Task CopyFileAsync(string imagePath, IFormFile file)
@@ -62,7 +61,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, file);
-            return $"Resources/{imageName}";
+            return $"Resources/Product/{imageName}";
         }
 
         public async Task<string> AddPromotionFileAsync(IFormFile file)
@@ -71,7 +70,7 @@ namespace ZooMag.Services
             string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
             string imagePath = dirPath + imageName;
             await CopyFileAsync(imagePath, file);
-            return $"Resources/{imageName}";
+            return $"Resources/Promotion/{imageName}";
         }
     }
 }

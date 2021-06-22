@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +25,17 @@ namespace ZooMag.Services
 
         public async Task<Response> UpdateAsync(UpdateProductItemRequest request)
         {
-            var productItem = await _context.ProductItems.Where(x=>x.Id == request.Id).Include(x=>x.ProductItemImages).FirstOrDefaultAsync();
+            var productItem = await _context.ProductItems
+                .Where(x=>x.Id == request.Id)
+                .Include(x=>x.ProductItemImages)
+                .FirstOrDefaultAsync();
 
             if (productItem == null)
-                return new Response { Status = "error", Message = "Не найден" };
+                return new Response
+                {
+                    Status = "error", 
+                    Message = "Не найден"
+                };
 
             productItem.Measure = request.Measure;
             productItem.Percent = request.Percent;
@@ -39,30 +45,48 @@ namespace ZooMag.Services
             {
                 var productItemImages = await _fileService.AddProductItemFilesASync(request.Images);
                 await _context.ProductItemImages.AddRangeAsync(productItemImages.Select(x => new ProductItemImage
-                    {ImagePath = x, ProductItemId = request.Id}));
+                {
+                    ImagePath = x, ProductItemId = request.Id
+                }));
             }
 
             await _context.SaveChangesAsync();
 
-            return new Response {Status = "success", Message = "Успешно"};
+            return new Response
+            {
+                Status = "success",
+                Message = "Успешно"
+            };
         }
 
         public async Task<Response> DeleteAsync(int id)
         {
-            var productItem = await _context.ProductItems.FindAsync(id);
+            var productItem = await _context.ProductItems
+                .FindAsync(id);
 
             if (productItem == null)
-                return new Response {Status = "success", Message = "Не найден"};
+                return new Response
+                {
+                    Status = "success", 
+                    Message = "Не найден"
+                };
 
-            var productItemsCount =
-                await _context.ProductItems.Where(x => x.ProductId == productItem.ProductId).CountAsync();
+            var productItemsCount = await _context.ProductItems
+                    .Where(x => x.ProductId == productItem.ProductId)
+                    .CountAsync();
 
             if (productItemsCount == 1)
-                return new Response {Status = "error", Message = "Нельзя удалять последний продукт"};
+                return new Response
+                {
+                    Status = "error", 
+                    Message = "Нельзя удалять последний продукт"
+                };
             
             productItem.Removed = true;
 
-            var productItemImages = await _context.ProductItemImages.Where(x => x.ProductItemId == id).ToListAsync();
+            var productItemImages = await _context.ProductItemImages
+                .Where(x => x.ProductItemId == id)
+                .ToListAsync();
 
             foreach (var productItemImage in productItemImages)
             {
@@ -71,12 +95,19 @@ namespace ZooMag.Services
             
             _context.ProductItemImages.RemoveRange(productItemImages);
 
-            string emptyFilePath = Path.GetFullPath("Resources/Images/Products/image/png");
+            string noImageFilePath = "Resources/no-image.png";
             
-            await _context.ProductItemImages.AddAsync(new ProductItemImage
-                {ImagePath = emptyFilePath, ProductItemId = id});
+            await _context.ProductItemImages
+                .AddAsync(new ProductItemImage
+                {
+                    ImagePath = noImageFilePath, ProductItemId = id
+                });
 
-            return new Response {Status = "success", Message = "Успешно"};
+            return new Response
+            {
+                Status = "success", 
+                Message = "Успешно"
+            };
         }
 
         public async Task<Response> CreateAsync(CreateProductItemRequest request)

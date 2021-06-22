@@ -113,7 +113,7 @@ namespace ZooMag.Services
                 productItem.Removed = true;
             }
 
-            string deletedFilePath = Path.GetFullPath("Resources/Images/deleted.png");
+            string deletedFilePath = "Resources/no-image.png";
 
             var newProductItemImages =
                 productItemIds.Select(x => new ProductItemImage {ImagePath = deletedFilePath, ProductItemId = x}).ToList();
@@ -413,7 +413,7 @@ namespace ZooMag.Services
         public async Task<GenericResponse<List<ProductResponse>>> GetFilteredProductsAsync(GenericPagedRequest<ProductFiltersRequest> request)
         {
             if (request.Query.MaxPrice < request.Query.MinPrice)
-                return new()
+                return new GenericResponse<List<ProductResponse>>
                 {
                     Payload = new List<ProductResponse>(),
                     Count = 0
@@ -466,7 +466,7 @@ namespace ZooMag.Services
                     }).ToList()
                 }).ToListAsync();
 
-            return new()
+            return new GenericResponse<List<ProductResponse>>
             {
                 Payload = products,
                 Count = products.Count
@@ -557,7 +557,7 @@ namespace ZooMag.Services
                         SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
                     }).ToList()
                 }).ToListAsync();
-            return new()
+            return new GenericResponse<List<ProductResponse>>
             {
                 Payload = products,
                 Count = products.Count
