@@ -22,7 +22,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromBody]CreatePickupPointRequest request)
         {
             Response response = await _pickupPointService.CreateAsync(request);
-            return Ok(response);
+            return Created("PickupPoint",response);
         }
 
         [HttpGet]
@@ -36,14 +36,14 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Update([FromBody]UpdatePickupPointRequest request)
         {
             Response response = await _pickupPointService.UpdateAsync(request);
-            return Ok(response);
+            return Created("PickupPoint",response);
         }
         
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery]int id)
         {
             Response response = await _pickupPointService.DeleteAsync(id);
-            return Ok(response);
+            return Created("PickupPoint",response);
         }
     }
 }
