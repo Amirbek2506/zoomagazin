@@ -61,7 +61,7 @@ namespace ZooMag.Controllers
             var ress = await _categoriesService.Create(categoryModel);
             if(ress.Status == "success")
             {
-                return Ok(ress);
+                return Created("Category",ress);
             }
             return BadRequest(ress);
         }
@@ -74,7 +74,7 @@ namespace ZooMag.Controllers
             Response ress = await _categoriesService.Update(categoryModel);
             if (ress.Status == "success")
             {
-                return Ok(ress);
+                return Created("Category",ress);
             }
             return BadRequest(ress);
         }
@@ -87,7 +87,7 @@ namespace ZooMag.Controllers
              Response ress = await _categoriesService.Delete(id);
             if (ress.Status == "success")
             {
-                return Ok(ress);
+                return Created("Category",ress);
             }
             return BadRequest(ress);
         }

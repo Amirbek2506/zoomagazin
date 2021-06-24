@@ -12,6 +12,8 @@ namespace ZooMag.DTOs.Product
         public string ImagePath { get; set; }
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string BrandName { get; set; }
         public List<ProductItemResponse> ProductItems { get; set; }
     }
 }

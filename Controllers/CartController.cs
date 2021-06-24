@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using ZooMag.DTOs.Product;
+using ZooMag.Entities;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Carts;
 using ZooMag.Services.Interfaces;
@@ -13,16 +16,68 @@ using ZooMag.ViewModels;
 namespace ZooMag.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class CartController : ControllerBase
     {
+        private readonly IProductsService _productsService;
+        private readonly UserManager<User> _userManager;
 
-        private readonly ICartsService _cartsService;
-
-        public CartController(ICartsService cartsService)
+        public CartController(IProductsService productsService, UserManager<User> userManager)
         {
-            this._cartsService = cartsService;
+            _productsService = productsService;
+            _userManager = userManager;
         }
+        
+        private async Task<string> GetUserKey()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                return user.Id.ToString();
+            }
+
+            string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
+                ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
+            if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
+            {
+                HttpContext.Response.Cookies.Append("UserKey", key);
+            }
+            return key;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToBasket([FromBody]AddToBusketRequest request)
+        {
+            string key = await GetUserKey();
+            Response response = await _productsService.AddToBasketAsync(key,request);
+            return Created("Product",response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBasketProducts()
+        {
+            string key = await GetUserKey();
+            List<BasketProductResponse> response = await _productsService.GetBasketProductsAsync(key);
+            
+            return Ok(response);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBasketProduct([FromQuery] int productItemId)
+        {
+            string key = await GetUserKey();
+            Response response = await _productsService.DeleteBasketProductAsync(productItemId,key);
+            return Created("Product",response);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DecreaseBasketProduct([FromQuery] int productItemId)
+        {
+            string key = await GetUserKey();
+            Response response = await _productsService.DecreaseBasketProductAsync(productItemId, key);
+            return Created("Product",response);
+        }
+        
         /*
         [HttpPost]
         [Route("create")]

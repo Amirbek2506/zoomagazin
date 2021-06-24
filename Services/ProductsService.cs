@@ -174,7 +174,7 @@ namespace ZooMag.Services
 
             var categories = await _context.Categories.ToListAsync();
             
-            var searchCategories = categories.Where(x => x.Name.Contains(request.Query))
+            var searchCategories = categories.Where(x => x.Name.ToLower().Contains(request.Query.ToLower()))
                 .ToList();
 
             for (int i = 0; i < searchCategories.Count; i++)
@@ -234,6 +234,8 @@ namespace ZooMag.Services
                 .Take(request.Limit)
                 .Include(x => x.ProductItems)
                 .ThenInclude(x => x.ProductItemImages)
+                .Include(x=>x.Brand)
+                .Include(x=>x.Category)
                 .Select(x => new ProductResponse
                 {
                     Id = x.Id,
@@ -242,6 +244,8 @@ namespace ZooMag.Services
                     ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
                     BrandId = x.BrandId,
                     CategoryId = x.CategoryId,
+                    BrandName = x.Brand.Name,
+                    CategoryName = x.Category.Name,
                     ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
                     {
                         Discount = pi.Percent,
@@ -503,6 +507,8 @@ namespace ZooMag.Services
             var product = await _context.Products.FindAsync(id);
             if (product == null || product.Removed)
                 return null;
+            var category = await _context.Categories.FindAsync(product.CategoryId);
+            var brand = await _context.Brands.FindAsync(product.BrandId);
             var productItems =
                 await _context.ProductItems.Where(x => x.ProductId == id && !x.Removed)
                     .Include(x=>x.Reviews)
@@ -514,6 +520,10 @@ namespace ZooMag.Services
                 Id = product.Id,
                 Title = product.Title,
                 TitleDescription = product.TitleDescription,
+                BrandId = product.BrandId,
+                CategoryId = product.CategoryId,
+                BrandName = brand.Name,
+                CategoryName = category.Name,
                 ProductItems = productItems.Select(pi=> new ProductItemDetailsResponse
                 {
                     Id = pi.Id,

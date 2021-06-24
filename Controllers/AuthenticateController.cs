@@ -71,7 +71,7 @@
                         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                         );
 
-                    string key = IpHelper.GetIpAddress();
+                    string key = HttpContext.Request.Cookies["UserKey"];
 
                     await _productsService.ChangeBasketProductsUserIdAsync(key,user.Id.ToString());
                     await _productsService.ChangeWishlistProductsUserIdAsync(key,user.Id.ToString());

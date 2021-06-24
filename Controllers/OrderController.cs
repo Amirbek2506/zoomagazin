@@ -33,7 +33,7 @@ namespace ZooMag.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var response = await _ordersService.CreateAsync(request,user.Id);
-            return Ok(response);
+            return Created("Order",response);
         }
 
         [HttpPut]
@@ -41,7 +41,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
             var response = await _ordersService.UpdateOrderStatusAsync(request);
-            return Ok(response);
+            return Created("Order",response);
         }
 
         [HttpGet]

@@ -28,7 +28,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromForm]CreateProductItemRequest request)
         {
             var response = await _productItemService.CreateAsync(request);
-            return Ok(response);
+            return Created("ProductItem",response);
         }
 
         [HttpPut]
@@ -36,7 +36,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Update([FromForm]UpdateProductItemRequest request)
         {
             var response = await _productItemService.UpdateAsync(request);
-            return Ok(response);
+            return Created("ProductItem",response);
         }
 
         [HttpDelete]
@@ -44,7 +44,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Delete([FromQuery]int id)
         {
             var response = await _productItemService.DeleteAsync(id);
-            return Ok(response);
+            return Created("ProductItem",response);
         }
     }
 }

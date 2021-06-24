@@ -28,7 +28,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromForm]CreateBrandRequest request)
         {
             var response = await _brandsService.CreateAsync(request);
-            return Ok(response);
+            return Created("Brand",response);
         }
 
         [HttpGet]
@@ -64,7 +64,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Update([FromForm]UpdateBrandRequest request)
         {
             var response = await _brandsService.UpdateAsync(request);
-            return Ok(response);
+            return Created("Brand", response);
         }
 
         [HttpDelete]
@@ -72,7 +72,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _brandsService.DeleteAsync(id);
-            return Ok(response);
+            return Created("Brand",response);
         }
     }
 }

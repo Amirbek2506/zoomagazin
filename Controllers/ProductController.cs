@@ -33,7 +33,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromBody]CreateProductRequest request)
         {
             var response = await _productsService.CreateAsync(request);
-            return Ok(response);
+            return Created("Product",response);
         }
 
         [HttpPut]
@@ -41,7 +41,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Update([FromBody]UpdateProductRequest request)
         {
             var response = await _productsService.UpdateAsync(request);
-            return Ok(response);
+            return Created("Product",response);
         }
 
 
@@ -50,7 +50,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Delete([FromQuery] int id)
         {
             var response = await _productsService.DeleteAsync(id);
-            return Ok(response);
+            return Created("Product",response);
         }
 
         [HttpGet]
@@ -81,90 +81,89 @@ namespace ZooMag.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetWishList()
-        {
-            string key = await GetUserKey();
-            List<WishListProductItemResponse> response = await _productsService.GetWishListAsync(key);
-            
-            return Ok(response);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetWishlistCount()
-        {
-            string key = await GetUserKey();
-            var response = await _productsService.GetWishlistCountAsync(key);
-            return Ok(response);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddToWishlist([FromBody]AddWishlistProductRequest productRequest)
-        {
-            string key = await GetUserKey();
-            Response response = await _productsService.AddToWishlistAsync(key, productRequest.ProductItemId);
-            return Ok(response);
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteFromWishlist([FromQuery] int productItemId)
-        {
-            string key = await GetUserKey();
-            Response response = await _productsService.DeleteFromWishlistAsync(key,productItemId);
-            
-            return Ok(response);
-        }
-
-        private async Task<string> GetUserKey()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                return user.Id.ToString();
-            }
-
-            string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
-                ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
-            KeyValuePair<string, string> userKey = new KeyValuePair<string, string>("","");
-            if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
-            {
-                HttpContext.Request.Cookies.Append(new KeyValuePair<string, string>("UserKey", key));
-            }
-            return key;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddToBasket([FromBody]AddToBusketRequest request)
-        {
-            string key = await GetUserKey();
-            Response response = await _productsService.AddToBasketAsync(key,request);
-            return Ok(response);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetBasketProducts()
-        {
-            string key = await GetUserKey();
-            List<BasketProductResponse> response = await _productsService.GetBasketProductsAsync(key);
-            
-            return Ok(response);
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteBasketProduct([FromQuery] int productItemId)
-        {
-            string key = await GetUserKey();
-            Response response = await _productsService.DeleteBasketProductAsync(productItemId,key);
-            return Ok(response);
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DecreaseBasketProduct([FromQuery] int productItemId)
-        {
-            string key = await GetUserKey();
-            Response response = await _productsService.DecreaseBasketProductAsync(productItemId, key);
-            return Ok(response);
-        }
+        // [HttpGet]
+        // public async Task<IActionResult> GetWishList()
+        // {
+        //     string key = await GetUserKey();
+        //     List<WishListProductItemResponse> response = await _productsService.GetWishListAsync(key);
+        //     
+        //     return Ok(response);
+        // }
+        //
+        // [HttpGet]
+        // public async Task<IActionResult> GetWishlistCount()
+        // {
+        //     string key = await GetUserKey();
+        //     var response = await _productsService.GetWishlistCountAsync(key);
+        //     return Ok(response);
+        // }
+        //
+        // [HttpPost]
+        // public async Task<IActionResult> AddToWishlist([FromBody]AddWishlistProductRequest productRequest)
+        // {
+        //     string key = await GetUserKey();
+        //     Response response = await _productsService.AddToWishlistAsync(key, productRequest.ProductItemId);
+        //     return Created("Product",response);
+        // }
+        //
+        // [HttpDelete]
+        // public async Task<IActionResult> DeleteFromWishlist([FromQuery] int productItemId)
+        // {
+        //     string key = await GetUserKey();
+        //     Response response = await _productsService.DeleteFromWishlistAsync(key,productItemId);
+        //     
+        //     return Created("Product",response);
+        // }
+        //
+        // private async Task<string> GetUserKey()
+        // {
+        //     if (User.Identity.IsAuthenticated)
+        //     {
+        //         var user = await _userManager.GetUserAsync(User);
+        //         return user.Id.ToString();
+        //     }
+        //
+        //     string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
+        //         ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
+        //     if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
+        //     {
+        //         HttpContext.Response.Cookies.Append("UserKey", key);
+        //     }
+        //     return key;
+        // }
+        //
+        // [HttpPost]
+        // public async Task<IActionResult> AddToBasket([FromBody]AddToBusketRequest request)
+        // {
+        //     string key = await GetUserKey();
+        //     Response response = await _productsService.AddToBasketAsync(key,request);
+        //     return Created("Product",response);
+        // }
+        //
+        // [HttpGet]
+        // public async Task<IActionResult> GetBasketProducts()
+        // {
+        //     string key = await GetUserKey();
+        //     List<BasketProductResponse> response = await _productsService.GetBasketProductsAsync(key);
+        //     
+        //     return Ok(response);
+        // }
+        //
+        // [HttpDelete]
+        // public async Task<IActionResult> DeleteBasketProduct([FromQuery] int productItemId)
+        // {
+        //     string key = await GetUserKey();
+        //     Response response = await _productsService.DeleteBasketProductAsync(productItemId,key);
+        //     return Created("Product",response);
+        // }
+        //
+        // [HttpDelete]
+        // public async Task<IActionResult> DecreaseBasketProduct([FromQuery] int productItemId)
+        // {
+        //     string key = await GetUserKey();
+        //     Response response = await _productsService.DecreaseBasketProductAsync(productItemId, key);
+        //     return Created("Product",response);
+        // }
 
         [HttpGet]
         public async Task<IActionResult> GetFilteredProducts([FromQuery]GenericPagedRequest<ProductFiltersRequest> request)

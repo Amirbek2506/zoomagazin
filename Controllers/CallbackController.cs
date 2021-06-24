@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ZooMag.DTOs;
 using ZooMag.DTOs.Callback;
 using ZooMag.Services.Interfaces;
 
@@ -26,14 +27,14 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromBody]CreateCallbackRequest request)
         {
             var response = await _callbackService.CreateAsync(request);
-            return Ok(response);
+            return Created("Callback",response);
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(PagedRequest request)
         {
-            var response = await _callbackService.GetAllAsync();
+            var response = await _callbackService.GetAllAsync(request);
             return Ok(response);
         }
 

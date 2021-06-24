@@ -98,24 +98,27 @@ namespace ZooMag.Services
             {
                 brand.Name = request.Name;
 
-                var brandCategories = await _context.BrandCategories.Where(x => x.BrandId == request.Id).ToListAsync();
-
-                var brandCategoriesId = brandCategories.Select(x => x.CategoryId).ToList();
-
-                var oldBrandCategoriesId = brandCategoriesId.Except(request.BrandCategories);
-
-                var newBrandCategoriesId = request.BrandCategories.Except(brandCategoriesId);
-
-                var newBrandCategories = newBrandCategoriesId.Select(x => new BrandCategory
+                if (request.BrandCategories != null)
                 {
-                    BrandId = request.Id,
-                    CategoryId = x
-                });
+                    var brandCategories = await _context.BrandCategories.Where(x => x.BrandId == request.Id).ToListAsync();
 
-                var oldBrandCategories = brandCategories.Where(x => oldBrandCategoriesId.Contains(x.CategoryId));
+                    var brandCategoriesId = brandCategories.Select(x => x.CategoryId).ToList();
 
-                _context.BrandCategories.RemoveRange(oldBrandCategories);
-                await _context.BrandCategories.AddRangeAsync(newBrandCategories);
+                    var oldBrandCategoriesId = brandCategoriesId.Except(request.BrandCategories);
+
+                    var newBrandCategoriesId = request.BrandCategories.Except(brandCategoriesId);
+
+                    var newBrandCategories = newBrandCategoriesId.Select(x => new BrandCategory
+                    {
+                        BrandId = request.Id,
+                        CategoryId = x
+                    });
+
+                    var oldBrandCategories = brandCategories.Where(x => oldBrandCategoriesId.Contains(x.CategoryId));
+
+                    _context.BrandCategories.RemoveRange(oldBrandCategories);
+                    await _context.BrandCategories.AddRangeAsync(newBrandCategories);
+                }
 
                 if(request.Image != null)
                 {

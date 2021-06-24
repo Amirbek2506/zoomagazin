@@ -29,7 +29,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Create([FromBody]CreateCommentRequest request)
         {
             Response response = await _commentService.CreateAsync(request);
-            return Ok(response);
+            return Created("Comment",response);
         }
 
         [HttpGet]
@@ -43,7 +43,7 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> Delete([FromQuery] int id)
         {
             Response response = await _commentService.DeleteAsync(id);
-            return Ok(response);
+            return Created("Comment",response);
         }
     }
 }

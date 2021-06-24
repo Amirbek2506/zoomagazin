@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ZooMag.Data;
+using ZooMag.DTOs;
 using ZooMag.DTOs.Callback;
 using ZooMag.Entities;
 using ZooMag.Services.Interfaces;
@@ -38,7 +39,7 @@ namespace ZooMag.Services
             return new Response { Status = "success", Message = "Успешно добавлен" };
         }
 
-        public async  Task<List<CallbackResponse>> GetAllAsync()
+        public async  Task<List<CallbackResponse>> GetAllAsync(PagedRequest request)
         {
             return await _context.Callbacks.Select(x=> new CallbackResponse 
             { 
@@ -48,7 +49,9 @@ namespace ZooMag.Services
                 Name = x.Name, 
                 PhoneNumber = x.PhoneNumber, 
                 TillHour = x.TillHour
-            }).ToListAsync();
+            }).Skip(request.Offset)
+                .Take(request.Limit)
+                .ToListAsync();
         }
 
         public async Task<List<CallbackResponse>> GetAllNewAsync()
