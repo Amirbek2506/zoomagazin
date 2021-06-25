@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using ZooMag.DTOs;
 using ZooMag.DTOs.Callback;
@@ -11,7 +6,7 @@ using ZooMag.Services.Interfaces;
 
 namespace ZooMag.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CallbackController : ControllerBase
     {
@@ -23,7 +18,6 @@ namespace ZooMag.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Create([FromBody]CreateCallbackRequest request)
         {
             var response = await _callbackService.CreateAsync(request);
@@ -31,19 +25,18 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery]PagedRequest request)
         {
             var response = await _callbackService.GetAllAsync(request);
             return Ok(response);
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetAllNew()
-        {
-            var response = await _callbackService.GetAllNewAsync();
-            return Ok(response);
-        }
+        // [HttpGet]
+        // [Authorize]
+        // public async Task<IActionResult> GetAllNew()
+        // {
+        //     var response = await _callbackService.GetAllNewAsync();
+        //     return Ok(response);
+        // }
     }
 }

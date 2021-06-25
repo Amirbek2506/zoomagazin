@@ -49,7 +49,8 @@ namespace ZooMag.Services
                 Name = x.Name, 
                 PhoneNumber = x.PhoneNumber, 
                 TillHour = x.TillHour
-            }).Skip(request.Offset)
+            }).OrderByDescending(x=>x.CreateDate)
+                .Skip(request.Offset)
                 .Take(request.Limit)
                 .ToListAsync();
         }

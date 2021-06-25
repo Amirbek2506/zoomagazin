@@ -10,6 +10,6 @@ namespace ZooMag.Services.Interfaces
     {
         Task<Response> CreateAsync(CreateCallbackRequest request);
         Task<List<CallbackResponse>> GetAllAsync(PagedRequest request);
-        Task<List<CallbackResponse>> GetAllNewAsync();
+        // Task<List<CallbackResponse>> GetAllNewAsync();
     }
 }
