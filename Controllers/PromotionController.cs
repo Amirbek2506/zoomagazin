@@ -32,7 +32,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Администратор")]
-        public async Task<IActionResult> Create([FromQuery]CreatePromotionRequest request)
+        public async Task<IActionResult> Create([FromForm]CreatePromotionRequest request)
         {
             var response = await _promotionService.CreateAsync(request);
             return Created("Promotion",response);

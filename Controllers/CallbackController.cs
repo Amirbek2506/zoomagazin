@@ -32,7 +32,7 @@ namespace ZooMag.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll(PagedRequest request)
+        public async Task<IActionResult> GetAll([FromQuery]PagedRequest request)
         {
             var response = await _callbackService.GetAllAsync(request);
             return Ok(response);

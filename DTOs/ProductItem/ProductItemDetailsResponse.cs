@@ -12,6 +12,7 @@ namespace ZooMag.DTOs.ProductItem
         public string VendorCode { get; set; }
         public double Rating { get; set; }
         public int CommentsCount { get; set; }
+        public double Percent { get; set; }
         public List<string> ImagesPath { get; set; }
         public List<DescriptionDetailsResponse> Descriptions { get; set; }
     }

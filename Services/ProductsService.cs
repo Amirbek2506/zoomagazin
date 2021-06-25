@@ -320,7 +320,7 @@ namespace ZooMag.Services
             {
                 basket = new Basket
                 {
-                    Count = request.Count,
+                    Count = request.Count < 1 ? 1 : request.Count,
                     ProductItemId = request.ProductItemId,
                     UserId = key
                 };
@@ -397,6 +397,8 @@ namespace ZooMag.Services
         {
             var basketProduct =
                 await _context.Baskets.FirstOrDefaultAsync(x => x.UserId == key && x.ProductItemId == productItemId);
+            if (basketProduct == null)
+                return new Response {Message = "Не найден", Status = "error"};
             _context.Baskets.Remove(basketProduct);
             await _context.SaveChangesAsync();
             return new Response {Status = "success", Message = "Успешно"};
@@ -408,8 +410,13 @@ namespace ZooMag.Services
                 await _context.Baskets.FirstOrDefaultAsync(x => x.UserId == key && x.ProductItemId == productItemId);
             if (basketProduct == null)
                 return new Response {Message = "Не найден", Status = "error"};
-            basketProduct.Count--;
-            _context.Update(basketProduct);
+            if (basketProduct.Count == 1)
+                _context.Baskets.Remove(basketProduct);
+            else
+            {
+                basketProduct.Count--;
+                _context.Baskets.Update(basketProduct);
+            }
             await _context.SaveChangesAsync();
             return new Response {Status = "success", Message = "Успешно"};
         }
@@ -493,6 +500,7 @@ namespace ZooMag.Services
                     ImagesPath = x.ProductItemImages.Select(pii=>pii.ImagePath).ToList(),
                     SellingPrice = Math.Round(x.Price - x.Price * x.Percent / 100,2),
                     VendorCode = x.VendorCode,
+                    Percent = x.Percent,
                     Descriptions = x.Descriptions.Select(d=>new DescriptionDetailsResponse
                     {
                         Id = d.Id,
