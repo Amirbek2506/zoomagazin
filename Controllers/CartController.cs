@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using ZooMag.DTOs.Product;
 using ZooMag.Entities;
-using ZooMag.Helpers;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Carts;
 using ZooMag.Services.Interfaces;
@@ -37,15 +36,12 @@ namespace ZooMag.Controllers
                 return user.Id.ToString();
             }
 
-            string key = IpHelper.GetIpAddress();
-            
-            // string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
-            //     ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
-            // if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
-            // {
-            //     HttpContext.Request.Cookies.Append(new KeyValuePair<string, string>("UserKey", key));
-            //     HttpContext.Response.Cookies.Append("UserKey", key);
-            // }
+            string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
+                ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
+            if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
+            {
+                HttpContext.Response.Cookies.Append("UserKey", key);
+            }
             return key;
         }
 
