@@ -34,6 +34,7 @@ namespace ZooMag
         // This method gets called by the runtime. Use this method to add services to the container.  
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ICategoriesService, CategoriesService>();
             services.AddTransient<IProductsService, ProductsService>();
@@ -149,18 +150,18 @@ namespace ZooMag
              options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("MyAllowSpecificOrigins",
-                builder =>
-                {
-                    builder.WithOrigins("http://zoomag.tj",
-                                        "http://www.zoomag.tj",
-                                        "http://localhost:3000")
-                                        .AllowAnyHeader()
-                                        .AllowAnyMethod();
-                });
-            });
+            // services.AddCors(options =>
+            // {
+            //     options.AddPolicy("MyAllowSpecificOrigins",
+            //     builder =>
+            //     {
+            //         builder.WithOrigins("http://zoomag.tj",
+            //                             "http://www.zoomag.tj",
+            //                             "http://localhost:3000")
+            //                             .AllowAnyHeader()
+            //                             .AllowAnyMethod();
+            //     });
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.  
@@ -187,8 +188,8 @@ namespace ZooMag
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors("MyAllowSpecificOrigins");
-
+            // app.UseCors("MyAllowSpecificOrigins");
+            app.UseCors(o => o.AllowCredentials().AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
