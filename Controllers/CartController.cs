@@ -36,14 +36,12 @@ namespace ZooMag.Controllers
                 return user.Id.ToString();
             }
 
-            string key = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
-
-            // string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
-            //     ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
-            // if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
-            // {
-            //     HttpContext.Response.Cookies.Append("UserKey", key);
-            // }
+            string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
+                ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
+            if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
+            {
+                HttpContext.Response.Cookies.Append("UserKey", key);
+            }
             return key;
         }
 
