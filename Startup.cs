@@ -155,10 +155,11 @@ namespace ZooMag
                 options.AddPolicy("MyAllowSpecificOrigins",
                 builder =>
                 {
-                    builder.WithOrigins("http://zoomag.tj",
-                                        "http://www.zoomag.tj",
-                                        "http://localhost:3000")
-                                        .WithHeaders("UserKey")
+                    // builder.WithOrigins("http://zoomag.tj",
+                    //                     "http://www.zoomag.tj",
+                    //                     "http://localhost:3000")
+                    builder.AllowAnyOrigin()
+                                        .AllowAnyHeader().AllowCredentials()
                                         .AllowAnyMethod();
                 });
             });
