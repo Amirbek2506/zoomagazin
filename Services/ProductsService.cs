@@ -272,6 +272,7 @@ namespace ZooMag.Services
                     Id = x.ProductItemId,
                     Price = x.ProductItem.Price,
                     Title = x.ProductItem.Product.Title,
+                    Measure = x.ProductItem.Measure,
                     ImagePath = x.ProductItem.ProductItemImages.First().ImagePath
                 }).ToListAsync();
         }
