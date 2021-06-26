@@ -7,14 +7,14 @@ namespace ZooMag.Helpers
     {
         public static string GetIpAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
+            // var host = Dns.GetHostEntry(Dns.GetHostName());
+            // foreach (var ip in host.AddressList)
+            // {
+            //     if (ip.AddressFamily == AddressFamily.InterNetwork)
+            //     {
+            //         return ip.ToString();
+            //     }
+            // }
             return string.Empty;
         }
     }
