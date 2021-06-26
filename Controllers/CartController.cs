@@ -40,6 +40,7 @@ namespace ZooMag.Controllers
                 ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
             if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
             {
+                HttpContext.Request.Cookies.Append(new KeyValuePair<string, string>("UserKey", key));
                 HttpContext.Response.Cookies.Append("UserKey", key);
             }
             return key;
