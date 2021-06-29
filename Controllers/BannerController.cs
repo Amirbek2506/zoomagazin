@@ -45,7 +45,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(PagedRequest request)
+        public async Task<IActionResult> GetAll([FromQuery]PagedRequest request)
         {
             List<BannerResponse> response = await _bannerService.GetAllAsync(request);
             return Ok(response);
