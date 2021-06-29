@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -160,7 +161,7 @@ namespace ZooMag
                                         "http://localhost:3000")
                     // builder.AllowAnyOrigin()
                                         .AllowAnyHeader().AllowCredentials()
-                                        .AllowAnyMethod();
+                                        .AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromSeconds(2520));
                 });
             });
         }

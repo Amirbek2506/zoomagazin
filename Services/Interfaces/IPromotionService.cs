@@ -15,5 +15,6 @@ namespace ZooMag.Services.Interfaces
         Task<PromotionResponse> GetByIdAsync(int id);
         Task<GenericResponse<List<ProductResponse>>> GetPromotionProductItemsAsync(GenericPagedRequest<int> request);
         Task DeleteOldPromotionsAsync();
+        Task<Response> DeleteAsync(int id);
     }
 }

@@ -125,5 +125,32 @@ namespace ZooMag.Services
             _context.Promotions.RemoveRange(promotions);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Response> DeleteAsync(int id)
+        {
+            var promotion = await _context.Promotions.FindAsync(id);
+            if (promotion == null)
+                return new Response
+                {
+                    Message = "Не найден",
+                    Status = "error"
+                };
+            var promotionProductItems = await _context.ProductItems
+                .Where(x => !x.Removed && x.PromotionId.HasValue && x.PromotionId.Value == id)
+                .ToListAsync();
+            for (int i = 0; i < promotionProductItems.Count; i++)
+            {
+                promotionProductItems[i].Percent = 0;
+                promotionProductItems[i].PromotionId = null;
+            }
+            _context.ProductItems.UpdateRange(promotionProductItems);
+            _context.Promotions.RemoveRange(promotion);
+            await _context.SaveChangesAsync();
+            return new Response
+            {
+                Message = "Успешно",
+                Status = "success"
+            };
+        }
     }
 }

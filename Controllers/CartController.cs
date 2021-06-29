@@ -40,7 +40,10 @@ namespace ZooMag.Controllers
                 ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
             if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
             {
-                HttpContext.Response.Cookies.Append("UserKey", key);
+                HttpContext.Response.Cookies.Append("UserKey", key, new CookieOptions()
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(1), MaxAge = TimeSpan.FromDays(1), SameSite = SameSiteMode.Strict
+                });
             }
             return key;
         }

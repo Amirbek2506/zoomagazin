@@ -51,5 +51,12 @@ namespace ZooMag.Controllers
             var response = await _promotionService.GetPromotionProductItemsAsync(request);
             return Ok(response);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] int id)
+        {
+            var response = await _promotionService.DeleteAsync(id);
+            return Created("Promotion", response);
+        }
     }
 }
