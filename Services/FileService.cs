@@ -72,5 +72,14 @@ namespace ZooMag.Services
             await CopyFileAsync(imagePath, file);
             return $"Resources/Promotion/{imageName}";
         }
+
+        public async Task<string> AddBannerFileAsync(IFormFile file)
+        {
+            string dirPath = GetDirectory("Banner");
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
+            string imagePath = dirPath + imageName;
+            await CopyFileAsync(imagePath, file);
+            return $"Resources/Banner/{imageName}";
+        }
     }
 }

@@ -53,6 +53,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Delete([FromQuery] int id)
         {
             var response = await _promotionService.DeleteAsync(id);
