@@ -446,17 +446,17 @@ namespace ZooMag.Services
                     request.Query.MaxPrice >= (pi.Price - pi.Price * pi.Percent / 100) &&
                     request.Query.MinPrice <= (pi.Price - pi.Price * pi.Percent / 100)));
 
-            if (request.Query.SortType == "Алфавиту: от А до Я")
+            if (request.Query.SortType == 1) //"Алфавиту: от А до Я"
                 queryableProducts = queryableProducts.OrderBy(x => x.Title);
-            if(request.Query.SortType == "Алфавиту: от Я до А")
+            if(request.Query.SortType == 2) //"Алфавиту: от Я до А"
                 queryableProducts = queryableProducts.OrderByDescending(x => x.Title);
-            if(request.Query.SortType == "Новизне")
+            if(request.Query.SortType == 3) //"Новизне"
                 queryableProducts = queryableProducts.OrderByDescending(x => x.CreateDate);
-            if(request.Query.SortType == "Популярности")
+            if(request.Query.SortType == 4) //"Популярности"
                 queryableProducts = queryableProducts.OrderByDescending(x => x.ProductItems.Max(pi => pi.Reviews.Average(c => c.Rating)));
-            if(request.Query.SortType == "Цена по возрастанию")
+            if(request.Query.SortType == 5) //"Цена по возрастанию"
                 queryableProducts = queryableProducts.OrderBy(x => x.ProductItems.Min(pi => pi.Price));
-            if(request.Query.SortType == "Цена по убыванию")
+            if(request.Query.SortType == 6) //"Цена по убыванию"
                 queryableProducts = queryableProducts.OrderByDescending(x => x.ProductItems.Min(pi=> pi.Price));
                 
 
