@@ -62,17 +62,21 @@ namespace ZooMag.Controllers
 
         private async Task<string> GetUserKey()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated ?? false)
             {
                 var user = await _userManager.GetUserAsync(User);
                 return user.Id.ToString();
             }
 
+            bool a = HttpContext.Request.Cookies.ContainsKey("UserKey");
             string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
                 ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
             if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
             {
-                HttpContext.Response.Cookies.Append("UserKey", key);
+                HttpContext.Response.Cookies.Append("UserKey", key, new CookieOptions
+                {
+                    SameSite = SameSiteMode.Lax
+                });
             }
             return key;
         }

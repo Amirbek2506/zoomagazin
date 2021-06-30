@@ -44,7 +44,7 @@ namespace ZooMag.Services.Interfaces
         Task<int> GetWishlistCountAsync(string key);
         Task<Response> AddToWishlistAsync(string key, int productItemId);
         Task<Response> DeleteFromWishlistAsync(string key, int productItemId);
-        Task<Response> AddToBasketAsync(string key,AddToBusketRequest request);
+        Task<Response> AddToBasketAsync(string key,AddToBasketRequest request);
         Task<List<BasketProductResponse>> GetBasketProductsAsync(string key);
         Task ChangeWishlistProductsUserIdAsync(string key,string newKey);
         Task ChangeBasketProductsUserIdAsync(string key,string newKey);

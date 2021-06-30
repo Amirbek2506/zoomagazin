@@ -310,7 +310,7 @@ namespace ZooMag.Services
             return new Response {Message = "Успешно", Status = "success"};
         }
 
-        public async Task<Response> AddToBasketAsync(string key,AddToBusketRequest request)
+        public async Task<Response> AddToBasketAsync(string key,AddToBasketRequest request)
         {
             var basket =
                 await _context.Baskets.FirstOrDefaultAsync(x =>

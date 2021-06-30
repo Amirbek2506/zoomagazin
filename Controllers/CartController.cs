@@ -36,20 +36,21 @@ namespace ZooMag.Controllers
                 return user.Id.ToString();
             }
 
+            bool a = HttpContext.Request.Cookies.ContainsKey("UserKey");
             string key = HttpContext.Request.Cookies.ContainsKey("UserKey")
                 ? HttpContext.Request.Cookies["UserKey"] : Guid.NewGuid().ToString();
             if (!HttpContext.Request.Cookies.ContainsKey("UserKey"))
             {
-                HttpContext.Response.Cookies.Append("UserKey", key, new CookieOptions()
+                HttpContext.Response.Cookies.Append("UserKey", key, new CookieOptions
                 {
-                    Expires = DateTimeOffset.UtcNow.AddDays(1), MaxAge = TimeSpan.FromDays(1), SameSite = SameSiteMode.Strict
+                    SameSite = SameSiteMode.Lax
                 });
             }
             return key;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToBasket([FromBody]AddToBusketRequest request)
+        public async Task<IActionResult> AddToBasket([FromBody]AddToBasketRequest request)
         {
             string key = await GetUserKey();
             Response response = await _productsService.AddToBasketAsync(key,request);

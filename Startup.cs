@@ -160,9 +160,10 @@ namespace ZooMag
                     builder.WithOrigins("http://zoomag.tj",
                                         "http://www.zoomag.tj",
                                         "http://localhost:3000")
-                    // builder.AllowAnyOrigin()
-                                        .AllowAnyHeader().AllowCredentials()
-                                        .AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromSeconds(2520));
+                    .WithExposedHeaders("UserKey","set-cookie")
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .AllowAnyMethod();
                 });
             });
         }
