@@ -269,7 +269,8 @@ namespace ZooMag.Services
                 .Include(x => x.ProductItem).ThenInclude(x => x.ProductItemImages)
                 .Select(x => new WishListProductItemResponse
                 {
-                    Id = x.ProductItemId,
+                    ProductId = x.ProductItem.Product.Id,
+                    ProductItemId = x.ProductItemId,
                     Price = x.ProductItem.Price,
                     Title = x.ProductItem.Product.Title,
                     Measure = x.ProductItem.Measure,
@@ -289,6 +290,9 @@ namespace ZooMag.Services
                 await _context.Wishlists.FirstOrDefaultAsync(x => x.UserId == key && x.ProductItemId == productItemId);
             if (wishlist != null)
                 return new Response {Status = "error", Message = "Продукт уже добавлен"};
+            var productItem = await _context.ProductItems.FindAsync(productItemId);
+            if (productItem != null)
+                return new Response {Status = "error", Message = "Продукт не найден"};
             wishlist = new Wishlist
             {
                 UserId = key,
