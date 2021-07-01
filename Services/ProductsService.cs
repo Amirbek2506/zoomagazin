@@ -291,7 +291,7 @@ namespace ZooMag.Services
             if (wishlist != null)
                 return new Response {Status = "error", Message = "Продукт уже добавлен"};
             var productItem = await _context.ProductItems.FindAsync(productItemId);
-            if (productItem != null)
+            if (productItem == null)
                 return new Response {Status = "error", Message = "Продукт не найден"};
             wishlist = new Wishlist
             {
