@@ -213,16 +213,11 @@ namespace ZooMag.Services
                     ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath
                 }).ToListAsync();
             
-            var productsCount = await _context.Products.Where(x => !x.Removed).Include(x => x.ProductItems)
-                .ThenInclude(x => x.ProductItemImages)
-                .Where(x => x.Title.Contains(request.Query) ||
-                            x.ProductItems.Any(pi => pi.VendorCode.Contains(request.Query))).CountAsync();
-            
             return new()
             {
                 Categories = searchCategoryResponses, 
                 Products = products, 
-                ProductsCount = productsCount
+                ProductsCount = products.Count
             };
         }
 
