@@ -200,8 +200,8 @@ namespace ZooMag.Services
             }
             
             var products = await _context.Products.Where(x=>!x.Removed).Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
-                .Where(x =>x.Title.Contains(request.Query) ||
-                            x.ProductItems.Any(pi => pi.VendorCode.Contains(request.Query)))
+                .Where(x =>x.Title.ToLower().Contains(request.Query.ToLower()) ||
+                            x.ProductItems.Any(pi => pi.VendorCode.ToLower().Contains(request.Query.ToLower())))
                 .OrderByDescending(x=>x.Id)
                 .Skip(request.Offset)
                 .Take(request.Limit)
