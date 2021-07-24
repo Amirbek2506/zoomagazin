@@ -30,6 +30,7 @@ namespace ZooMag.Data
         #endregion
 
         public DbSet<ProductItemImage> ProductItemImages { get; set; }
+        public DbSet<City> Cities { get; set; }
         public DbSet<PickupPoint> PickupPoints { get; set; }
         public DbSet<DeliveryType> DeliveryTypes { get; set; }
 

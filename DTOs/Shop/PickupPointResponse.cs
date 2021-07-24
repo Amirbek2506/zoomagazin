@@ -1,4 +1,4 @@
-namespace ZooMag.DTOs.PickupPoint
+namespace ZooMag.DTOs.Shop
 {
     public class PickupPointResponse
     {

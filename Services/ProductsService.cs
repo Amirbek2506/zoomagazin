@@ -141,30 +141,28 @@ namespace ZooMag.Services
             List<int> categoryIds = new List<int> {request.Query};
             GetParentCategoryCategories(ref categoryIds,request.Query,categories);
 
-            var products = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed)
-                .OrderByDescending(x=>x.CreateDate)
-                .Skip(request.Offset).Take(request.Limit)
-                .Include(x => x.ProductItems).ThenInclude(x=>x.ProductItemImages)
-                .Select(x => new MostPopularProductResponse
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    TitleDescription = x.TitleDescription,
-                    ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath,
-                    ProductItems = x.ProductItems.Where(pi=>!pi.Removed).Select(pi => new MostPopularProductItemResponse
-                    {
-                        Discount = pi.Percent,
-                        Measure = pi.Measure,
-                        Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100,2),
-                        Id = pi.Id
-                    }).ToList()
-                }).ToListAsync();
-
             return new()
             {
-                Payload = products,
-                Count = products.Count
+                Payload = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed)
+                    .OrderByDescending(x=>x.CreateDate)
+                    .Skip(request.Offset).Take(request.Limit)
+                    .Include(x => x.ProductItems).ThenInclude(x=>x.ProductItemImages)
+                    .Select(x => new MostPopularProductResponse
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        TitleDescription = x.TitleDescription,
+                        ImagePath = x.ProductItems.First(pi=>!pi.Removed).ProductItemImages.First().ImagePath,
+                        ProductItems = x.ProductItems.Where(pi=>!pi.Removed).Select(pi => new MostPopularProductItemResponse
+                        {
+                            Discount = pi.Percent,
+                            Measure = pi.Measure,
+                            Price = pi.Price,
+                            SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100,2),
+                            Id = pi.Id
+                        }).ToList()
+                    }).ToListAsync(),
+                Count = await _context.Products.Where(x => categoryIds.Contains(x.CategoryId) && !x.Removed).CountAsync()
             };
         }
 
@@ -223,37 +221,36 @@ namespace ZooMag.Services
 
         public async Task<GenericResponse<List<ProductResponse>>> GetAllAsync(GenericPagedRequest<string> request)
         {
-            var products = await _context.Products.Where(x => !x.Removed && (string.IsNullOrEmpty(request.Query) || x.Title.Contains(request.Query)))
-                .OrderByDescending(x=>x.Id)
-                .Skip(request.Offset)
-                .Take(request.Limit)
-                .Include(x => x.ProductItems)
-                .ThenInclude(x => x.ProductItemImages)
-                .Include(x=>x.Brand)
-                .Include(x=>x.Category)
-                .Select(x => new ProductResponse
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    TitleDescription = x.TitleDescription,
-                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
-                    BrandId = x.BrandId,
-                    CategoryId = x.CategoryId,
-                    BrandName = x.Brand.Name,
-                    CategoryName = x.Category.Name,
-                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
-                    {
-                        Discount = pi.Percent,
-                        Measure = pi.Measure,
-                        Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2),
-                        Id = pi.Id
-                    }).ToList()
-                }).ToListAsync();
             return new ()
             {
-                Payload = products,
-                Count = products.Count
+                Payload = await _context.Products.Where(x => !x.Removed && (string.IsNullOrEmpty(request.Query) || x.Title.Contains(request.Query)))
+                    .OrderByDescending(x=>x.Id)
+                    .Skip(request.Offset)
+                    .Take(request.Limit)
+                    .Include(x => x.ProductItems)
+                    .ThenInclude(x => x.ProductItemImages)
+                    .Include(x=>x.Brand)
+                    .Include(x=>x.Category)
+                    .Select(x => new ProductResponse
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        TitleDescription = x.TitleDescription,
+                        ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                        BrandId = x.BrandId,
+                        CategoryId = x.CategoryId,
+                        BrandName = x.Brand.Name,
+                        CategoryName = x.Category.Name,
+                        ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
+                        {
+                            Discount = pi.Percent,
+                            Measure = pi.Measure,
+                            Price = pi.Price,
+                            SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2),
+                            Id = pi.Id
+                        }).ToList()
+                    }).ToListAsync(),
+                Count = await _context.Products.Where(x => !x.Removed && (string.IsNullOrEmpty(request.Query) || x.Title.Contains(request.Query))).CountAsync()
             };
         }
 
@@ -457,30 +454,27 @@ namespace ZooMag.Services
                 queryableProducts = queryableProducts.OrderBy(x => x.ProductItems.Min(pi => pi.Price));
             if(request.Query.SortType == 6) //"Цена по убыванию"
                 queryableProducts = queryableProducts.OrderByDescending(x => x.ProductItems.Min(pi=> pi.Price));
-                
-
-            var products = await queryableProducts.Skip(request.Offset)
-                .Take(request.Limit)
-                .Select(x => new ProductResponse
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
-                    TitleDescription = x.TitleDescription,
-                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
-                    {
-                        Id = pi.Id,
-                        Discount = pi.Percent,
-                        Measure = pi.Measure,
-                        Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
-                    }).ToList()
-                }).ToListAsync();
 
             return new GenericResponse<List<ProductResponse>>
             {
-                Payload = products,
-                Count = products.Count
+                Payload = await queryableProducts.Skip(request.Offset)
+                    .Take(request.Limit)
+                    .Select(x => new ProductResponse
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                        TitleDescription = x.TitleDescription,
+                        ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
+                        {
+                            Id = pi.Id,
+                            Discount = pi.Percent,
+                            Measure = pi.Measure,
+                            Price = pi.Price,
+                            SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
+                        }).ToList()
+                    }).ToListAsync(),
+                Count = await queryableProducts.CountAsync()
             };
         }
 
@@ -554,31 +548,30 @@ namespace ZooMag.Services
 
         public async Task<GenericResponse<List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request)
         {
-            var products = await _context.Products.Where(x => !x.Removed && x.BrandId == request.Query)
-                .OrderByDescending(x=>x.Id)
-                .Skip(request.Offset)
-                .Take(request.Limit)
-                .Include(x => x.ProductItems)
-                .ThenInclude(x => x.ProductItemImages)
-                .Select(x => new ProductResponse
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    TitleDescription = x.TitleDescription,
-                    ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
-                    ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
-                    {
-                        Id = pi.Id,
-                        Discount = pi.Percent,
-                        Measure = pi.Measure,
-                        Price = pi.Price,
-                        SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
-                    }).ToList()
-                }).ToListAsync();
-            return new GenericResponse<List<ProductResponse>>
+            return new()
             {
-                Payload = products,
-                Count = products.Count
+                Payload = await _context.Products.Where(x => !x.Removed && x.BrandId == request.Query)
+                    .OrderByDescending(x=>x.Id)
+                    .Skip(request.Offset)
+                    .Take(request.Limit)
+                    .Include(x => x.ProductItems)
+                    .ThenInclude(x => x.ProductItemImages)
+                    .Select(x => new ProductResponse
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        TitleDescription = x.TitleDescription,
+                        ImagePath = x.ProductItems.First(pi => !pi.Removed).ProductItemImages.First().ImagePath,
+                        ProductItems = x.ProductItems.Where(pi => !pi.Removed).Select(pi => new ProductItemResponse
+                        {
+                            Id = pi.Id,
+                            Discount = pi.Percent,
+                            Measure = pi.Measure,
+                            Price = pi.Price,
+                            SellingPrice = Math.Round(pi.Price - pi.Price * pi.Percent / 100, 2)
+                        }).ToList()
+                    }).ToListAsync(),
+                Count = await _context.Products.Where(x => !x.Removed && x.BrandId == request.Query).CountAsync()
             };
         }
 

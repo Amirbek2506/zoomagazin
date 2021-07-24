@@ -1,6 +1,6 @@
-namespace ZooMag.DTOs.PickupPoint
+﻿namespace ZooMag.Entities
 {
-    public class UpdatePickupPointRequest
+    public class City
     {
         public int Id { get; set; }
         public string Name { get; set; }
