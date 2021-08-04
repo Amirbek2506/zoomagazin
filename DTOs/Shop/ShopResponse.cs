@@ -3,6 +3,6 @@
     public class ShopResponse
     {
         public int Id { get; set; }
-        public TYPE Type { get; set; }
+        // public TYPE Type { get; set; }
     }
 }

@@ -75,5 +75,14 @@ namespace ZooMag.Services
                 Status = "success"
             };
         }
+
+        public async Task<List<PickupPointResponse>> GetAllByCityId(int cityId)
+        {
+            return await _context.PickupPoints.Select(x => new PickupPointResponse
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToListAsync();
+        }
     }
 }
