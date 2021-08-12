@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ZooMag.Entities
 {
@@ -6,8 +7,9 @@ namespace ZooMag.Entities
     {
         [Key]
         public int Id { get; set; }
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
         public string Title { get; set; }
-        public string Image { get; set; }
+        public string CategoryImage { get; set; }
+        public ICollection<Pet> Pets { get; set; }
     }
 }
