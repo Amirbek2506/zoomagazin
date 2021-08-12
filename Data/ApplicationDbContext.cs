@@ -10,11 +10,10 @@ namespace ZooMag.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
            : base(options)
         {
-            Database.EnsureCreated();
+          // Database.EnsureCreated();
         }
 
         #region products
-
         public DbSet<Basket> Baskets { get; set; }
         public DbSet<Description> Descriptions { get; set; }
         public DbSet<Callback> Callbacks { get; set; }
