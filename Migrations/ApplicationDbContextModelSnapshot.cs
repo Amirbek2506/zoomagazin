@@ -478,6 +478,21 @@ namespace ZooMag.Migrations
                     b.ToTable("Chats");
                 });
 
+            modelBuilder.Entity("ZooMag.Entities.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cities");
+                });
+
             modelBuilder.Entity("ZooMag.Entities.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -530,7 +545,7 @@ namespace ZooMag.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryType");
+                    b.ToTable("DeliveryTypes");
                 });
 
             modelBuilder.Entity("ZooMag.Entities.Description", b =>
@@ -748,6 +763,9 @@ namespace ZooMag.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -760,16 +778,26 @@ namespace ZooMag.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<string>("OriginCountry")
+                        .HasColumnType("text");
+
                     b.Property<int>("PetCategoryId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("QuantityInStock")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PetCategoryId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Pets");
                 });
@@ -781,10 +809,10 @@ namespace ZooMag.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
-                    b.Property<string>("Image")
+                    b.Property<string>("CategoryImage")
                         .HasColumnType("text");
 
-                    b.Property<int>("ParentId")
+                    b.Property<int?>("ParentId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -1066,21 +1094,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "c5606c76-4f79-4ece-83fb-a3f244512511",
+                            ConcurrencyStamp = "606a84a8-d730-4d77-8660-d2e04b2f33be",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "801c6eb1-b820-4066-b873-773357b4fc7f",
+                            ConcurrencyStamp = "e670f9eb-8a6a-4746-910b-a0ce14fd95b5",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "878dcbd5-bd48-40a7-a23a-782dedf764f8",
+                            ConcurrencyStamp = "5db55a2a-4560-4940-a7f6-0d953d480d0f",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -1222,7 +1250,7 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "55e1a98d-9dfe-478c-ab2d-599d34923d82",
+                            ConcurrencyStamp = "148b245e-2cda-4b4c-8d9d-31de473d0881",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
@@ -1230,7 +1258,7 @@ namespace ZooMag.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEfTc/kxtZIqearKf+w3gslyh3tG+MOd1pfCskarEdOCjS/VL7rK1WL/gS/guZTNng==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBWhZOgGu+7t0W3BzS/VTxszIfIsBLhqIKR++oAustRh/FXoX5MKrKg6Ff0O2Crung==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1466,7 +1494,7 @@ namespace ZooMag.Migrations
                         .HasForeignKey("PickupPointId");
 
                     b.HasOne("ZooMag.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1499,6 +1527,25 @@ namespace ZooMag.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("ProductItem");
+                });
+
+            modelBuilder.Entity("ZooMag.Entities.Pet", b =>
+                {
+                    b.HasOne("ZooMag.Entities.PetCategory", "PetCategory")
+                        .WithMany("Pets")
+                        .HasForeignKey("PetCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZooMag.Entities.User", "User")
+                        .WithMany("Pets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PetCategory");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ZooMag.Entities.PetGalery", b =>
@@ -1666,6 +1713,11 @@ namespace ZooMag.Migrations
                     b.Navigation("PetGaleries");
                 });
 
+            modelBuilder.Entity("ZooMag.Entities.PetCategory", b =>
+                {
+                    b.Navigation("Pets");
+                });
+
             modelBuilder.Entity("ZooMag.Entities.PickupPoint", b =>
                 {
                     b.Navigation("Orders");
@@ -1697,6 +1749,10 @@ namespace ZooMag.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("BoxOrders");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("Pets");
 
                     b.Navigation("PetTransports");
 
