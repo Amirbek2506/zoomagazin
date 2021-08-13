@@ -10,6 +10,7 @@ using ZooMag.Models.ViewModels.PetTransports;
 using ZooMag.Models.ViewModels.ProductItems;
 using ZooMag.Models.ViewModels.Products;
 using ZooMag.ViewModels;
+using zoomagazin.DTOs.Pet;
 
 namespace ZooMag.Mapping
 {
@@ -37,6 +38,11 @@ namespace ZooMag.Mapping
             CreateMap<PetTransport, InpPetTransportModel>().ReverseMap();
             CreateMap<PetTransport, OutPetTransport>().ReverseMap();
             CreateMap<BoxOrder, OutBoxOrderModel>().ReverseMap();
+            CreateMap<CreatePetRequest, Pet>()
+                .ForMember(x => x.Image, option => option.Ignore())
+                .ForMember(x => x.PetGaleries, option => option.Ignore())
+                .ForMember(x => x.PetCategory, option => option.Ignore())
+                .ForMember(x => x.User, option => option.Ignore());
         }
     }
 }

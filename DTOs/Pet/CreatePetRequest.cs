@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
 namespace zoomagazin.DTOs.Pet
@@ -15,7 +16,7 @@ namespace zoomagazin.DTOs.Pet
         public IFormFile Image { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
-        public IFormFile[] Images { get; set; }
+        public List<IFormFile> Images { get; set; }
         public int UserId { get; set; }
     }
 }

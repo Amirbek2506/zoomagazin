@@ -81,5 +81,15 @@ namespace ZooMag.Services
             await CopyFileAsync(imagePath, file);
             return $"Resources/Banner/{imageName}";
         }
+
+        public Task<List<string>> AddPetGalleryFilesASync(List<IFormFile> files)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddPetImageFileASync(IFormFile file)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using ZooMag.DTOs.PetGalery;
 
-namespace zoomagazin.DTOs.Pet
+namespace ZooMag.DTOs.Pet
 {
     public class GetPetResponse
     {
@@ -17,7 +17,7 @@ namespace zoomagazin.DTOs.Pet
         public string Image { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
-        public GetPetImageResponse Images { get; set; }
+        public GetPetGaleryResponse Images { get; set; }
         public int UserId { get; set; }
     }
 }
