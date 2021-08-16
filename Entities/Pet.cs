@@ -14,11 +14,13 @@ namespace ZooMag.Entities
         public string Description { get; set; }
         public int Age { get; set; }
         public string Breed { get; set; }
+        public bool Gender { get; set; }  
+        public bool Inoculated { get; set; }
         public string Color { get; set; }
         public string OriginCountry { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Price { get; set; }             
+        public decimal Price { get; set; }           
         public int PetCategoryId { get; set; }
         public int? MainImageId { get; set; }
         public bool IsActive { get; set; }

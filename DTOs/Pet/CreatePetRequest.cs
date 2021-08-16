@@ -9,6 +9,8 @@ namespace zoomagazin.DTOs.Pet
         public string Description { get; set; }
         public int Age { get; set; }
         public string Breed { get; set; }
+        public bool Gender { get; set; }
+        public bool Inoculated { get; set; }
         public string Color { get; set; }
         public decimal Price { get; set; }
         public string OriginCountry { get; set; }             
