@@ -1,5 +1,6 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using ZooMag.DTOs.PetGalery;
+using ZooMag.DTOs.PetImage;
 
 namespace ZooMag.DTOs.Pet
 {
@@ -17,7 +18,7 @@ namespace ZooMag.DTOs.Pet
         public string Image { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
-        public GetPetGaleryResponse Images { get; set; }
+        public List<GetPetImageResponse> Images { get; set; }
         public int UserId { get; set; }
     }
 }

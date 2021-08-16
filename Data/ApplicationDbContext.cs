@@ -57,7 +57,7 @@ namespace ZooMag.Data
         #region pet order
         public DbSet<PetCategory> PetCategories { get; set; }
         public DbSet<Pet> Pets { get; set; }
-        public DbSet<PetGalery> PetGaleries { get; set; }
+        public DbSet<PetImage> PetImages { get; set; }
         public DbSet<PetOrder> PetOrders { get; set; }
         #endregion
 

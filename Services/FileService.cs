@@ -82,14 +82,23 @@ namespace ZooMag.Services
             return $"Resources/Banner/{imageName}";
         }
 
-        public Task<List<string>> AddPetGalleryFilesASync(List<IFormFile> files)
+        public async Task<List<string>> AddPetGalleryFilesASync(List<IFormFile> files)
         {
-            throw new NotImplementedException();
+            List<string> imagePaths = new List<string>();
+            foreach(var file in files)
+            {
+                imagePaths.Add(await AddPetImageFileASync(file));
+            }
+            return imagePaths;
         }
 
-        public Task<string> AddPetImageFileASync(IFormFile file)
+        public async Task<string> AddPetImageFileASync(IFormFile file)
         {
-            throw new NotImplementedException();
+            string dirPath = GetDirectory("Pet");
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
+            string imagePath = dirPath + imageName;
+            await CopyFileAsync(imagePath, file);
+            return $"Resources/Pet/{imageName}";
         }
     }
 }

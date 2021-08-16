@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.DTOs.Pet;
-using ZooMag.DTOs.PetGalery;
+using ZooMag.DTOs.PetImage;
 using ZooMag.Entities;
 using ZooMag.Mapping;
 using ZooMag.Models;
@@ -35,317 +35,106 @@ namespace ZooMag.Services
 
         public async Task<int> CreatePet(CreatePetRequest request)
         {
+            //incorrect PetCategory
+            if (_context.PetCategories.FirstOrDefault(x => x.Id == request.PetCategoryId) == null)
+                return 0;
+            //create Pet entity
             var model = _mapper.Map<CreatePetRequest, Pet>(request);
             await _context.Pets.AddAsync(model);
             _context.SaveChanges();
-
-            //create Pet image and Galery:
-            if (request.Image != null)
-            {
-                await CreatePetMainImage(new CreatePetMainImageRequest{
-                    PetId = model.Id,
-                    Image = request.Image
-                });
-            }
+            //create pets images
             if (request.Images != null)
             {
-                await this.CreatePetGalery(new CreatePetGaleryRequest{
-                    PetId = model.Id,
-                    Images = request.Images
-                });
+                var ImagePaths = await this.CreatePetGalery(new CreatePetImagesRequest{
+                                        PetId = model.Id,
+                                        Images = request.Images
+                                    });
+                model.MainImageId = ImagePaths.First();
+                _context.SaveChanges();
             }
-            return model.Id;
-            /*
-            var productItemImages = new List<string>();
-            if(request.Images != null)
-                productItemImages = await _fileService.AddProductItemFilesASync(request.Images);
-            else 
-                productItemImages.Add("Resources/no-image.png");
-            if (request.ProductId != null)
+            return model.Id;            
+        }
+
+        public async Task<IEnumerable<int>> CreatePetGalery(CreatePetImagesRequest request)
+        {
+            var imagePaths = await  _fileService.AddPetGalleryFilesASync(request.Images);
+            var models = imagePaths.Select(x => new PetImage{PetId = request.PetId, ImageUrl = x});
+            var result = new List<int>();
+            foreach (var item in models)
             {
-                List<CreateDescriptionRequest> descriptionRequests = new List<CreateDescriptionRequest>();
-                if(request.Descriptions.Any(x=> !string.IsNullOrEmpty(x)))
-                   descriptionRequests = request.Descriptions.Select(JsonConvert.DeserializeObject<CreateDescriptionRequest>).ToList();
-                var productItem = new ProductItem
-                {
-                    Descriptions = descriptionRequests.Select(x => new Description
-                    {
-                        Content = x.Content,
-                        Title = x.Title
-                    }).ToList(),
-                    Measure = request.Measure,
-                    Percent = request.Percent,
-                    Price = request.Price,
-                    Removed = false,
-                    VendorCode = request.VendorCode,
-                    ProductId = (int) request.ProductId,
-                    ProductItemImages = productItemImages.Select(x => new ProductItemImage {ImagePath = x}).ToList()
-                };
-                
-                await _context.ProductItems.AddAsync(productItem);
-                await _context.SaveChangesAsync();
-                
-                return new Response {Message = "Успешно", Status = "success"};
-            }
-
-            return new Response {Status = "success", Message = "Не найден"};
-            */
+                await _context.PetImages.AddAsync(item);
+                _context.SaveChanges();
+                result.Add(item.Id);
+            }              
+            return result;
         }
 
-        public async Task<List<int>> CreatePetGalery(CreatePetGaleryRequest request)
+        public async Task<Response> DeletePet(int petId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Pets.FirstOrDefaultAsync(x => x.Id == petId);
+            if (entity == null)
+                return new Response {Status = "error", Message = "Питомец не найден"};
+            var galeries = _context.PetImages.Where(x => x.PetId == petId);
+            
+            //remove data:
+            _context.PetImages.RemoveRange(galeries);
+            _context.Pets.Remove(entity);
+            _context.SaveChanges();
+            return new Response {Status = "success", Message = "Питомец успешно удалён"};
         }
 
-        public async Task<int> CreatePetMainImage(CreatePetMainImageRequest request)
+        public async Task DeletePetGalery(int petGaleryId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.PetImages.FirstOrDefaultAsync(x => x.Id == petGaleryId);
+            if (entity == null)
+                return;
+            _context.PetImages.Remove(entity);
+        }
+
+        public async Task<Response> DeletePetImage(int petImageId)
+        {
+            var entity = await _context.PetImages.FirstOrDefaultAsync(x => x.Id == petImageId);
+            if (entity == null)
+                return new Response {Status = "error", Message = "Изображение не найдено"};
+            _fileService.Delete(entity.ImageUrl);
+            _context.PetImages.Remove(entity);    
+            _context.SaveChanges();
+            return new Response {Status = "success", Message = "Изображение успешно удалено"};            
+        }
+
+        public async Task<List<PetListItemResponse>> GetAllPets()
+        {
+            var entities = await _context.Pets.Where(x => x.IsActive).Include(x => x.PetImages).ToListAsync();
+            var result = _mapper.Map<List<Pet>, List<PetListItemResponse>>(entities);            
+            return result;
         }
 
         public async Task<GetPetResponse> GetPet(int id)
         {
-            throw new NotImplementedException();
+            var entity = _context.Pets.FirstOrDefault(x => x.Id == id);
+            if (entity == null) return null;
+
+            var result = _mapper.Map<Pet, GetPetResponse>(entity);            
+            result.Images = await GetPetGalery(entity.Id, entity.MainImageId);
+            if ( _context.PetImages.FirstOrDefault(x => x.Id == entity.MainImageId) != null)
+                result.Image = _context.PetImages.FirstOrDefault(x => x.Id == entity.MainImageId).ImageUrl;
+            return result;
         }
 
-        public async Task<GetPetGaleryResponse> GetPetGalery(int petId)
+        public async Task<List<GetPetImageResponse>> GetPetGalery(int petId, int? mainImageId)
         {
-            throw new NotImplementedException();
+            var petGaleriesEntities = _context.PetImages.Where(x => x.PetId == petId && x.Id != (mainImageId??0)).ToList();
+            var result = _mapper.Map< List<PetImage>, List<GetPetImageResponse>>(petGaleriesEntities);
+            return result;
         }
 
-
-
-        // public async Task<int> CreatePet(InpPetModel pet)
-        // {
-        //     Pet prod = _mapper.Map<InpPetModel, Pet>(pet);
-        //     if (await _context.PetCategories.FindAsync(prod.PetCategoryId)==null)
-        //     {
-        //         prod.PetCategoryId = 0;
-        //     }
-        //     prod.Image = "http://api.zoomag.tj/Resources/Images/Pets/image.png";
-        //     prod.IsActive = true;
-        //     _context.Pets.Add(prod);
-        //     await Save();
-        //     return prod.Id;
-        // }
-
-        // public OutPetModel FetchPetById(int id)
-        // {
-        //     Pet prod = _context.Pets.FirstOrDefault(p => p.Id == id && p.IsActive);
-        //     if (prod == null)
-        //         return null;
-
-        //     var pet = _mapper.Map<Pet, OutPetModel>(prod);
-        //     pet.Category = _context.PetCategories.Find(prod.PetCategoryId);
-
-        //     return pet;
-        // }
-
-        // public async Task<List<OutPetModel>> FetchPets(int rows_limit, int rows_offset,int categoryId)
-        // {
-        //     List<Pet> pets = await _context.Pets
-        //         .Where(p => 
-        //             p.IsActive && 
-        //             (categoryId != 0 ? p.PetCategoryId == categoryId : true))
-        //         .Skip(rows_offset).Take(rows_limit).ToListAsync();
-
-        //     return _mapper.Map<List<Pet>, List<OutPetModel>>(pets);
-        // }
-
-        // public async Task<int> UpdatePet(UpdPetModel pet)
-        // {
-        //     Pet prod = await _context.Pets.SingleOrDefaultAsync(p => p.Id == pet.Id && p.IsActive);
-        //     if (prod == null)
-        //         return 0;
-
-        //     prod.PetCategoryId = await _context.PetCategories.FindAsync(prod.PetCategoryId) == null?0:pet.PetCategoryId;
-
-        //     prod.Name = pet.Name;
-        //     prod.Discription = pet.Discription;
-        //     prod.Color = pet.Color;
-        //     prod.Price = pet.Price;
-        //     prod.Quantity = pet.Quantity;
-        //     prod.Breed = pet.Breed;
-        //     prod.Age = pet.Age;
-
-        //     await Save();
-        //     return prod.Id;
-        // }
-
-        // public async Task<Response> DeletePet(int id)
-        // {
-        //     Pet pet = _context.Pets.FirstOrDefault(p => p.Id == id);
-        //     if (pet != null)
-        //     {
-        //         DeleteDirectory(id);
-        //         await DeletePetGaleries(id);
-        //         pet.Image = "Resources/Images/deleted.png";
-        //         pet.IsActive = false;
-        //         await Save();
-        //         return new Response { Status = "success", Message = "Питомец успешно удален!" };
-        //     }
-        //         return new Response { Status = "error", Message = "Питомец не существует!" };
-        // }       
-
-
-        // #region pet images
-        // private async Task<string> UploadImage(int petId, IFormFile file)
-        // {
-        //     string fName = Guid.NewGuid().ToString() + file.FileName;
-        //     string path = Path.GetFullPath("Resources/Images/Pets/" + petId);
-        //     if (!Directory.Exists(path))
-        //     {
-        //         Directory.CreateDirectory(path);
-        //     }
-        //     path = Path.Combine(path, fName);
-        //     using (var stream = new FileStream(path, FileMode.Create))
-        //     {
-        //         await file.CopyToAsync(stream);
-        //     }
-        //     return "http://api.zoomag.tj/Resources/Images/Pets/" + petId + "/" + fName;
-        // }
-
-
-        // public async Task CreatePetGaleries(int petId, IFormFile[] images)
-        // {
-        //     for (int i = 1; i <= images.Length; i++)
-        //     {
-        //         string fileName = await UploadImage(petId, images[i - 1]);
-        //         if (i == 1)
-        //         {
-        //             Pet pet = _context.Pets.FirstOrDefault(p => p.Id == petId);
-        //             if (pet != null)
-        //             {
-        //                 if(pet.Image == "http://api.zoomag.tj/Resources/Images/Pets/image.png" || String.IsNullOrEmpty(pet.Image))
-        //                 {
-        //                     pet.Image = fileName;
-        //                     await Save();
-        //                     continue;
-        //                 }
-        //             }
-        //         }
-        //         _context.PetGaleries.Add(
-        //             new PetGalery
-        //             {
-        //                 PetId = petId,
-        //                 Image = fileName
-        //             });
-        //     }
-        //     await Save();
-        //     return;
-        // }
-
-        // public async Task<Response> SetMainImage(int petId,int imageId)
-        // {
-        //     var pet = await _context.Pets.FindAsync(petId);
-        //     if(pet==null)
-        //     {
-        //         return new Response { Status = "error",Message = "Питомец   не найден!" };
-        //     }
-        //     var galery = await _context.PetGaleries.FindAsync(imageId);
-        //     if (galery == null)
-        //     {
-        //         return new Response { Status = "error", Message = "Фото не найдено!" };
-        //     }
-        //     string img = pet.Image;
-        //     pet.Image = galery.Image;
-        //     galery.Image = img;
-        //     await Save();
-        //     return new Response {Status = "success",Message = "Фото успешно присвоен!" }; ;
-        // }
-
-        // private async Task DeletePetGaleries(int petId)
-        // {
-        //     var galeries = await _context.PetGaleries.Where(p => p.PetId == petId).ToListAsync();
-        //         _context.PetGaleries.RemoveRange(galeries);
-        //     await Save();
-        //     return;
-        // }
-
-        // public async Task<List<PetImagesModel>> FetchPetGaleriesByPetId(int petId)
-        // {
-        //     var res = await _context.PetGaleries.Where(p => p.PetId == petId).ToListAsync();
-        //     return _mapper.Map<List<PetGalery>, List<PetImagesModel>>(res);
-        // }
-
-        // private void DeleteDirectory(int petId)
-        // {
-        //     string path = "Resources/Images/Pets/" + petId;
-        //     if (Directory.Exists(path))
-        //         Directory.Delete(path, true);
-        // }
-
-        // private void DeleteImage(string path)
-        // {
-        //     FileInfo fileInfo = new FileInfo(path);
-        //     if (fileInfo.Exists)
-        //     {
-        //         fileInfo.Delete();
-        //     }
-        // }
-
-
-        // public async Task<Response> DeleteImage(int id, int petId)
-        // {
-        //     if (id != 0)
-        //     {
-        //         var galery = _context.PetGaleries.FirstOrDefault(p => p.Id == id);
-        //         if(galery!=null)
-        //         {
-        //             DeleteImage(galery.Image);
-        //             await DeletePetGalery(id);
-        //             return new Response { Status = "success", Message = "Фотография успешно удалено!" };
-        //         }
-        //     }
-        //     else
-        //     {
-        //         var pet = await _context.Pets.FirstOrDefaultAsync(p=>p.Id == petId);
-        //         if (pet!=null)
-        //         {
-        //             DeleteImage(pet.Image);
-        //             var galery = _context.PetGaleries.FirstOrDefault(p => p.PetId == petId);
-        //             if (galery != null)
-        //             {
-        //                 pet.Image = galery.Image;
-        //                 await Save();
-        //                 await DeletePetGalery(galery.Id);
-        //             }else
-        //             {
-        //                 pet.Image = null;
-        //                 await Save();
-        //             }
-        //             return new Response { Status = "success", Message = "Фотография успешно удалено!" };
-        //         }
-        //     }
-        //     return new Response { Status = "error", Message = "Фотография не найдена!" };
-        // }
-
-
-        // private async Task<int> DeletePetGalery(int id)
-        // {
-        //     var galery = await _context.PetGaleries.FirstOrDefaultAsync(p=>p.Id == id);
-        //     if(galery!=null)
-        //     {
-        //         _context.PetGaleries.Remove(galery);
-        //     }
-        //     return await _context.SaveChangesAsync();
-        // }
-
-        // #endregion
-
-        // private async Task<int> Save()
-        // {
-        //     return await _context.SaveChangesAsync();
-        // }
-
-
-        // public async Task<int> CountPets(int categoryId)
-        // {
-        //     return await _context.Pets
-        //          .Where(p =>
-        //                p.IsActive &&
-        //                (categoryId != 0 ? p.PetCategoryId == categoryId : true))
-        //          .CountAsync();
-
-        // }
+        public async Task<Response> UpdatePet(UpdatePetRequest request)
+        {
+            var model = _mapper.Map<UpdatePetRequest, Pet>(request);
+            _context.Pets.Update(model);
+            _context.SaveChanges();
+            await CreatePetGalery(new CreatePetImagesRequest{ PetId = model.Id, Images = request.NewImages.ToList()});
+            return new Response {Status = "success", Message = "Данные успешно обновлены"};;
+        }
     }
 }

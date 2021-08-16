@@ -2,23 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using ZooMag.DTOs.PetGalery;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Pets;
 using ZooMag.Models.ViewModels.Products;
 using ZooMag.ViewModels;
 using ZooMag.DTOs.Pet;
 using zoomagazin.DTOs.Pet;
+using ZooMag.DTOs.PetImage;
+using ZooMag.Entities;
 
 namespace ZooMag.Services.Interfaces
 {
     public interface IPetsService
     {
         Task<int> CreatePet(CreatePetRequest request);
-        Task<int> CreatePetMainImage(CreatePetMainImageRequest request);
-        Task<List<int>> CreatePetGalery(CreatePetGaleryRequest request);
+        Task<IEnumerable<int>> CreatePetGalery(CreatePetImagesRequest request);
+        Task<List<PetListItemResponse>> GetAllPets();
         Task<GetPetResponse> GetPet(int id);
-        Task<GetPetGaleryResponse> GetPetGalery(int petId);
+        Task<List<GetPetImageResponse>> GetPetGalery(int petId, int? mainImageId);
+
+        Task<Response> DeletePet(int petId);
+        Task<Response> DeletePetImage(int petImageId);
+        Task<Response> UpdatePet(UpdatePetRequest request);
 
 
         // Task<int> CreatePet(InpPetModel pet);

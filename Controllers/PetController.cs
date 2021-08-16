@@ -31,106 +31,48 @@ namespace ZooMag.Controllers
             return Ok(new Response { Status = "Success", Message = "Питомец успешно добавлен!" });
         }
 
+        [HttpGet]
+        [Route("getAll")]
+        public async Task<IActionResult> GetAllPets()
+        {          
+            var result = await  _petsService.GetAllPets();
+            if (result == null)
+                return BadRequest(new Response {Status = "error",Message = "Список питомцев пуст!"});
+            return Ok(result);
+        }
 
-        // [HttpGet]
-        // [Route("fetch")]
-        // public async Task<IActionResult> GetPets(int offset=0, int limit=20,int categoryId=0)
-        // {
-        //     var pets = await _petsService.FetchPets(limit<1?1:limit,offset<1?0:offset,categoryId);
-        //     int count = await _petsService.CountPets(categoryId);
-        //     return Ok(new { count = count, pets = pets });
-        // }
+        [HttpGet]
+        [Route("getById")]
+        public async Task<IActionResult> GetPetById(int Id)
+        {          
+            var result = await  _petsService.GetPet(Id);
+            if (result == null)
+                return BadRequest(new Response {Status = "error",Message = "Данные о товаре не нейдены!"});
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("delete")]
+        public async Task<IActionResult> Delete(int Id)
+        {           
+            var response = await _petsService.DeletePet(Id);
+            return Created("Pet", response);
+        }
         
+        [HttpPost]
+        [Route("deleteImage")]
+        public async Task<IActionResult> DeletePet(int petImageId)
+        {           
+            var response = await _petsService.DeletePetImage(petImageId);
+            return Created("Pet", response);
+        }
 
-        // [HttpGet]
-        // [Route("fetchbyid/{id}")]
-        // public async Task<IActionResult> GetPetById(int id)
-        // {
-        //     var petModel = _petsService.FetchPetById(id);
-        //     if (petModel == null)
-        //     {
-        //         return BadRequest(new Response { Status = "Error", Message = "Питомец не найден!" });
-        //     }
-        //     petModel.Images = await _petsService.FetchPetGaleriesByPetId(id);
-
-        //     return Ok(petModel);
-        // }
-
-
-        // [HttpPut]
-        // [Route("update")]
-        // [Authorize(Roles = "Администратор")]
-        // public async Task<IActionResult> UpdatePet([FromForm] UpdPetModel model)
-        // {
-        //     int petId = await _petsService.UpdatePet(model);
-        //     if(petId==0)
-        //     {
-        //         return BadRequest(new Response { Status = "Error", Message = "Питомец не найден!" });
-        //     }
-           
-        //     return Ok(new Response { Status = "Success", Message = "Питомец успешно изменен!" });
-        // }
-
-
-        // [HttpPost]
-        // [Route("createimages")]
-        // [Authorize(Roles = "Администратор")]
-        // public async Task<IActionResult> CreateImages([FromForm]int petid, IFormFile[] Images)
-        // {
-        //     var petModel = _petsService.FetchPetById(petid);
-        //     if (petModel == null)
-        //     {
-        //         return BadRequest(new Response { Status = "Error", Message = "Питомец не найден!" });
-        //     }
-        //     if (Images!=null)
-        //     {
-        //         await _petsService.CreatePetGaleries(petid, Images);
-        //     }
-        //     petModel.Images = await _petsService.FetchPetGaleriesByPetId(petid);
-
-        //     return Ok(petModel);
-        // }
-
-
-        // [HttpPost]
-        // [Route("setmainimage")]
-        // [Authorize(Roles = "Администратор")]
-        // public async Task<IActionResult> SetMainImage(int petid, int imageid)
-        // {
-        //     var ress = await _petsService.SetMainImage(petid,imageid);
-        //     if(ress.Status == "success")
-        //     {
-        //         return Ok(ress);
-        //     }
-        //     return BadRequest(ress);
-        // }
-
-
-        // [HttpDelete]
-        // [Route("delete/{id}")]
-        // [Authorize(Roles = "Администратор")]
-        // public async Task<IActionResult> DeletePet(int id)
-        // {
-        //     var ress = await _petsService.DeletePet(id);
-        //     if (ress.Status == "success")
-        //     {
-        //         return Ok(ress);
-        //     }
-        //     return BadRequest(ress);
-        // }
-
-
-        // [HttpDelete]
-        // [Route("deleteImage")]
-        // [Authorize(Roles = "Администратор")]
-        // public async Task<IActionResult> DeleteImage(int petid, int imageid)
-        // {
-        //     var ress = await _petsService.DeleteImage(imageid, petid);
-        //     if (ress.Status == "success")
-        //     {
-        //         return Ok(ress);
-        //     }
-        //     return BadRequest(ress);
-        // }
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> Update([FromForm]UpdatePetRequest request)
+        {
+            var response = await  _petsService.UpdatePet(request);
+            return Created("Pet", response);
+        }
     }
 }

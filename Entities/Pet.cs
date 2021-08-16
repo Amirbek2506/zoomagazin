@@ -20,12 +20,12 @@ namespace ZooMag.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }             
         public int PetCategoryId { get; set; }
-        public string Image { get; set; }
+        public int? MainImageId { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
         public DateTime CreatedAt { get; set; }
         public int UserId { get; set; }
-        public virtual ICollection<PetGalery> PetGaleries { get; set; }
+        public virtual ICollection<PetImage> PetImages { get; set; }
         public virtual PetCategory PetCategory { get; set; }
         public virtual User User { get; set; }
     }

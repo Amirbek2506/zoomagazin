@@ -13,7 +13,7 @@ namespace zoomagazin.DTOs.Pet
         public decimal Price { get; set; }
         public string OriginCountry { get; set; }             
         public int PetCategoryId { get; set; }
-        public IFormFile Image { get; set; }
+       // public IFormFile Image { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
         public List<IFormFile> Images { get; set; }
