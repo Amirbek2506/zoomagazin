@@ -81,5 +81,43 @@ namespace ZooMag.Services
             await CopyFileAsync(imagePath, file);
             return $"Resources/Banner/{imageName}";
         }
+
+        public async Task<List<string>> AddPetGalleryFilesASync(List<IFormFile> files)
+        {
+            List<string> imagePaths = new List<string>();
+            foreach(var file in files)
+            {
+                imagePaths.Add(await AddPetImageFileASync(file));
+            }
+            return imagePaths;
+        }
+
+        public async Task<string> AddPetImageFileASync(IFormFile file)
+        {
+            string dirPath = GetDirectory("Pet");
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
+            string imagePath = dirPath + imageName;
+            await CopyFileAsync(imagePath, file);
+            return $"Resources/Pet/{imageName}";
+        }
+
+        public async Task<string> AddServImageFileASync(IFormFile file)
+        {
+            string dirPath = GetDirectory("AdditionalServ");
+            string imageName = $"{DateTime.Now:dd-MM-yyyy-H-m}_{file.FileName}";
+            string imagePath = dirPath + imageName;
+            await CopyFileAsync(imagePath, file);
+            return $"Resources/AdditionalServ/{imageName}";
+        }
+
+        public async Task<List<string>> AddServImageFilesASync(List<IFormFile> files)
+        {
+            List<string> imagePaths = new List<string>();
+            foreach(var file in files)
+            {
+                imagePaths.Add(await AddServImageFileASync(file));
+            }
+            return imagePaths;
+        }
     }
 }

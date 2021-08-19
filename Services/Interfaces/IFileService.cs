@@ -14,5 +14,14 @@ namespace ZooMag.Services.Interfaces
         Task<string> AddProductItemFileASync(IFormFile file);
         Task<string> AddPromotionFileAsync(IFormFile requestImage);
         Task<string> AddBannerFileAsync(IFormFile requestImage);
+
+        //for pets
+        Task<List<string>> AddPetGalleryFilesASync (List<IFormFile> files);
+        Task<string> AddPetImageFileASync(IFormFile file);
+
+        //for additional serv:
+        Task<string> AddServImageFileASync(IFormFile file);
+        Task<List<string>> AddServImageFilesASync(List<IFormFile> file);
+
     }
 }

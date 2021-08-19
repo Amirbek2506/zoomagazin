@@ -46,7 +46,7 @@ namespace ZooMag.Controllers
 
         [HttpPost]
         [Route("create")]
-        [Authorize(Roles = "Администратор")]
+        //[Authorize(Roles = "Администратор")]
         public async Task<IActionResult> CreatePetCategory([FromForm] InpPetCategoryModel categoryModel)
         {
             var ress = await _categoriesService.Create(categoryModel);
@@ -59,7 +59,7 @@ namespace ZooMag.Controllers
         
         [HttpPut]
         [Route("update")]
-        [Authorize(Roles = "Администратор")]
+        //[Authorize(Roles = "Администратор")]
         public async Task<IActionResult> UpdatePetCategory([FromForm] UpdPetCategoryModel categoryModel)
         {
             Response ress = await _categoriesService.Update(categoryModel);
@@ -72,7 +72,7 @@ namespace ZooMag.Controllers
 
         [HttpDelete]
         [Route("delete")]
-        [Authorize(Roles = "Администратор")]
+        //[Authorize(Roles = "Администратор")]
         public async Task<IActionResult> DeletePetCategory([FromForm] int id)
         {
              Response ress = await _categoriesService.Delete(id);

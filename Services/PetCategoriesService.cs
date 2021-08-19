@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
+using ZooMag.Entities;
 using ZooMag.Mapping;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Categories;
@@ -39,7 +40,7 @@ namespace ZooMag.Services
             if (model.Image != null)
             {
                 string image = await UploadImage(cat.Id, model.Image);
-                cat.Image = "Resources/Images/PetCategories/"+ cat.Id + "/" + image;
+                cat.CategoryImage = "Resources/Images/PetCategories/"+ cat.Id + "/" + image;
                 await Save();
             }
             return new Response { Status = "success", Message = "Категория успешно добавлена!" };
@@ -68,7 +69,7 @@ namespace ZooMag.Services
                 if (model.Image != null)
                 {
                     string image = await UploadImage(model.Id, model.Image);
-                    category.Image = "Resources/Images/PetCategories/" + model.Id + "/" + image;
+                    category.CategoryImage = "Resources/Images/PetCategories/" + model.Id + "/" + image;
                 }
                 await Save();
                 return new Response { Status = "success", Message = "Категория успешно изменена!" };
@@ -82,7 +83,7 @@ namespace ZooMag.Services
             if (category != null)
             {
                 List<Pet> pets = await _context.Pets.Where(p => p.PetCategoryId == id).ToListAsync();
-                pets.ForEach(p=>p.PetCategoryId = category.ParentId);
+                pets.ForEach(p=>p.PetCategoryId = category.ParentId??_context.PetCategories.First().Id);
                 string path = "Resources/Images/PetCategories/" + category.Id;
                 if (Directory.Exists(path))
                     Directory.Delete(path, true);
@@ -107,7 +108,7 @@ namespace ZooMag.Services
         public async Task<List<OutPetCategoryModel>> FetchWithSubcategories()
         {
             var categories = await _context.PetCategories.ToListAsync();
-            var superCategories = categories.Where(x => x.ParentId == 0).Select(x=> new OutPetCategoryModel { Id = x.Id, Title = x.Title,Image = x.Image}).ToList();
+            var superCategories = categories.Where(x => x.ParentId == null).Select(x=> new OutPetCategoryModel { Id = x.Id, Title = x.Title,Image = x.CategoryImage}).ToList();
             foreach(var superCategory in superCategories)
             {
                 await GetSubcategories(superCategory, categories);
@@ -117,7 +118,7 @@ namespace ZooMag.Services
 
         private async Task GetSubcategories(OutPetCategoryModel superCategory, IList<PetCategory> categories)
         {
-            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutPetCategoryModel { Id = x.Id, Title = x.Title,Image = x.Image}).ToList();
+            superCategory.SubCategories = categories.Where(x => x.ParentId == superCategory.Id).Select(x=> new OutPetCategoryModel { Id = x.Id, Title = x.Title,Image = x.CategoryImage}).ToList();
             foreach(var category in superCategory.SubCategories)
             {
                 await GetSubcategories(category, categories);
@@ -140,5 +141,14 @@ namespace ZooMag.Services
             return file.FileName;
         }
 
+        Entities.PetCategory IPetCategoriesService.FetchById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Entities.PetCategory>> IPetCategoriesService.Fetch()
+        {
+            throw new NotImplementedException();
+        }
     }
-}*/
+}
