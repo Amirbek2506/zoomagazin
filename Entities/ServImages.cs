@@ -4,7 +4,7 @@ namespace ZooMag.Entities
     {
         public int Id { get; set; }
         public string ImageUrl { get; set; }
-        public int IsBanner { get; set; }
+        public bool IsBannerImage { get; set; }
         public int AdditionalServId { get; set; }
         public virtual AdditionalServ AdditionalServes{ get; set; }
     }

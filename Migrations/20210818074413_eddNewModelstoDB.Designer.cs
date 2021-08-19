@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZooMag.Data;
@@ -9,9 +10,10 @@ using ZooMag.Data;
 namespace ZooMag.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210818074413_eddNewModelstoDB")]
+    partial class eddNewModelstoDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1124,21 +1126,21 @@ namespace ZooMag.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "e7ba4d0c-d91a-479f-99b2-953d8dc4f399",
+                            ConcurrencyStamp = "40cc5356-c615-4b70-b85b-6614e2baa71c",
                             Name = "Администратор",
                             NormalizedName = "АДМИНИСТРАТОР"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "198246dd-73dc-447c-89dc-13d1ea977c3e",
+                            ConcurrencyStamp = "63361cbe-d779-456d-afc1-303d891d11f1",
                             Name = "Бухгалтер",
                             NormalizedName = "БУХГАЛТЕР"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "fac513ee-6f50-4a74-9bc6-4d7d475f5349",
+                            ConcurrencyStamp = "a48ac866-db7e-42a8-865d-7ae2a7762cfb",
                             Name = "Клиент",
                             NormalizedName = "КЛИЕНТ"
                         });
@@ -1157,8 +1159,8 @@ namespace ZooMag.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsBannerImage")
-                        .HasColumnType("boolean");
+                    b.Property<int>("IsBanner")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1303,7 +1305,7 @@ namespace ZooMag.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDay = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "5bbc29f8-449e-43fb-9f80-f5af3f27ca17",
+                            ConcurrencyStamp = "357ee2ce-f3fb-4c3c-a808-0a9194cf83ee",
                             Email = "user@example.com",
                             EmailConfirmed = false,
                             GenderId = 1,
@@ -1311,7 +1313,7 @@ namespace ZooMag.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAED51ASjaKsfGxZrt+WrJvuHHL147Jk4d/BRteCmtFuXj5KUx9a7gK8KKzvNitglFDA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEF/ODW1fdzzRCiwSW0mTU+APG0qJUeLtq/tzjf1rgsSnxA1hWNwg2EadQ+pitldRSg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,

@@ -61,7 +61,7 @@ namespace ZooMag.Controllers
         
         [HttpPost]
         [Route("deleteImage")]
-        public async Task<IActionResult> DeletePet(int petImageId)
+        public async Task<IActionResult> DeletePetImage(int petImageId)
         {           
             var response = await _petsService.DeletePetImage(petImageId);
             return Created("Pet", response);

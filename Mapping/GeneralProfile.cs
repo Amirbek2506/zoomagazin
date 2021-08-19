@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AutoMapper;
+using ZooMag.DTOs.AdditionalServ;
 using ZooMag.DTOs.Pet;
 using ZooMag.DTOs.PetImage;
 using ZooMag.Entities;
@@ -41,6 +42,7 @@ namespace ZooMag.Mapping
             CreateMap<PetTransport, InpPetTransportModel>().ReverseMap();
             CreateMap<PetTransport, OutPetTransport>().ReverseMap();
             CreateMap<BoxOrder, OutBoxOrderModel>().ReverseMap();
+            
             CreateMap<CreatePetRequest, Pet>()
                 .ForMember(x => x.MainImageId, option => option.Ignore())
                 .ForMember(x => x.PetImages, option => option.Ignore())
@@ -57,6 +59,16 @@ namespace ZooMag.Mapping
                 .ForMember(x => x.Image, option => option.MapFrom(x =>  (x.MainImageId != null? 
                                                                             x.PetImages.FirstOrDefault(i => i.Id == x.MainImageId).ImageUrl:
                                                                             null)));
+            
+            CreateMap<CreateAdditionalServRequest, AdditionalServ>()
+                .ForMember(x => x.ServImages, option => option.Ignore());
+            CreateMap<AdditionalServ, GetAdditionalServResponse>()
+                .ForMember(x => x.ServImages, option => option.MapFrom(x => x.ServImages));
+            CreateMap<UpdateAdditionalServRequest, AdditionalServ>()
+                .ForMember(x => x.ServImages, option => option.Ignore());
+            CreateMap<GetServImageResponse, ServImages>();     
+            CreateMap<CreateServImageRequest, ServImages>();     
+            CreateMap<ServImages, GetServImageResponse>();                
         }
     }
 }

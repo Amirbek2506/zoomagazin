@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace ZooMag.DTOs.AdditionalServ
 {
@@ -6,6 +7,8 @@ namespace ZooMag.DTOs.AdditionalServ
     {
         public string ServName { get; set; }
         public string ContentText { get; set; }
-        public virtual IEnumerable<CreateServImageRequest> ServImages { get; set; }
+        public bool IsActive { get; set; }
+        public List<IFormFile> BannerImages { get; set; }
+        public List<IFormFile> OtherImages { get; set; }
     }
 }

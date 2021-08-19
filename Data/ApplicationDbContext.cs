@@ -65,13 +65,15 @@ namespace ZooMag.Data
         #region additional
         public DbSet<SlideShow> SlideShows { get; set; }
         public DbSet<Banner> Banners { get; set; }
-
-
         public DbSet<Gender> Genders { get; set; }
         public DbSet<SiteProperty> SiteProperties { get; set; }
         public DbSet<Article> Articles { get; set; }
         #endregion
 
+        #region additional service
+        public DbSet<AdditionalServ> AdditionalServs{ get; set; }
+        public DbSet<ServImages> ServImages { get; set; }
+        #endregion
 
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PetTransport> PetTransports { get; set; }

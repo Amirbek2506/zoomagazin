@@ -40,6 +40,8 @@ namespace ZooMag.Services
                 return 0;
             //create Pet entity
             var model = _mapper.Map<CreatePetRequest, Pet>(request);
+            model.CreatedAt = DateTime.Now;
+
             await _context.Pets.AddAsync(model);
             _context.SaveChanges();
             //create pets images
@@ -77,18 +79,11 @@ namespace ZooMag.Services
             var galeries = _context.PetImages.Where(x => x.PetId == petId);
             
             //remove data:
+            await galeries.ForEachAsync(x => _fileService.Delete(x.ImageUrl));
             _context.PetImages.RemoveRange(galeries);
             _context.Pets.Remove(entity);
             _context.SaveChanges();
             return new Response {Status = "success", Message = "Питомец успешно удалён"};
-        }
-
-        public async Task DeletePetGalery(int petGaleryId)
-        {
-            var entity = await _context.PetImages.FirstOrDefaultAsync(x => x.Id == petGaleryId);
-            if (entity == null)
-                return;
-            _context.PetImages.Remove(entity);
         }
 
         public async Task<Response> DeletePetImage(int petImageId)
@@ -133,6 +128,7 @@ namespace ZooMag.Services
             var model = _mapper.Map<UpdatePetRequest, Pet>(request);
             _context.Pets.Update(model);
             _context.SaveChanges();
+            //add new images
             await CreatePetGalery(new CreatePetImagesRequest{ PetId = model.Id, Images = request.NewImages.ToList()});
             return new Response {Status = "success", Message = "Данные успешно обновлены"};;
         }
