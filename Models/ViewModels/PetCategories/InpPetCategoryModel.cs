@@ -8,7 +8,7 @@ namespace ZooMag.Models.ViewModels.PetCategories
 {
     public class InpPetCategoryModel
     {
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
         public string Title { get; set; }
         public IFormFile Image { get; set; }
     }
