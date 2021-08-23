@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ZooMag.Entities;
+//using ZooMag.Models;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Services.Interfaces;
 using ZooMag.ViewModels;
@@ -19,17 +22,14 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategoriesForSelectOption()
-        {
-            var response = await _categoriesService.GetCategoriesForSelectOptionAsync();
-            return Ok(response);
-        }
-
-        [HttpGet]
         [Route("Categories/fetch")]
         public async Task<IActionResult> GetCategories(bool hierarchie = true)
         {
-            return hierarchie ? Ok(await _categoriesService.FetchWithSubcategories()) : Ok(await _categoriesService.Fetch());
+            if(hierarchie)
+            {
+                return Ok(await _categoriesService.FetchWithSubcategories());
+            }
+            return Ok(await _categoriesService.Fetch());
         }
 
 

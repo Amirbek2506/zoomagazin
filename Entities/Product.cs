@@ -12,7 +12,6 @@ namespace ZooMag.Entities
         public DateTime CreateDate { get; set; }
         public bool Removed { get; set; }
         public int CategoryId { get; set; }
-        public virtual ICollection<ProductSpecificFilter> ProductSpecificFilters { get; set; }
         public virtual List<ProductItem> ProductItems { get; set; }
         public virtual Brand Brand { get; set; }
         public virtual Category Category { get; set; }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.DTOs.Brand;
-using ZooMag.DTOs.Category;
 using ZooMag.Entities;
 using ZooMag.Mapping;
 //using ZooMag.Models;
@@ -159,15 +158,6 @@ namespace ZooMag.Services
                     Id = x.BrandId,
                     Name = x.Brand.Name
                 }).ToListAsync();
-        }
-
-        public async Task<List<SelectOptionCategoryResponse>> GetCategoriesForSelectOptionAsync()
-        {
-            return await _context.Categories.Select(x => new SelectOptionCategoryResponse
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToListAsync();
         }
     }
 }
