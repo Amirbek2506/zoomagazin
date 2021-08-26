@@ -27,6 +27,15 @@ namespace ZooMag.Controllers
             return Created("AdditionalServ",response);
         }
 
+        [HttpPost]
+        [Route("createImage")]
+       // [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> CreateAdditionalServImage([FromForm]CreateServImageRequest request)
+        {
+            var response = await _additionalServiсe.CreateServImage(request);
+            return Created("AdditionalServ",response);
+        }
+
         [HttpGet]
         [Route("getAll")]
         public async Task<IActionResult> GetAll()

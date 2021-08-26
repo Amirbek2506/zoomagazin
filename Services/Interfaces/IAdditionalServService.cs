@@ -8,6 +8,7 @@ namespace ZooMag.Services.Interfaces
     public interface IAdditionalServService
     {
         Task<Response> CreateAdditionalService(CreateAdditionalServRequest request);
+        Task<Response> CreateServImage(CreateServImageRequest request);
         Task<List<int>> CreateServImages(List<CreateServImageRequest> request, int addiotionalServId);
         Task<List<GetAdditionalServResponse>> GetAllAdditionalServ();
         Task<GetAdditionalServResponse> GetAdditionalServ(int additionalServId);

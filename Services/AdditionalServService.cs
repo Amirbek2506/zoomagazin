@@ -40,6 +40,15 @@ namespace ZooMag.Services
             return new Response {Status = "success", Message = "Услуга успешно добавлена"};
         }
 
+        public async Task<Response> CreateServImage(CreateServImageRequest request)
+        {
+            var imageEntity = _mapper.Map<CreateServImageRequest, ServImages>(request);
+            imageEntity.ImageUrl = await _fileService.AddServImageFileASync(request.Image);
+            await _context.ServImages.AddAsync(imageEntity);
+            _context.SaveChanges();
+            return new Response {Status = "success", Message = "Изображение успешно добавлено"};
+        }
+
         public async Task<List<int>> CreateServImages(List<CreateServImageRequest> request, int addiotionalServId)
         {
             var imagePaths = await  _fileService.AddServImageFilesASync(request.Select(x => x.Image).ToList());
