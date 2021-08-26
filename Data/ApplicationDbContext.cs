@@ -13,7 +13,7 @@ namespace ZooMag.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
            : base(options)
         {
-          // Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         #region products
