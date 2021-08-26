@@ -71,6 +71,19 @@ namespace ZooMag.Services
             return result;
         }
 
+        public async Task<int> CreatePetImage(CreatePetImageRequest request)
+        {
+            var imagePath = await _fileService.AddPetImageFileASync(request.Image);
+            var model = new PetImage{
+                PetId = request.PetId,
+                ImageUrl = imagePath
+            };
+            await _context.PetImages.AddAsync(model);
+            _context.SaveChanges();
+            return model.Id;
+
+        }
+
         public async Task<Response> DeletePet(int petId)
         {
             var entity = await _context.Pets.FirstOrDefaultAsync(x => x.Id == petId);
@@ -123,6 +136,21 @@ namespace ZooMag.Services
             return result;
         }
 
+        public async Task<Response> SetMainImage(int petId, int petImageId)
+        {
+            var pet = await _context.Pets.FirstOrDefaultAsync(x => x.Id == petId);
+            var petImage = await _context.PetImages.FirstOrDefaultAsync(x => x.Id == petImageId);
+            if (pet == null)
+                return new Response{ Status = "error", Message = "Не удалось изменить главное изображение, питомец не найден"};
+            if (petImage == null)
+                return new Response{ Status = "error", Message = "Не удалось изменить главное изображение, изоюражение не найдено"};
+            
+            pet.MainImageId = petImageId;
+            _context.Pets.Update(pet);
+            _context.SaveChanges();
+            return new Response{ Status = "success", Message = "Главное изображение успешно изменено"};
+        }
+
         public async Task<Response> UpdatePet(UpdatePetRequest request)
         {
             var model = _mapper.Map<UpdatePetRequest, Pet>(request);
@@ -130,7 +158,7 @@ namespace ZooMag.Services
             _context.SaveChanges();
             //add new images
             await CreatePetGalery(new CreatePetImagesRequest{ PetId = model.Id, Images = request.NewImages.ToList()});
-            return new Response {Status = "success", Message = "Данные успешно обновлены"};;
+            return new Response {Status = "success", Message = "Данные успешно обновлены"};
         }
     }
 }
