@@ -426,16 +426,18 @@ namespace ZooMag.Services
                     Payload = new List<ProductResponse>(),
                     Count = 0
                 };
-            var categories = await _context.Categories.ToListAsync();
-            List<int> categoryIds = request.Query.CategoriesId;
-            for (int i = 0; i < request.Query.CategoriesId?.Count; i++)
-            {
-                GetParentCategoryCategories(ref categoryIds,request.Query.CategoriesId[i],categories);
-            }
+            var categories = await _context.Categories
+                .Include(x=>x.CategoryFilters)
+                .Where(x=>x.CategoryFilters.Any(cf=>request.Query.FiltersId.Contains(cf.FilterId)))
+                .ToListAsync();
+            List<int> categoryIds = new List<int> { request.Query.CategoryId};
+            GetParentCategoryCategories(ref categoryIds,request.Query.CategoryId,categories);
 
             var queryableProducts = _context.Products
+                .Include(x=>x.ProductSpecificFilters)
                 .Where(x => !x.Removed &&
-                            (request.Query.CategoriesId == null || categoryIds.Contains(x.CategoryId)) &&
+                            (request.Query.SpecificFiltersId == null || request.Query.SpecificFiltersId.Any(sf=>x.ProductSpecificFilters.Any(psf=>psf.SpecificFilterId == sf))) &&
+                            (request.Query.CategoryId == 0 || categoryIds.Contains(x.CategoryId)) &&
                             (request.Query.BrandsId == null || request.Query.BrandsId.Contains(x.BrandId)))
                 .Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
                 .Where(x => x.ProductItems.Any(pi =>

@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ZooMag.DTOs.FilterCategory;
+using ZooMag.DTOs.SpecificFilter;
 using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Categories;
 using ZooMag.Services.Interfaces;
@@ -19,6 +22,23 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
+        [Route("Categories/GetCategorySpecificFilters")]
+        public async Task<IActionResult> GetCategorySpecificFilters(int categoryId)
+        {
+            List<SpecificFilterResponse> response = await _categoriesService.GetCategorySpecificFiltersAsync(categoryId);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("Categories/GetCategoryFilters")]
+        public async Task<IActionResult> GetCategoryFilters(int categoryId)
+        {
+            var response = await _categoriesService.GetCategoryFilters(categoryId);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("Categories/GetCategoriesForSelectOption")]
         public async Task<IActionResult> GetCategoriesForSelectOption()
         {
             var response = await _categoriesService.GetCategoriesForSelectOptionAsync();
