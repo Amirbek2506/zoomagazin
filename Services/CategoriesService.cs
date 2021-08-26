@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
 using ZooMag.DTOs.Brand;
+using ZooMag.DTOs.Category;
+using ZooMag.DTOs.Filter;
+using ZooMag.DTOs.FilterCategory;
+using ZooMag.DTOs.SpecificFilter;
 using ZooMag.Entities;
 using ZooMag.Mapping;
 //using ZooMag.Models;
@@ -158,6 +162,75 @@ namespace ZooMag.Services
                     Id = x.BrandId,
                     Name = x.Brand.Name
                 }).ToListAsync();
+        }
+
+        public async Task<List<SelectOptionCategoryResponse>> GetCategoriesForSelectOptionAsync()
+        {
+            return await _context.Categories.Select(x => new SelectOptionCategoryResponse
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToListAsync();
+        }
+
+        public async Task<List<FilterCategoryResponse>> GetCategoryFilters(int categoryId)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            
+            var categoriesId = new List<int> {categoryId};
+            
+            GetParentCategoryCategories(ref categoriesId, categoryId,categories);
+            
+            return await _context.FilterCategories
+                .Include(x => x.Filters)
+                .ThenInclude(x => x.CategoryFilters)
+                .Where(x => x.Filters.Any(f => f.CategoryFilters.Any(cf => categoriesId.Contains(cf.CategoryId))))
+                .Select(x => new FilterCategoryResponse
+                {
+                    Id = x.Id,
+                    Text = x.Text,
+                    Filters = x.Filters
+                        .Where(f => f.CategoryFilters.Any(cf => categoriesId.Contains(cf.CategoryId)))
+                        .Select(f => new FilterResponse
+                        {
+                            Id = f.Id,
+                            Text = f.Text
+                        }).ToList()
+                }).ToListAsync();
+        }
+
+        public async Task<List<SpecificFilterResponse>> GetCategorySpecificFiltersAsync(int categoryId)
+        {
+            var categories = await _context.Categories.ToListAsync();
+
+            var categoriesId = new List<int>(categoryId);
+
+            GetParentCategoryCategories(ref categoriesId, categoryId, categories);
+
+            var productIds = await _context.Products.Where(x => categoriesId.Contains(x.CategoryId)).Select(x => x.Id)
+                .ToListAsync();
+
+            return await _context.ProductSpecificFilters.Where(x => productIds.Contains(x.ProductId))
+                .Include(x => x.SpecificFilter)
+                .Select(x => new SpecificFilterResponse
+                {
+                    Id = x.SpecificFilterId,
+                    Text = x.SpecificFilter.Text
+                }).ToListAsync();
+        }
+
+        private void GetParentCategoryCategories(ref List<int> categoryIds, int parentCategoryId, List<Category> categories)
+        {
+            var childCategories = categories.Where(x => x.ParentCategoryId == parentCategoryId).Select(x => x.Id)
+                .ToList();
+            categoryIds.AddRange(childCategories);
+            if (childCategories.Count > 0)
+            {
+                foreach (var categoryId in childCategories)
+                {
+                    GetParentCategoryCategories(ref categoryIds,categoryId,categories);
+                }
+            }
         }
     }
 }

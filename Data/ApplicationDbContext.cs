@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ZooMag.DTOs.SpecificFilter;
 using ZooMag.Entities;
 
 namespace ZooMag.Data
@@ -77,6 +80,10 @@ namespace ZooMag.Data
 
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PetTransport> PetTransports { get; set; }
+        public DbSet<Filter> Filters { get; set; }
+        public DbSet<FilterCategory> FilterCategories { get; set; }
+        public DbSet<SpecificFilter> SpecificFilters { get; set; }
+        public DbSet<ProductSpecificFilter> ProductSpecificFilters { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -87,6 +94,8 @@ namespace ZooMag.Data
             builder.Entity<Category>().HasOne(x => x.ParentCategory).WithMany(x=>x.Categories)
                 .HasForeignKey(x => x.ParentCategoryId).IsRequired(false);
             builder.Entity<BrandCategory>().HasKey(x => new { x.BrandId, x.CategoryId });
+            builder.Entity<ProductSpecificFilter>().HasKey(x => new { x.ProductId, x.SpecificFilterId });
+            builder.Entity<CategoryFilter>().HasKey(x => new { x.CategoryId, x.FilterId });
             builder.Entity<Role>().HasData(new Role
             {
                 Id = 1,
