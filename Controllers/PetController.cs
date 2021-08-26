@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using ZooMag.DTOs.PetImage;
 using ZooMag.Models;
 using ZooMag.Models.ViewModels.Pets;
 using ZooMag.Services.Interfaces;
@@ -29,6 +30,15 @@ namespace ZooMag.Controllers
         {
             int petId = await _petsService.CreatePet(model);
             return Ok(new Response { Status = "Success", Message = "Питомец успешно добавлен!" });
+        }
+
+        [HttpPost]
+        [Route("createImage")]
+      //  [Authorize(Roles = "Администратор")]
+        public async Task<IActionResult> CreatePetImage([FromForm] CreatePetImageRequest model)
+        {
+            int petId = await _petsService.CreatePetImage(model);
+            return Ok(new Response { Status = "Success", Message = "Изображение успешно добавлено!" });
         }
 
         [HttpGet]
@@ -64,6 +74,14 @@ namespace ZooMag.Controllers
         public async Task<IActionResult> DeletePetImage(int petImageId)
         {           
             var response = await _petsService.DeletePetImage(petImageId);
+            return Created("Pet", response);
+        }
+
+        [HttpPost]
+        [Route("setMainImage")]
+        public async Task<IActionResult> SetMainImage(int petId, int petImageId)
+        {           
+            var response = await _petsService.SetMainImage(petId, petImageId);
             return Created("Pet", response);
         }
 
