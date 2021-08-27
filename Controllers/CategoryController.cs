@@ -25,6 +25,7 @@ namespace ZooMag.Controllers
         [Route("Categories/GetCategorySpecificFilters")]
         public async Task<IActionResult> GetCategorySpecificFilters(int categoryId)
         {
+            
             List<SpecificFilterResponse> response = await _categoriesService.GetCategorySpecificFiltersAsync(categoryId);
             return Ok(response);
         }
