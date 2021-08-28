@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ZooMag.Data;
+using ZooMag.DTOs.PetCategory;
 using ZooMag.Entities;
 using ZooMag.Mapping;
 using ZooMag.Models;
@@ -50,12 +51,6 @@ namespace ZooMag.Services
         {
             return _context.PetCategories.Find(id);
         }
-
-        public async Task<List<PetCategory>> Fetch()
-        {
-            return await _context.PetCategories.ToListAsync();
-        }
-
         public async Task<Response> Update(UpdPetCategoryModel model)
         {
             if (String.IsNullOrEmpty(model.Title))
@@ -140,15 +135,11 @@ namespace ZooMag.Services
             }
             return file.FileName;
         }
-
-        Entities.PetCategory IPetCategoriesService.FetchById(int id)
+        public async Task<List<GetPetCategoryItemRequest>> Fetch()
         {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Entities.PetCategory>> IPetCategoriesService.Fetch()
-        {
-            throw new NotImplementedException();
+            var entities = await _context.PetCategories.ToListAsync();
+            var result = _mapper.Map<List<PetCategory>, List<GetPetCategoryItemRequest>>(entities);
+            return result;
         }
     }
 }

@@ -2,6 +2,7 @@
 using AutoMapper;
 using ZooMag.DTOs.AdditionalServ;
 using ZooMag.DTOs.Pet;
+using ZooMag.DTOs.PetCategory;
 using ZooMag.DTOs.PetImage;
 using ZooMag.Entities;
 using ZooMag.Models.ViewModels.Brands;
@@ -65,7 +66,8 @@ namespace ZooMag.Mapping
                 .ForMember(x => x.ServImages, option => option.Ignore());
             CreateMap<GetServImageResponse, ServImages>();     
             CreateMap<CreateServImageRequest, ServImages>();     
-            CreateMap<ServImages, GetServImageResponse>();                
+            CreateMap<ServImages, GetServImageResponse>();   
+            CreateMap<PetCategory, GetPetCategoryItemRequest>();             
         }
     }
 }
