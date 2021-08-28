@@ -19,6 +19,5 @@ namespace ZooMag.DTOs.Pet
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
         public List<GetPetImageResponse> Images { get; set; }
-        public int UserId { get; set; }
     }
 }

@@ -26,9 +26,7 @@ namespace ZooMag.Entities
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int UserId { get; set; }
         public virtual ICollection<PetImage> PetImages { get; set; }
         public virtual PetCategory PetCategory { get; set; }
-        public virtual User User { get; set; }
     }
 }

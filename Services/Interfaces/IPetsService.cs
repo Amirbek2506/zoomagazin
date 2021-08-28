@@ -15,8 +15,8 @@ namespace ZooMag.Services.Interfaces
 {
     public interface IPetsService
     {
-        Task<int> CreatePet(CreatePetRequest request);
-        Task<int> CreatePetImage(CreatePetImageRequest request);
+        Task<Response> CreatePet(CreatePetRequest request);
+        Task<Response> CreatePetImage(CreatePetImageRequest request);
         Task<IEnumerable<int>> CreatePetGalery(CreatePetImagesRequest request);
         Task<List<PetListItemResponse>> GetAllPets();
         Task<GetPetResponse> GetPet(int id);

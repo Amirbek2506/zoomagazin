@@ -46,12 +46,10 @@ namespace ZooMag.Mapping
             CreateMap<CreatePetRequest, Pet>()
                 .ForMember(x => x.MainImageId, option => option.Ignore())
                 .ForMember(x => x.PetImages, option => option.Ignore())
-                .ForMember(x => x.PetCategory, option => option.Ignore())
-                .ForMember(x => x.User, option => option.Ignore());
+                .ForMember(x => x.PetCategory, option => option.Ignore());
             CreateMap<UpdatePetRequest, Pet>()
                 .ForMember(x => x.PetImages, option => option.Ignore())
-                .ForMember(x => x.PetCategory, option => option.Ignore())
-                .ForMember(x => x.User, option => option.Ignore());
+                .ForMember(x => x.PetCategory, option => option.Ignore());
             CreateMap<PetImage, GetPetImageResponse>()
                 .ForMember(x => x.Image, option => option.MapFrom(x => x.ImageUrl));
             CreateMap<Pet, GetPetResponse>();
@@ -59,7 +57,6 @@ namespace ZooMag.Mapping
                 .ForMember(x => x.Image, option => option.MapFrom(x =>  (x.MainImageId != null? 
                                                                             x.PetImages.FirstOrDefault(i => i.Id == x.MainImageId).ImageUrl:
                                                                             null)));
-            
             CreateMap<CreateAdditionalServRequest, AdditionalServ>()
                 .ForMember(x => x.ServImages, option => option.Ignore());
             CreateMap<AdditionalServ, GetAdditionalServResponse>()

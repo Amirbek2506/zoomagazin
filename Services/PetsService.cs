@@ -33,11 +33,11 @@ namespace ZooMag.Services
             _mapper = new MapperConfiguration(x => x.AddProfile<GeneralProfile>()).CreateMapper();
         }
 
-        public async Task<int> CreatePet(CreatePetRequest request)
+        public async Task<Response> CreatePet(CreatePetRequest request)
         {
             //incorrect PetCategory
             if (_context.PetCategories.FirstOrDefault(x => x.Id == request.PetCategoryId) == null)
-                return 0;
+                new Response { Status = "Error", Message = "Категория не найдена!" };
             //create Pet entity
             var model = _mapper.Map<CreatePetRequest, Pet>(request);
             model.CreatedAt = DateTime.Now;
@@ -54,7 +54,7 @@ namespace ZooMag.Services
                 model.MainImageId = ImagePaths.First();
                 _context.SaveChanges();
             }
-            return model.Id;            
+            return new Response { Status = "Success", Message = "Питомец успешно добавлен!" };            
         }
 
         public async Task<IEnumerable<int>> CreatePetGalery(CreatePetImagesRequest request)
@@ -71,7 +71,7 @@ namespace ZooMag.Services
             return result;
         }
 
-        public async Task<int> CreatePetImage(CreatePetImageRequest request)
+        public async Task<Response> CreatePetImage(CreatePetImageRequest request)
         {
             var imagePath = await _fileService.AddPetImageFileASync(request.Image);
             var model = new PetImage{
@@ -80,8 +80,7 @@ namespace ZooMag.Services
             };
             await _context.PetImages.AddAsync(model);
             _context.SaveChanges();
-            return model.Id;
-
+            return new Response { Status = "Success", Message = "Изображение успешно добавлено!" };     
         }
 
         public async Task<Response> DeletePet(int petId)
@@ -112,7 +111,7 @@ namespace ZooMag.Services
 
         public async Task<List<PetListItemResponse>> GetAllPets()
         {
-            var entities = await _context.Pets.Where(x => x.IsActive).Include(x => x.PetImages).ToListAsync();
+            var entities = await _context.Pets.Include(x => x.PetImages).ToListAsync();
             var result = _mapper.Map<List<Pet>, List<PetListItemResponse>>(entities);            
             return result;
         }

@@ -16,7 +16,6 @@ namespace ZooMag.Entities
         public virtual Gender Gender { get; set; }
         public virtual ICollection<Comment> Reviews { get; set; }
         public virtual ICollection<Animal> Animals { get; set; }
-        public virtual ICollection<Pet> Pets { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<PetTransport> PetTransports { get; set; }
         public virtual ICollection<BoxOrder> BoxOrders { get; set; }

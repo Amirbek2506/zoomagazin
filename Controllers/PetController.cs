@@ -28,8 +28,8 @@ namespace ZooMag.Controllers
       //  [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> CreatePet([FromForm] CreatePetRequest model)
         {
-            int petId = await _petsService.CreatePet(model);
-            return Ok(new Response { Status = "Success", Message = "Питомец успешно добавлен!" });
+            var result = await _petsService.CreatePet(model);
+            return Created("Pet", result);
         }
 
         [HttpPost]
@@ -37,8 +37,8 @@ namespace ZooMag.Controllers
       //  [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> CreatePetImage([FromForm] CreatePetImageRequest model)
         {
-            int petId = await _petsService.CreatePetImage(model);
-            return Ok(new Response { Status = "Success", Message = "Изображение успешно добавлено!" });
+            var result = await _petsService.CreatePetImage(model);
+            return Created("Pet", result);
         }
 
         [HttpGet]

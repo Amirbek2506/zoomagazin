@@ -18,6 +18,5 @@ namespace zoomagazin.DTOs.Pet
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
         public List<IFormFile> NewImages { get; set; }
-        public int UserId { get; set; }
     }
 }
