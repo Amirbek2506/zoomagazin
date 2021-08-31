@@ -23,7 +23,7 @@ namespace ZooMag.Controllers
 
         public OrderController(IOrdersService ordersService, UserManager<User> userManager)
         {
-            this._ordersService = ordersService;
+            _ordersService = ordersService;
             _userManager = userManager;
         }
 

@@ -203,7 +203,7 @@ namespace ZooMag.Services
         {
             var categories = await _context.Categories.ToListAsync();
 
-            var categoriesId = new List<int>(categoryId);
+            var categoriesId = new List<int> {categoryId};
 
             GetParentCategoryCategories(ref categoriesId, categoryId, categories);
 

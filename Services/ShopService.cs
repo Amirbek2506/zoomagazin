@@ -21,12 +21,18 @@ namespace ZooMag.Services
         
         public async Task<Response> CreateAsync(CreateShopRequest request)
         {
-            var pickupPoint = new PickupPoint
+            var pickupPoint = new Shop
             {
-                Name = request.Name
+                Name = request.Name,
+                Address = request.Address,
+                Graphic = request.Graphic,
+                PhoneNumber = request.PhoneNumber,
+                CityId = request.CityId,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude
             };
 
-            await _context.PickupPoints.AddAsync(pickupPoint);
+            await _context.Shops.AddAsync(pickupPoint);
             await _context.SaveChangesAsync();
             return new Response
             {
@@ -35,21 +41,46 @@ namespace ZooMag.Services
             };
         }
 
-        public async Task<List<PickupPointResponse>> GetAllAsync()
+        public async Task<List<PickupPointResponse>> GetAllPickupPointsAsync()
         {
-            return await _context.PickupPoints.Select(x => new PickupPointResponse { Id = x.Id, Name = x.Name}).ToListAsync();
+            return await _context.Shops.Select(x => new PickupPointResponse
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Address = x.Address,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude
+            }).ToListAsync();
+        }
+
+        public async Task<List<ShopResponse>> GetAllAsync()
+        {
+            return await _context.Shops.Select(x => new ShopResponse
+            {
+                Id = x.Id, 
+                Name = x.Name,
+                Address = x.Address,
+                Graphic = x.Graphic,
+                PhoneNumber = x.PhoneNumber
+            }).ToListAsync();
         }
 
         public async Task<Response> UpdateAsync(UpdateShopRequest request)
         {
-            var pickupPoint = await _context.PickupPoints.FindAsync(request.Id);
-            if (pickupPoint == null)
+            var shop = await _context.Shops.FindAsync(request.Id);
+            if (shop == null)
                 return new Response
                 {
                     Message = "Не найден",
                     Status = "error"
                 };
-            pickupPoint.Name = request.Name;
+            shop.Name = request.Name;
+            shop.Address = request.Address;
+            shop.Graphic = request.Graphic;
+            shop.PhoneNumber = request.PhoneNumber;
+            shop.Latitude = request.Latitude;
+            shop.Longitude = request.Longitude;
+            shop.CityId = request.CityId;
             await _context.SaveChangesAsync();
             return new Response
             {
@@ -60,14 +91,14 @@ namespace ZooMag.Services
 
         public async Task<Response> DeleteAsync(int id)
         {
-            var pickupPoint = await _context.PickupPoints.FindAsync(id);
-            if (pickupPoint == null)
+            var shop = await _context.Shops.FindAsync(id);
+            if (shop == null)
                 return new Response
                 {
                     Message = "Не найден",
                     Status = "error"
                 };
-            _context.PickupPoints.Remove(pickupPoint);
+            _context.Shops.Remove(shop);
             await _context.SaveChangesAsync();
             return new Response
             {
@@ -76,13 +107,33 @@ namespace ZooMag.Services
             };
         }
 
-        public async Task<List<PickupPointResponse>> GetAllByCityId(int cityId)
+        public async Task<List<PickupPointResponse>> GetAllPickupPointsByCityIdAsync(int cityId)
         {
-            return await _context.PickupPoints.Select(x => new PickupPointResponse
+            return await _context.Shops
+                .Where(x=> x.CityId == cityId)
+                .Select(x => new PickupPointResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Address = x.Address,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude
+                }).ToListAsync();
+        }
+
+        public async Task<ShopResponse> GetByIdAsync(int shopId)
+        {
+            return await _context.Shops.Where(x=>x.Id == shopId).Select(x=> new ShopResponse
             {
+                Address = x.Address,
+                Graphic = x.Graphic,
                 Id = x.Id,
-                Name = x.Name
-            }).ToListAsync();
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Name = x.Name,
+                PhoneNumber = x.PhoneNumber
+            }).FirstOrDefaultAsync();
+            
         }
     }
 }

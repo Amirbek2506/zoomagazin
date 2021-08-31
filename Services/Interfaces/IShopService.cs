@@ -8,9 +8,11 @@ namespace ZooMag.Services.Interfaces
     public interface IShopService
     {
         Task<Response> CreateAsync(CreateShopRequest request);
-        Task<List<PickupPointResponse>> GetAllAsync();
+        Task<List<PickupPointResponse>> GetAllPickupPointsAsync();
+        Task<List<ShopResponse>> GetAllAsync();
         Task<Response> UpdateAsync(UpdateShopRequest request);
         Task<Response> DeleteAsync(int id);
-        Task<List<PickupPointResponse>> GetAllByCityId(int cityId);
+        Task<List<PickupPointResponse>> GetAllPickupPointsByCityIdAsync(int cityId);
+        Task<ShopResponse> GetByIdAsync(int shopId);
     }
 }

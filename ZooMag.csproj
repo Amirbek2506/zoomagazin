@@ -39,10 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Images\Brands\" />
-    <Folder Include="Resources\Images\PetCategories\" />
-    <Folder Include="Resources\Images\Pets\" />
-    <Folder Include="Resources\Images\SlideShows\" />
+    <Folder Include="Resources\Product" />
   </ItemGroup>
 
 </Project>

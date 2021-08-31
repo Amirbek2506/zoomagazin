@@ -33,7 +33,6 @@ namespace ZooMag.Data
 
         public DbSet<ProductItemImage> ProductItemImages { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<PickupPoint> PickupPoints { get; set; }
         public DbSet<DeliveryType> DeliveryTypes { get; set; }
 
         #region product orders
@@ -84,6 +83,7 @@ namespace ZooMag.Data
         public DbSet<FilterCategory> FilterCategories { get; set; }
         public DbSet<SpecificFilter> SpecificFilters { get; set; }
         public DbSet<ProductSpecificFilter> ProductSpecificFilters { get; set; }
+        public DbSet<Shop> Shops { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

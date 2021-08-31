@@ -42,7 +42,12 @@ namespace ZooMag
             services.AddTransient<IProductItemService, ProductItemService>();
             services.AddTransient<IDescriptionService, DescriptionService>();
             services.AddTransient<ICallbackService, CallbackService>();
+            services.AddTransient<ICityService, CityService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IShopService, ShopService>();
+            services.AddTransient<ISpecificFilterService, SpecificFilterService>();
+            services.AddTransient<IFilterService, FilterService>();
+            services.AddTransient<IFilterCategoryService, FilterCategoryService>();
             services.AddTransient<IPromotionService, PromotionService>();
             services.AddHostedService<RemoveOldPromotionsWorker>();
             /*
