@@ -12,11 +12,9 @@ namespace zoomagazin.DTOs.Pet
         public string Breed { get; set; }
         public string Color { get; set; }
         public decimal Price { get; set; }
-        public string OriginCountry { get; set; } 
-        public int MainImageId{ get; set; }           
+        public string OriginCountry { get; set; }    
         public int PetCategoryId { get; set; }
         public bool IsActive { get; set; }
         public int QuantityInStock { get; set; }
-        public List<IFormFile> NewImages { get; set; }
     }
 }

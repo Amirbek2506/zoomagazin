@@ -152,11 +152,22 @@ namespace ZooMag.Services
 
         public async Task<Response> UpdatePet(UpdatePetRequest request)
         {
-            var model = _mapper.Map<UpdatePetRequest, Pet>(request);
-            _context.Pets.Update(model);
-            _context.SaveChanges();
-            //add new images
-            await CreatePetGalery(new CreatePetImagesRequest{ PetId = model.Id, Images = request.NewImages.ToList()});
+            var pet = await _context.Pets.FindAsync(request.Id);
+            if (pet == null)
+                return new Response { Status = "error", Message = "Питомец не найден" };
+
+            pet.Name = request.Name;
+            pet.Description = request.Description;
+            pet.Age = request.Age;
+            pet.Breed = request.Breed;
+            pet.Color = request.Color;
+            pet.Price = request.Price;
+            pet.OriginCountry = request.OriginCountry;
+            pet.PetCategoryId = request.PetCategoryId;
+            pet.IsActive = request.IsActive;
+            pet.QuantityInStock = request.QuantityInStock;
+            _context.Pets.Update(pet); 
+            await _context.SaveChangesAsync();
             return new Response {Status = "success", Message = "Данные успешно обновлены"};
         }
     }
