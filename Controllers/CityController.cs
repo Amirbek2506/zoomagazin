@@ -21,7 +21,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Create([FromBody]CreateCityRequest request)
         {
             var response = await _cityService.CreateAsync(request);
@@ -36,7 +36,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Update([FromBody]UpdateCityRequest request)
         {
             var response = await _cityService.UpdateAsync(request);
@@ -44,7 +44,7 @@ namespace ZooMag.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _cityService.DeleteAsync(id);

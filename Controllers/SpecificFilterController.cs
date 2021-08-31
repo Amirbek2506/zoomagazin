@@ -8,6 +8,8 @@ using ZooMag.ViewModels;
 
 namespace ZooMag.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]/[action]")]
     public class SpecificFilterController : ControllerBase
     {
         private readonly ISpecificFilterService _specificFilterService;

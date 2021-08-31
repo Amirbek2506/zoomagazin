@@ -26,16 +26,30 @@ namespace ZooMag.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByCityId(int cityId)
+        public async Task<IActionResult> GetAllPickupPointsByCityId(int cityId)
         {
-            List<PickupPointResponse> response = await _shopService.GetAllByCityId(cityId);
+            var response = await _shopService.GetAllPickupPointsByCityIdAsync(cityId);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(int shopId)
+        {
+            var response = await _shopService.GetByIdAsync(shopId);
             return Ok(response);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            List<PickupPointResponse> response = await _shopService.GetAllAsync();
+            List<ShopResponse> response = await _shopService.GetAllAsync();
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPickupPoints()
+        {
+            List<PickupPointResponse> response = await _shopService.GetAllPickupPointsAsync();
             return Ok(response);
         }
 

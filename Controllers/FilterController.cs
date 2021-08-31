@@ -6,6 +6,8 @@ using ZooMag.Services.Interfaces;
 
 namespace ZooMag.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]/[action]")]
     public class FilterController : ControllerBase
     {
         private readonly IFilterService _filterService;
