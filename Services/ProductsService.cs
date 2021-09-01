@@ -55,7 +55,11 @@ namespace ZooMag.Services
                 CreateDate = DateTime.Now,
                 Title = request.Title,
                 TitleDescription = request.TitleDescription,
-                Removed = false
+                Removed = false,
+                ProductSpecificFilters = request.SpecificFiltersId?.Select(x=>new ProductSpecificFilter
+                {
+                    SpecificFilterId = x
+                }).ToList()
                 // ProductItems = request.ProductItems.Select(x => new ProductItem
                 // {
                 //     Measure = x.Measure,

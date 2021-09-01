@@ -11,5 +11,6 @@ namespace ZooMag.Models.ViewModels.Categories
         public int? ParentId { get; set; }
         public string Title { get; set; }
         public IFormFile Image { get; set; }
+        public List<int> FiltersId { get; set; }
     }
 }
