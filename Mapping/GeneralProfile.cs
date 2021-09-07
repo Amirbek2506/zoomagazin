@@ -54,10 +54,7 @@ namespace ZooMag.Mapping
             CreateMap<PetImage, GetPetImageResponse>()
                 .ForMember(x => x.Image, option => option.MapFrom(x => x.ImageUrl));
             CreateMap<Pet, GetPetResponse>();
-            CreateMap<Pet, PetListItemResponse>()
-                .ForMember(x => x.Image, option => option.MapFrom(x =>  (x.MainImageId != null? 
-                                                                            x.PetImages.FirstOrDefault(i => i.Id == x.MainImageId).ImageUrl:
-                                                                            null)));
+            CreateMap<Pet, PetListItemResponse>();
             CreateMap<CreateAdditionalServRequest, AdditionalServ>()
                 .ForMember(x => x.ServImages, option => option.Ignore());
             CreateMap<AdditionalServ, GetAdditionalServResponse>()
