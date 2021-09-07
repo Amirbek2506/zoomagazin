@@ -41,7 +41,11 @@ namespace ZooMag.Services
             var cat = new Category 
             {
                 Name = categoryModel.Title,
-                ParentCategoryId = categoryModel.ParentId == 0 ? null : categoryModel.ParentId
+                ParentCategoryId = categoryModel.ParentId == 0 ? null : categoryModel.ParentId,
+                CategoryFilters = categoryModel.FiltersId?.Select(x=> new CategoryFilter
+                {
+                    FilterId = x
+                }).ToList()
             };
             _context.Categories.Add(cat);
             await Save();
@@ -203,7 +207,7 @@ namespace ZooMag.Services
         {
             var categories = await _context.Categories.ToListAsync();
 
-            var categoriesId = new List<int>(categoryId);
+            var categoriesId = new List<int> {categoryId};
 
             GetParentCategoryCategories(ref categoriesId, categoryId, categories);
 

@@ -120,7 +120,7 @@ namespace ZooMag.Services
             if (request.ProductId != null)
             {
                 List<CreateDescriptionRequest> descriptionRequests = new List<CreateDescriptionRequest>();
-                if(request.Descriptions.Any(x=> !string.IsNullOrEmpty(x)))
+                if(request.Descriptions != null && request.Descriptions.Any(x=> !string.IsNullOrEmpty(x)))
                    descriptionRequests = request.Descriptions.Select(JsonConvert.DeserializeObject<CreateDescriptionRequest>).ToList();
                 var productItem = new ProductItem
                 {

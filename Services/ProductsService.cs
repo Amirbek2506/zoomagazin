@@ -55,7 +55,11 @@ namespace ZooMag.Services
                 CreateDate = DateTime.Now,
                 Title = request.Title,
                 TitleDescription = request.TitleDescription,
-                Removed = false
+                Removed = false,
+                ProductSpecificFilters = request.SpecificFiltersId?.Select(x=>new ProductSpecificFilter
+                {
+                    SpecificFilterId = x
+                }).ToList()
                 // ProductItems = request.ProductItems.Select(x => new ProductItem
                 // {
                 //     Measure = x.Measure,
@@ -436,7 +440,7 @@ namespace ZooMag.Services
             var queryableProducts = _context.Products
                 .Include(x=>x.ProductSpecificFilters)
                 .Where(x => !x.Removed &&
-                            (request.Query.SpecificFiltersId == null || request.Query.SpecificFiltersId.Any(sf=>x.ProductSpecificFilters.Any(psf=>psf.SpecificFilterId == sf))) &&
+                            (request.Query.SpecificFiltersId == null || x.ProductSpecificFilters.Any(sf=> request.Query.SpecificFiltersId.Contains(sf.SpecificFilterId))) &&// request.Query.SpecificFiltersId.Any(sf=>x.ProductSpecificFilters.Contains(sf))) &&
                             (request.Query.CategoryId == 0 || categoryIds.Contains(x.CategoryId)) &&
                             (request.Query.BrandsId == null || request.Query.BrandsId.Contains(x.BrandId)))
                 .Include(x => x.ProductItems).ThenInclude(x => x.ProductItemImages)
