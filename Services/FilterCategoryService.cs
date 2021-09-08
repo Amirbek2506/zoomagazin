@@ -24,7 +24,6 @@ namespace ZooMag.Services
         {
             return await _context.FilterCategories.Include(x => x.Filters).Select(x => new FilterCategoryResponse
             {
-                Id = x.Id,
                 Text = x.Text,
                 Filters = x.Filters.Select(f => new FilterResponse
                 {

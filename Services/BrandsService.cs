@@ -195,7 +195,6 @@ namespace ZooMag.Services
                 .Where(x => x.Filters.Any(f => f.CategoryFilters.Any(cf => categoriesId.Contains(cf.CategoryId))))
                 .Select(x => new FilterCategoryResponse
                 {
-                    Id = x.Id,
                     Text = x.Text,
                     Filters = x.Filters.Where(f => f.CategoryFilters.Any(cf => categoriesId.Contains(cf.CategoryId)))
                         .Select(f => new FilterResponse

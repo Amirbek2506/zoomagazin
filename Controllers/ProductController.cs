@@ -28,6 +28,13 @@ namespace ZooMag.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetProductsForSelectOption()
+        {
+            var response = await _productsService.GetProductsForSelectOptionAsync();
+            return Ok(response);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Администратор")]
         public async Task<IActionResult> Create([FromBody]CreateProductRequest request)

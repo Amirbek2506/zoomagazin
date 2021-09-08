@@ -581,6 +581,15 @@ namespace ZooMag.Services
             };
         }
 
+        public async Task<List<SelectOptionProductResponse>> GetProductsForSelectOptionAsync()
+        {
+            return await _context.Products.Select(x => new SelectOptionProductResponse
+            {
+                Id = x.Id,
+                Name = x.Title
+            }).ToListAsync();
+        }
+
         private void GetParentCategoryCategories(ref List<int> categoryIds, int parentCategoryId, List<Category> categories)
         {
             var childCategories = categories.Where(x => x.ParentCategoryId == parentCategoryId).Select(x => x.Id)

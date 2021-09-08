@@ -54,5 +54,6 @@ namespace ZooMag.Services.Interfaces
         Task<ProductItemDetailsResponse> GetProductItemDetailsAsync(int productItemId);
         Task<ProductDetailsResponse> GetProductDetailsAsync(int id);
         Task<GenericResponse< List<ProductResponse>>> GetProductsByBrandIdAsync(GenericPagedRequest<int> request);
+        Task<List<SelectOptionProductResponse>> GetProductsForSelectOptionAsync();
     }
 }
