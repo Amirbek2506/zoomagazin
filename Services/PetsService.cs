@@ -112,7 +112,20 @@ namespace ZooMag.Services
         public async Task<List<PetListItemResponse>> GetAllPets()
         {
             var entities = await _context.Pets.Include(x => x.PetImages).ToListAsync();
+            if (entities == null) return null;
+            
             var result = _mapper.Map<List<Pet>, List<PetListItemResponse>>(entities);            
+            foreach (var item in result)
+            {
+                var mainImage = _context.PetImages.FirstOrDefault(x => x.Id == (item.MainImageId ?? 0));
+                item.Images = await GetPetGalery(item.Id, item.MainImageId);
+                if (mainImage != null)
+                {
+                    item.Images.Add( _mapper.Map<PetImage, GetPetImageResponse>(mainImage));
+                    item.Images.Reverse();
+                }
+
+            }
             return result;
         }
 
@@ -123,6 +136,7 @@ namespace ZooMag.Services
 
             var result = _mapper.Map<Pet, GetPetResponse>(entity);            
             result.Images = await GetPetGalery(entity.Id, entity.MainImageId);
+            
             if ( _context.PetImages.FirstOrDefault(x => x.Id == entity.MainImageId) != null)
                 result.Image = _context.PetImages.FirstOrDefault(x => x.Id == entity.MainImageId).ImageUrl;
             return result;
